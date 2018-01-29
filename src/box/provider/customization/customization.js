@@ -40,7 +40,7 @@ class Customization extends Component {
     render(){
         return (
             <div >
-               <HeaderBar />
+                <HeaderBar />
                 <NavigationBar />
 
                 <br/>

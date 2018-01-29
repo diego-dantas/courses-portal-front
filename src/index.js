@@ -11,11 +11,18 @@ import NavegationBar from './box/provider/dash/NavegationBar';
 import Dash from './box/provider/dash/Dash';
 import About from './box/provider/about/About';
 import Customization from './box/provider/customization/customization'
+import Login from './box/provider/dash/Login';
+import Marketing from './box/provider/marketing/Marketing';
+import Courses from './box/provider/courses/Courses';
+import Signature from './box/provider/signature/Signature';
+import Financial from './box/provider/financial/Financial';
+import Analytical from './box/provider/analytical/Analytical';
 
 import history from './service/router/history'
 
 import registerServiceWorker from './registerServiceWorker';
 import injectTapEventPlugin from 'react-tap-event-plugin';
+
 
 
 injectTapEventPlugin();
@@ -28,6 +35,12 @@ const Main = () => (
                     <Route exact path='/provider' component={Dash} />
                     <Route exact path='/provider/about' component={About} />
                     <Route exact path='/provider/customization' component={Customization} />
+                    <Route exact path='/provider/login' component={Login}/>
+                    <Route exact path='/provider/marketing' component={Marketing}/>
+                    <Route exact path='/provider/course' component={Courses}/>
+                    <Route exact path='/provider/signature' component={Signature}/>
+                    <Route exact path='/provider/financial' component={Financial}/>
+                    <Route exact path='/provider/analytical' component={Analytical}/>
                 </div>
             </Router>
         </BrowserRouter>
