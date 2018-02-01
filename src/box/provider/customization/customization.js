@@ -2,8 +2,13 @@ import React, { Component } from 'react';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import SwipeableViews from 'react-swipeable-views'
 
+import PubSub from 'pubsub-js';
+
 import HeaderBar from '../dash/HeaderBar';
 import NavigationBar from '../dash/NavegationBar';
+import SubCategory from '../customization/SubCategory';
+import Descriptive from '../customization/Descriptive';
+import Category from '../customization/Category';
 
 class Customization extends Component {
 
@@ -11,6 +16,12 @@ class Customization extends Component {
         super(props);
         this.state = {slideIndex: 0};
     }
+    componentDidMount()
+    {
+        PubSub.publish('header-label',"Personalização");
+    }
+
+    handleChange = (value) => this.setState({slideIndex: value});
 
     styles = {
         headline: {
@@ -32,6 +43,7 @@ class Customization extends Component {
         },
         paddingAbout :{
             paddingLeft: "150px",
+            paddingRight: "10px",
             marginLeft: "100px",
             marginRight: "10px"
         }
@@ -51,14 +63,16 @@ class Customization extends Component {
                         onChange={this.handleChange}
                         value={this.state.slideIndex} >
                         <Tab style={this.styles.tab} label="Categorias" value={0} />
-                        <Tab style={this.styles.tab} label="Descritivos" value={1} />
-                        <Tab style={this.styles.tab} label="Home face" value={2} />
+                        <Tab style={this.styles.tab} label="Sub Categorias" value={1} />
+                        <Tab style={this.styles.tab} label="Descritivos" value={2} />
+                        <Tab style={this.styles.tab} label="Home face" value={3} />
                     </Tabs>
                     <SwipeableViews
                     index={this.state.slideIndex}
                     onChangeIndex={this.handleChange} >
-
-
+                    <Category />
+                    <SubCategory />
+                    <Descriptive />
                 </SwipeableViews>
                 </div>
             </div>

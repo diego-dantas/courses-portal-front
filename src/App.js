@@ -13,7 +13,10 @@ import  './style/css/global.css';
 class App extends Component {
    render(){
        return(
-            <HeaderBar />
+           <div>
+                <HeaderBar />
+                <img src='./static/img/odontologia-topo.jpg'/>
+            </div>
        );
    } 
 }

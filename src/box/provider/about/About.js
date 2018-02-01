@@ -6,8 +6,17 @@ import HeaderBar from '../dash/HeaderBar';
 import NavigationBar from '../dash/NavegationBar';
 
 
+import PubSub from 'pubsub-js';
+
 class About extends Component
 {
+    constructor(){
+        super();
+    }
+    componentDidMount()
+    {
+        PubSub.publish('header-label',"Sobre");
+    }
     style = {
         paddingAbout :{
             paddingLeft: "200px",
