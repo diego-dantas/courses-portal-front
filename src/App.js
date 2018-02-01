@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import HeaderBar from './box/generic/HeaderBar';
 
 //import of css
-import  './style/css/global.css';
+import  './static/style/css/global.css';
 
 
 
