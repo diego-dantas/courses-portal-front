@@ -12,10 +12,14 @@ class About extends Component
 {
     constructor(){
         super();
+        this.state = {
+            provider: JSON.parse(localStorage.getItem('provider'))
+        }
     }
     componentDidMount()
     {
         PubSub.publish('header-label',"Sobre");
+        console.log("to aqui no no sobre " + this.state.provider.email);
     }
     style = {
         paddingAbout :{
@@ -33,6 +37,7 @@ class About extends Component
                 <div style={this.style.paddingAbout}>
                     <TextField
                         id="email"
+                        value={this.state.provider.email}
                         disabled={true}
                         hintText="Email"
                         floatingLabelText="Email"
@@ -40,6 +45,7 @@ class About extends Component
                     />
                     <TextField
                         id="name"
+                        value={this.state.provider.name}
                         hintText="Nome"
                         floatingLabelText="Nome"
                         fullWidth={true}
@@ -48,6 +54,7 @@ class About extends Component
                     />
                     <TextField
                         id="password0"
+                        value={this.state.provider.password}
                         hintText="Senha"
                         floatingLabelText="Senha"
                         type="password"

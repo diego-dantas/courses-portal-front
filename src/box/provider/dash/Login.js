@@ -35,10 +35,10 @@ class Login extends Component {
         console.log('iniciando requisição para API');
         console.log('email = ' + this.email.input.value + ' password = ' + this.password.input.value);
         
-
         HttpService.make().post('/login', this.makeDataForlogin())
                    .then(success => {
                        console.log(success.data);
+                       localStorage.setItem('provider', JSON.stringify(success.data));
                        history.push('/provider/about', success);
                    })
                    .catch(error => {
@@ -58,41 +58,39 @@ class Login extends Component {
     render(){
 
         const actions = [
-            <TextField 
-                hintText="E-mail"
-                floatingLabelText="E-mail"
-                type="email"
-                fullWidth={true}
-                ref={(input) => { this.email = input; }}
-            />,
-            <TextField id="password"
-                hintText="Password"
-                floatingLabelText="Password"            
-                type="password"
-                fullWidth={true}
-                ref={(input) => { this.password = input; }}
-            />,
-            <br/>,<br/>,<br/>,
-
-            <RaisedButton
-              label="Entrar"
-              primary={true}
-              fullWidth={true}
-              onClick={this.makeLogin}
-            />,
-            <br/>,<br/>,
-            <p>{this.state.msg}</p>
+                <RaisedButton
+                    label="Entrar"
+                    primary={true}
+                    fullWidth={true}
+                    onClick={this.makeLogin}
+                />,
+                <br/>,<br/>,
+                <p>{this.state.msg}</p>
           ];
       
         return(
             <div style={this.style.divStyle}>
                 <Dialog
+                    title="PORTAL DASH BOARD"
                     style={this.style.dialogStyle}
                     actions={actions}
                     modal={false}
                     open={this.state.open}
                 >
-                    PORTAL DASH BOARD
+                    <TextField 
+                        hintText="E-mail"
+                        floatingLabelText="E-mail"
+                        type="email"
+                        fullWidth={true}
+                        ref={(input) => { this.email = input; }}
+                    />,
+                    <TextField id="password"
+                        hintText="Password"
+                        floatingLabelText="Password"            
+                        type="password"
+                        fullWidth={true}
+                        ref={(input) => { this.password = input; }}
+                    />
                 </Dialog>
           </div>
         );

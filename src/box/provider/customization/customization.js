@@ -14,11 +14,17 @@ class Customization extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {slideIndex: 0};
+        this.state = {
+            slideIndex: 0,
+            provider: JSON.parse(localStorage.getItem('provider'))
+        };
+        
+        
     }
     componentDidMount()
     {
         PubSub.publish('header-label',"Personalização");
+        console.log("to aqui e tenho o provider " + this.state.provider.email);
     }
 
     handleChange = (value) => this.setState({slideIndex: value});
