@@ -19,42 +19,35 @@ import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import ActionFavorite from 'material-ui/svg-icons/action/favorite';
 import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
 
-const styles = {
-    block: {
-      maxWidth: 250,
-    },
-    radioButton: {
-      marginBottom: 16,
-    },
-  };
 
 class Category extends Component {
-
-    state = {
-        openCreate: false,
-        openUpdate: false,
-        provider: JSON.parse(localStorage.getItem('provider')),
-        categoryTable: JSON.parse(localStorage.getItem('category')),
-        idCategory: '',
-        descriCategory: 'toto',
-        enableButton: true,
-        //state da tabela
-        fixedHeader: true,
-        stripedRows: false,
-        showRowHover: false,
-        selectable: true,
-        multiSelectable: false,
-        enableSelectAll: false,
-        deselectOnClickaway: true,
-        showCheckboxes: false,
-        height: '300px',
+    constructor(){
+        super();
+        this.state = {
+            openCreate: false,
+            openUpdate: false,
+            provider: JSON.parse(localStorage.getItem('provider')),
+            categoryTable: JSON.parse(localStorage.getItem('category')),
+            idCategory: '',
+            descriCategory: '',
+            enableButton: true,
+            //state da tabela
+            fixedHeader: true,
+            stripedRows: false,
+            showRowHover: false,
+            selectable: true,
+            multiSelectable: false,
+            enableSelectAll: false,
+            deselectOnClickaway: true,
+            showCheckboxes: false,
+            height: '300px',
+        }
     }
+    
 
     componentDidMount() {
         this.getCategory();
-        console.log(this.state.categoryTable);
     }
-
   
     handleOpenCreate = () => {
         this.setState({openCreate: true});     
@@ -74,13 +67,14 @@ class Category extends Component {
     makeDataForCategory = (opcao, _id) => {
         if(opcao == 'create'){
             return{
-                provider: this.state.provider,
-                description: this.category.input.value
+                description: this.category.input.value,
+                provider: this.state.provider
             }  
         }else if(opcao == 'update'){
             return{
-                provider: this.state.provider,
-                description: this.categoryUpdate.input.value
+                _id: this.state.idCategory,
+                description: this.categoryUpdate.input.value,
+                provider: this.state.provider
             }  
         }else if(opcao == 'delete'){
             return{
@@ -95,8 +89,8 @@ class Category extends Component {
         
         HttpService.make().post('/createGrid', this.makeDataForCategory('create'))
                    .then(success => {
-                       this.handleCloseCreate();
-                       this.getCategory();
+                        this.handleCloseCreate();
+                        this.getCategory();
                    })
                    .catch(error =>{
                        console.log('Erro na criação da categoria');
@@ -104,11 +98,10 @@ class Category extends Component {
     }
 
     deleteCategory = () => {
-        alert(this.state.idCategory);
         HttpService.make().post('/deleteGrid', this.makeDataForCategory('delete'))
                    .then(success =>{
-                       alert('registro excluido com sucesso');
                        this.handleCloseUpdate();
+                       this.getCategory();
                    })
                    .catch(error => {
                        console.log('erro ao excluir o registro')
@@ -120,7 +113,8 @@ class Category extends Component {
         HttpService.make().post('/updateGrid', this.makeDataForCategory('update'))
                    .then(success => {
                        alert('dados atualizados com sucesso');
-                       localStorage.setItem('/category', JSON.stringify(success.data));
+                       this.handleCloseUpdate();
+                       this.getCategory();
                    })
                    .catch(error => {
                        console.log('erro ao atualizar o cadastro de categoria');
@@ -130,7 +124,9 @@ class Category extends Component {
     getCategory = () =>{
         HttpService.make().get('/getGrid')
                    .then(success => {
-                        localStorage.setItem('/category', JSON.stringify(success.data));
+                        this.setState({categoryTable:[{_id: '',description: ''}]});
+                        localStorage.setItem('category', JSON.stringify(success.data));
+                        this.setState({categoryTable: JSON.parse(localStorage.getItem('category'))});
                    })
                    .catch(error => {
                        console.log('Erro ao carregar as categorias que estão salvas no banco');
@@ -231,13 +227,12 @@ class Category extends Component {
                         showRowHover={this.state.showRowHover}
                         stripedRows={this.state.stripedRows}
                     >
-                        {this.state.categoryTable.map( (row, index) => ( 
+                        {this.state.categoryTable.map( (row, index) => (
                             <TableRow key={index}>
                                 <TableRowColumn>{row._id}</TableRowColumn>
                                 <TableRowColumn>{row.description}</TableRowColumn>
                             </TableRow>
-                        ))}
-                        
+                         ))}
                     </TableBody>
                 </Table>
 
@@ -266,7 +261,7 @@ class Category extends Component {
                     <TextField 
                         floatingLabelText="Categoria"
                         fullWidth={true}
-                        value={this.state.descriCategory}
+                        defaultValue={this.state.descriCategory}
                         ref={(input) => {this.categoryUpdate = input;} }
                     />
                 </Dialog>
