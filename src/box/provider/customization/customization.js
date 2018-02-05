@@ -9,6 +9,7 @@ import NavigationBar from '../dash/NavegationBar';
 import SubCategory from '../customization/SubCategory';
 import Descriptive from '../customization/Descriptive';
 import Category from '../customization/Category';
+import Promotions from '../customization/Promotions';
 
 class Customization extends Component {
 
@@ -70,8 +71,8 @@ class Customization extends Component {
                         value={this.state.slideIndex} >
                         <Tab style={this.styles.tab} label="Categorias" value={0} />
                         <Tab style={this.styles.tab} label="Sub Categorias" value={1} />
-                        <Tab style={this.styles.tab} label="Descritivos" value={2} />
-                        <Tab style={this.styles.tab} label="Home face" value={3} />
+                        <Tab style={this.styles.tab} label="Planos" value={2} />
+                        <Tab style={this.styles.tab} label="promoções" value={3} />
                     </Tabs>
                     <SwipeableViews
                     index={this.state.slideIndex}
@@ -79,6 +80,7 @@ class Customization extends Component {
                     <Category />
                     <SubCategory />
                     <Descriptive />
+                    <Promotions />
                 </SwipeableViews>
                 </div>
             </div>

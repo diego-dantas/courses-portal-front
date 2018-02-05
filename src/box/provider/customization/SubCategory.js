@@ -29,9 +29,11 @@ class SubCategory extends Component {
             value: 0,
             provider: JSON.parse(localStorage.getItem('provider')),
             categoryTable: JSON.parse(localStorage.getItem('category')),
+            subCategoryTable: JSON.parse(localStorage.getItem('subCategory')),
             idCategory: 0,
             descriCategory: '',
-            
+            idSubCategory: 0,
+            descriSubCategory: '',
 
 
             //state da tabela
@@ -48,37 +50,34 @@ class SubCategory extends Component {
     }
     componentDidMount() {
         this.getCategory();
+        this.getSubCategory();
     }
 
     makeDataForCategory = (opcao, id) => {
-        var valida = true;
-        var i = 0;
         
-        while(valida){
-            if(id == this.state.categoryTable[i]._id){
-                valida = false;
-                console.log(this.state.categoryTable[i])
-                break;
-            }
-            i++;
-        }
+        var categorySub = '';
+        this.state.categoryTable.map((row, index) =>{
+            if(row._id == id)
+                categorySub = row;
+        })
         
         
         if(opcao == 'create'){
             return{
                 description: this.subCategory.input.value,
-                grid: this.state.categoryTable[i]
+                grid: categorySub
             }  
         }else if(opcao == 'update'){
             return{
-                _id: this.state.idCategory,
-                description: this.categoryUpdate.input.value,
-                provider: this.state.provider
+                _id: this.state.idSubCategory,
+                description: this.SubcategoryUpdate.input.value,
+                grid: {_id: this.state.idCategory}
             }  
         }else if(opcao == 'delete'){
             return{
-                _id: this.state.idCategory,
-                description: this.state.descriCategory
+                _id: this.state.idSubCategory,
+                description: this.SubcategoryUpdate.input.value,
+                grid: {_id: this.state.idCategory}
             }  
         }
               
@@ -109,12 +108,12 @@ class SubCategory extends Component {
         if(this.state.idCategory == 0){
             alert('Por favor escolher uma categoria');
         }else{
-            console.log(JSON.stringify(this.makeDataForCategory('create', this.state.idCategory)));
             
-            HttpService.make().post('/createSubGrid', this.makeDataForCategory('create'))
+            
+            HttpService.make().post('/createSubGrid', this.makeDataForCategory('create', this.state.idCategory))
                     .then(success => {
                             this.handleCloseCreate();
-                            this.getCategory();
+                            this.getSubCategory();
                     })
                     .catch(error =>{
                         console.log('Erro na criação da categoria');
@@ -123,29 +122,48 @@ class SubCategory extends Component {
     }
 
     deleteCategory = () => {
-     /*   HttpService.make().post('/deleteGrid', this.makeDataForCategory('delete'))
+        
+        HttpService.make().post('/deleteSubGrid', this.makeDataForCategory('delete', this.state.idCategory))
                    .then(success =>{
                        this.handleCloseUpdate();
-                       this.getCategory();
+                       this.getSubCategory();
                    })
                    .catch(error => {
                        console.log('erro ao excluir o registro')
-                   })*/
+                   })
     }
 
     updateCategory = ()  => {
-       /*
-        HttpService.make().post('/updateGrid', this.makeDataForCategory('update'))
-                   .then(success => {
-                       alert('dados atualizados com sucesso');
-                       this.handleCloseUpdate();
-                       this.getCategory();
-                   })
-                   .catch(error => {
-                       console.log('erro ao atualizar o cadastro de categoria');
-                   })*/
+
+          
+        if(this.state.idCategory == 0){
+            alert('Por favor escolher uma categoria');
+        }else{
+            console.log(JSON.stringify(this.makeDataForCategory('update')));
+            HttpService.make().post('/updateSubGrid', this.makeDataForCategory('update'))
+                        .then(success => {
+                            alert('dados atualizados com sucesso');
+                            this.handleCloseUpdate();
+                            this.getSubCategory();
+                        })
+                        .catch(error => {
+                            console.log('erro ao atualizar o cadastro de categoria');
+                        })
+        }
     }
 
+    getSubCategory = () =>{
+        HttpService.make().get('/getSubGrid')
+                   .then(success => {
+                        this.setState({subCategoryTable:[{"_id": "", "description": "", "grid": {"_id": "", "provider": null,"description": ""}}]});
+                        localStorage.setItem('subCategory', JSON.stringify(success.data));
+                        this.setState({subCategoryTable: JSON.parse(localStorage.getItem('subCategory'))});
+                        console.log(this.state.subCategoryTable);
+                   })
+                   .catch(error => {
+                       console.log('Erro ao carregar as categorias que estão salvas no banco');
+                   })
+    }
     getCategory = () =>{
         HttpService.make().get('/getGrid')
                    .then(success => {
@@ -157,12 +175,13 @@ class SubCategory extends Component {
                        console.log('Erro ao carregar as categorias que estão salvas no banco');
                    })
     }
-
     handleCellClick(col)
     {   
-        let desc = this.state.categoryTable[col].description;
-        this.setState({idCategory: this.state.categoryTable[col]._id});
-        this.setState({descriCategory: desc});
+        let desc = this.state.subCategoryTable[col].description;
+        this.setState({idSubCategory: this.state.subCategoryTable[col]._id});
+        this.setState({descriSubCategory: desc});
+        this.setState({value: this.state.subCategoryTable[col].grid._id});
+        this.setState({idCategory: this.state.subCategoryTable[col].grid._id});
         this.handleOpenUpdate();          
     }
 
@@ -250,7 +269,14 @@ class SubCategory extends Component {
                         deselectOnClickaway={this.state.deselectOnClickaway}
                         showRowHover={this.state.showRowHover}
                         stripedRows={this.state.stripedRows}
-                    >
+                    >   
+                         {this.state.subCategoryTable.map( (row, index) => (
+                            <TableRow key={index}>
+                                <TableRowColumn>{row._id}</TableRowColumn>
+                                <TableRowColumn>{row.description}</TableRowColumn>
+                                <TableRowColumn>{row.grid.description}</TableRowColumn>
+                            </TableRow>
+                         ))}
                         
                     </TableBody>
                 </Table>
@@ -277,6 +303,31 @@ class SubCategory extends Component {
                         fullWidth={true}
                         disabled={this.state.disableField}
                         ref={(input) => {this.subCategory = input;} }
+                    />
+                </Dialog>
+
+                <Dialog
+                    title="Sub Categoria"
+                    actions={actionsUpdate}
+                    modal={true}
+                    open={this.state.openUpdate}
+                >
+                     <SelectField
+                        floatingLabelText="Categoria"
+                        value={this.state.value}
+                        onChange={this.handleChange}
+                    >  
+                        <MenuItem value={0} primaryText="Categorias"/>
+                        {this.state.categoryTable.map( (row, index) => (
+                            <MenuItem value={row._id} primaryText={row.description}/>
+                         ))}
+                      
+                    </SelectField>
+                    <TextField 
+                        floatingLabelText="Sub Categoria"
+                        fullWidth={true}
+                        defaultValue={this.state.descriSubCategory}
+                        ref={(input) => {this.SubcategoryUpdate = input;} }
                     />
                 </Dialog>
             </div>
