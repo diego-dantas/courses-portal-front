@@ -233,6 +233,22 @@ class SubCategory extends Component {
                 onClick={this.deleteCategory}
             />
         ]
+
+       
+
+        
+        const bodyTable = [
+            this.state.subCategoryTable.map( (row, index) => (
+                <TableRow key={index}>
+                    <TableRowColumn>{row._id}</TableRowColumn>
+                    <TableRowColumn>{row.description}</TableRowColumn>
+                    <TableRowColumn>{row.grid.description}</TableRowColumn>
+                </TableRow>
+            ))  
+        ]
+        
+                      
+            
         return(
             <div>
                 <RaisedButton
@@ -270,13 +286,7 @@ class SubCategory extends Component {
                         showRowHover={this.state.showRowHover}
                         stripedRows={this.state.stripedRows}
                     >   
-                         {this.state.subCategoryTable.map( (row, index) => (
-                            <TableRow key={index}>
-                                <TableRowColumn>{row._id}</TableRowColumn>
-                                <TableRowColumn>{row.description}</TableRowColumn>
-                                <TableRowColumn>{row.grid.description}</TableRowColumn>
-                            </TableRow>
-                         ))}
+                         {bodyTable}
                         
                     </TableBody>
                 </Table>
