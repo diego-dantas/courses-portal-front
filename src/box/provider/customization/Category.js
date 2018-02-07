@@ -172,20 +172,20 @@ class Category extends Component {
 
             />,
             <RaisedButton
-                label="cancelar"
-                backgroundColor="#DD2C00"
-                icon={<CancelIo color="#FFF"/>}
-                labelStyle={{color: 'white'}}
-                style={{marginRight:'20px'}}
-                onClick={this.handleCloseUpdate}
-            />,
-            <RaisedButton
                 label="Excluir"
                 backgroundColor="#DD2C00"
                 icon={<CancelIo color="#FFF"/>}
                 labelStyle={{color: 'white'}}
                 style={{marginRight:'20px'}}
                 onClick={this.deleteCategory}
+            />,
+            <RaisedButton
+                label="cancelar"
+                backgroundColor="#FF9800"
+                icon={<CancelIo color="#FFF"/>}
+                labelStyle={{color: 'white'}}
+                style={{marginRight:'20px'}}
+                onClick={this.handleCloseUpdate}
             />
         ]
         

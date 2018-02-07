@@ -158,7 +158,6 @@ class SubCategory extends Component {
                         this.setState({subCategoryTable:[{"_id": "", "description": "", "grid": {"_id": "", "provider": null,"description": ""}}]});
                         localStorage.setItem('subCategory', JSON.stringify(success.data));
                         this.setState({subCategoryTable: JSON.parse(localStorage.getItem('subCategory'))});
-                        console.log(this.state.subCategoryTable);
                    })
                    .catch(error => {
                        console.log('Erro ao carregar as categorias que estão salvas no banco');
@@ -217,20 +216,20 @@ class SubCategory extends Component {
 
             />,
             <RaisedButton
-                label="cancelar"
-                backgroundColor="#DD2C00"
-                icon={<CancelIo color="#FFF"/>}
-                labelStyle={{color: 'white'}}
-                style={{marginRight:'20px'}}
-                onClick={this.handleCloseUpdate}
-            />,
-            <RaisedButton
                 label="Excluir"
                 backgroundColor="#DD2C00"
                 icon={<CancelIo color="#FFF"/>}
                 labelStyle={{color: 'white'}}
                 style={{marginRight:'20px'}}
                 onClick={this.deleteCategory}
+            />,
+            <RaisedButton
+                label="cancelar"
+                backgroundColor="#FF9800"
+                icon={<CancelIo color="#FFF"/>}
+                labelStyle={{color: 'white'}}
+                style={{marginRight:'20px'}}
+                onClick={this.handleCloseUpdate}
             />
         ]
 
