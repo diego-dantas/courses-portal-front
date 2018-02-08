@@ -20,6 +20,16 @@ import {
   import ActionFavorite from 'material-ui/svg-icons/action/favorite';
   import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
   import DatePicker from 'material-ui/DatePicker';
+  import MaskedInput from 'react-maskedinput'
+
+
+//Import BootStrap 
+import { 
+    FormGroup, 
+    FormControl,
+    ControlLabel
+} from 'react-bootstrap';
+
 
 
 class Promotions extends Component {
@@ -71,29 +81,31 @@ class Promotions extends Component {
         this.setState({openUpdate: false});   
     }
 
-    setDateStart = (event, date) => {
-        this.setState({dateStart: date})
+    setDateStart = (date) => {
+        this.setState({dateStart: date.target.value })
     }
 
-    setDateFinished = (event, date) => {
-        this.setState({dateFinished: date})
+    setDateFinished = (date) => {
+        this.setState({dateFinished: date.target.value })
     }
 
     handleCellClick(col)
     {   
+        //converto o retorno da data do banco
         let desc = this.state.promotionTabel[col].description;
         let dataInicialC  = this.formateDate(this.state.promotionTabel[col].dateInicial).substring(0,10);
         let dataFinalC  = this.formateDate(this.state.promotionTabel[col].dateFinal).substring(0,10);
-        let dtIn = dataInicialC.substring(6,10) + '-' + dataInicialC.substring(3,5) + '-' + parseInt(dataInicialC.substring(0,2))
-        let dtFn = dataFinalC.substring(6,10) + '-' + dataFinalC.substring(3,5) + '-' + parseInt(dataFinalC.substring(0,2));
-        alert(dtFn)
-
+        let dtIn = dataInicialC.substring(6,10) + '-' + dataInicialC.substring(3,5) + '-' + dataInicialC.substring(0,2)
+        let dtFn = dataFinalC.substring(6,10) + '-' + dataFinalC.substring(3,5) + '-' + dataFinalC.substring(0,2);        
+        
+        //populo os valores para os states
         this.setState({idPromotion: this.state.promotionTabel[col]._id});
         this.setState({descPromotion: desc});
         this.setState({codCupomPromotion: this.state.promotionTabel[col].codigoCupom});
         this.setState({percentual: this.state.promotionTabel[col].percentual});
-        this.setState({dataFin: new Date(dtIn)});
-        this.setState({dataIni: new Date(dtFn)});
+        this.setState({dataIni: dtIn});
+        this.setState({dataFin: dtFn});
+
         this.handleOpenUpdate();          
     }
 
@@ -106,15 +118,17 @@ class Promotions extends Component {
     }
     makeDataForPromotions = () => {
         return{
+            _id: this.state.idPromotion,
             description: this.description.input.value,
             codigoCupom: this.coupon.input.value,
             percentual: this.percentage.input.value,
-            dateInicial: this.state.dateStart,
-            dateFinal: this.state.dateFinished
+            dateInicial: this.state.dataIni.value,
+            dateFinal: this.state.dataFin.value
         }
     }
 
-    createPromotions = () => {
+    createPromotions = () => {     
+         
         console.log(JSON.stringify(this.makeDataForPromotions()));
         HttpService.make().post('/createPromotion', this.makeDataForPromotions())
                             .then(success => {
@@ -125,6 +139,34 @@ class Promotions extends Component {
                             .catch(error =>{
                                 console.log('Erro ao criar uma promoção');
                             })
+    }
+
+    updatePromotions = () => {     
+        
+       console.log(JSON.stringify(this.makeDataForPromotions()));
+       HttpService.make().post('/updatePromotion', this.makeDataForPromotions())
+                           .then(success => {
+                               alert('Dados atualizados com sucesso');
+                               this.getPromotion();
+                               this.handleCloseUpdate();
+                           })
+                           .catch(error =>{
+                               console.log('Erro ao alterar uma promoção');
+                           })
+   }
+
+   deletePromotions = () => {     
+    
+   console.log(JSON.stringify(this.makeDataForPromotions()));
+   HttpService.make().post('/deletePromotion', this.makeDataForPromotions())
+                       .then(success => {
+                           alert('Dados excluido com sucesso');
+                           this.getPromotion();
+                           this.handleCloseUpdate();
+                       })
+                       .catch(error =>{
+                           console.log('Erro ao exluir uma promoção');
+                       })
     }
 
     getPromotion = () => {
@@ -171,12 +213,12 @@ class Promotions extends Component {
 
         const actionsUpdate = [
             <RaisedButton
-                label="salvar"
+                label="atualizar"
                 backgroundColor="#0ac752"
                 icon={<NewIco color="#FFF"/>}
                 labelStyle={{color: 'white'}}
                 style={{marginRight:'20px'}}
-                onClick={this.createPromotions}
+                onClick={this.updatePromotions}
 
             />,
             <RaisedButton
@@ -185,7 +227,7 @@ class Promotions extends Component {
                 icon={<CancelIo color="#FFF"/>}
                 labelStyle={{color: 'white'}}
                 style={{marginRight:'20px'}}
-                onClick={this.handleCloseUpdate}
+                onClick={this.deletePromotions}
             />,
             <RaisedButton
                 label="cancelar"
@@ -220,7 +262,7 @@ class Promotions extends Component {
                     style={{float: 'right', marginTop:'20px'}}
                     onClick={this.handleOpenCreate}
                 />
-                 <br/><br/><br/><br/><br/>
+                 <br/><br/><br/>
                 <Table
                     height='300px'
                     fixedHeader={this.state.fixedHeader}
@@ -281,14 +323,29 @@ class Promotions extends Component {
                         type='number'
                         ref={(input) => {this.percentage = input;} }
                     />
-                    <DatePicker 
-                        hintText="Data Inicio"
-                        onChange={this.setDateStart}
-                    />
-                    <DatePicker 
-                        hintText="Data Final"
-                        onChange={this.setDateFinished}  
-                    />
+                    <br /><br />
+                    <div className="row">
+                        <div className="col-md-5">
+                            <FormGroup controlId="formInlineName">
+                                
+                                <ControlLabel>Data Inicial</ControlLabel>{' '}
+                                <FormControl 
+                                    type="date" 
+                                    inputRef={(ref) => {this.state.dataIni = ref}} 
+                                />
+                            </FormGroup>{' '}
+                        </div>
+                        <div className="col-md-5">
+                            <FormGroup controlId="formInlineEmail">
+                                <ControlLabel>Data Final</ControlLabel>{' '}
+                                <FormControl 
+                                type="date" 
+                                inputRef={(ref) => {this.state.dataFin = ref}} 
+                                />
+                                
+                            </FormGroup>{' '}
+                        </div>
+                    </div>
                 </Dialog>
 
                 <Dialog
@@ -303,14 +360,14 @@ class Promotions extends Component {
                         fullWidth={true}
                         disabled={this.state.disableField}
                         defaultValue={this.state.descPromotion}
-                        ref={(input) => {this.descPromotion = input;} }
+                        ref={(input) => {this.description = input;} }
                     />
                     <TextField 
                         floatingLabelText="Código do Cupom "
                         fullWidth={false}
                         style={{marginRight: '30px'}}
                         defaultValue={this.state.codCupomPromotion}
-                        ref={(input) => {this.codCupomPromotion = input;} }
+                        ref={(input) => {this.coupon = input;} }
                     />
                     <TextField 
                         floatingLabelText="Percentual"
@@ -318,18 +375,33 @@ class Promotions extends Component {
                         style={{marginLeft: '30px'}}
                         type='number'
                         defaultValue={this.state.percentual}
-                        ref={(input) => {this.percentual = input;} }
+                        ref={(input) => {this.percentage = input;} }
                     />
-                    <DatePicker 
-                        hintText="Data Inicio"
-                        defaultDate={this.state.dataIni}
-                        onChange={this.setDateStart}
-                    />
-                    <DatePicker 
-                        hintText="Data Final"
-                        vallue={this.state.dataFin}
-                        onChange={this.setDateFinished}  
-                    />
+                    <br /><br />
+                    <div className="row">
+                        <div className="col-md-5">
+                            <FormGroup controlId="formInlineName">
+                                
+                                <ControlLabel>Data Inicial</ControlLabel>{' '}
+                                <FormControl 
+                                    type="date" 
+                                    defaultValue={this.state.dataIni}
+                                    inputRef={(ref) => {this.state.dataIni = ref}} 
+                                />
+                            </FormGroup>{' '}
+                        </div>
+                        <div className="col-md-5">
+                            <FormGroup controlId="formInlineEmail">
+                                <ControlLabel>Data Final</ControlLabel>{' '}
+                                <FormControl 
+                                    type="date" 
+                                    defaultValue={this.state.dataFin}
+                                    inputRef={(ref) => {this.state.dataFin = ref}} 
+                                />
+                                
+                            </FormGroup>{' '}
+                        </div>
+                    </div>
                 </Dialog>
 
             </div>

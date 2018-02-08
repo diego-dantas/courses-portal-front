@@ -259,7 +259,7 @@ class SubCategory extends Component {
                     fullWidth={true}
                     onClick={this.handleOpenCreate}
                 />
-                <br/><br/><br/><br/><br/>
+                <br/><br/><br/>
                 <Table
                     height={this.state.height}
                     fixedHeader={this.state.fixedHeader}
