@@ -16,6 +16,7 @@ class About extends Component
             provider: JSON.parse(localStorage.getItem('provider')),
             category: JSON.parse(localStorage.getItem('category')),
             subCategory: JSON.parse(localStorage.getItem('subCategory')),
+            promotion: JSON.parse(localStorage.getItem('promotion')),
             plan: JSON.parse(localStorage.getItem('plan'))
         }
     }
@@ -25,6 +26,7 @@ class About extends Component
         this.getPlan()
         this. getCategory();
         this.getSubCategory();
+        this.getPromotion();
         console.log('Carreguei os dados iniciais');
     }
     style = {
@@ -39,15 +41,7 @@ class About extends Component
         console.log('vamos la buscar os planos');
         HttpService.make().get('/getPlan')
                     .then(success =>{
-                        
-                        this.setState({plan: [ {
-                            "_id": "",
-                            "description": "",
-                            "status": "",
-                            "wayImagen": ""
-                        }]});
                         localStorage.setItem('plan', JSON.stringify(success.data));
-                        this.setState({plan: JSON.parse(localStorage.getItem('plan'))});
 
                         console.log(JSON.parse(localStorage.getItem('plan')));
                     })
@@ -58,9 +52,7 @@ class About extends Component
     getSubCategory = () =>{
         HttpService.make().get('/getSubGrid')
                    .then(success => {
-                        this.setState({subCategoryTable:[{"_id": "", "description": "", "grid": {"_id": "", "provider": null,"description": ""}}]});
                         localStorage.setItem('subCategory', JSON.stringify(success.data));
-                        this.setState({subCategoryTable: JSON.parse(localStorage.getItem('subCategory'))});
                    })
                    .catch(error => {
                        console.log('Erro ao carregar as categorias que estão salvas no banco');
@@ -69,13 +61,20 @@ class About extends Component
     getCategory = () =>{
         HttpService.make().get('/getGrid')
                    .then(success => {
-                        this.setState({categoryTable:[{_id: '',description: ''}]});
                         localStorage.setItem('category', JSON.stringify(success.data));
-                        this.setState({categoryTable: JSON.parse(localStorage.getItem('category'))});
                    })
                    .catch(error => {
                        console.log('Erro ao carregar as categorias que estão salvas no banco');
                    })
+    }
+    getPromotion = () => {
+        HttpService.make().get('/getPromotion')
+                    .then(success =>{
+                        localStorage.setItem('promotion', JSON.stringify(success));
+                    })
+                    .catch(error => {
+                        console.log('Erro ao buscar as promoçoes');
+                    })
     }
     render()
     {
