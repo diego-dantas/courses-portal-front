@@ -4,7 +4,7 @@ import TextField from 'material-ui/TextField';
 
 import HeaderBar from '../dash/HeaderBar';
 import NavigationBar from '../dash/NavegationBar';
-
+import HttpService from '../../../service/http/HttpService';
 
 import PubSub from 'pubsub-js';
 
@@ -13,13 +13,15 @@ class About extends Component
     constructor(){
         super();
         this.state = {
-            provider: JSON.parse(localStorage.getItem('provider'))
+            provider: JSON.parse(localStorage.getItem('provider')),
+            plan: JSON.parse(localStorage.getItem('plan'))
         }
     }
     componentDidMount()
     {
         PubSub.publish('header-label',"Sobre");
         console.log("to aqui no no sobre " + this.state.provider.email);
+        this.getPlan()
     }
     style = {
         paddingAbout :{
@@ -27,6 +29,27 @@ class About extends Component
             marginLeft: "92px",
             marginRight: "92px"
         }
+    }
+
+    getPlan = () => {
+        console.log('vamos la buscar os planos');
+        HttpService.make().get('/getPlan')
+                    .then(success =>{
+                        
+                        this.setState({plan: [ {
+                            "_id": "",
+                            "description": "",
+                            "status": "",
+                            "wayImagen": ""
+                        }]});
+                        localStorage.setItem('plan', JSON.stringify(success.data));
+                        this.setState({plan: JSON.parse(localStorage.getItem('plan'))});
+
+                        console.log(JSON.parse(localStorage.getItem('plan')));
+                    })
+                    .catch(error => {
+                        console.log('Erro ao buscar as promoçoes');
+                    })
     }
     render()
     {
