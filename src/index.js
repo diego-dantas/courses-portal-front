@@ -7,7 +7,6 @@ import { BrowserRouter, Router, Route } from 'react-router-dom'
 
 //import of components
 import App from './App';
-import NavegationBar from './box/provider/dash/NavegationBar';
 import Dash from './box/provider/dash/Dash';
 import About from './box/provider/about/About';
 import Customization from './box/provider/customization/customization'

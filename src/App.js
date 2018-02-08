@@ -15,7 +15,6 @@ class App extends Component {
        return(
            <div>
                 <HeaderBar />
-                <img src='./static/img/odontologia-topo.jpg'/>
             </div>
        );
    } 

@@ -75,13 +75,13 @@ class Customization extends Component {
                         <Tab style={this.styles.tab} label="promoções" value={3} />
                     </Tabs>
                     <SwipeableViews
-                    index={this.state.slideIndex}
-                    onChangeIndex={this.handleChange} >
-                    <Category />
-                    <SubCategory />
-                    <Plan />
-                    <Promotions />
-                </SwipeableViews>
+                        index={this.state.slideIndex}
+                        onChangeIndex={this.handleChange} >
+                        <Category />
+                        <SubCategory />
+                        <Plan />
+                        <Promotions />
+                    </SwipeableViews>
                 </div>
             </div>
         );

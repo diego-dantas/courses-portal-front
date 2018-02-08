@@ -14,11 +14,8 @@ import NewIco from 'material-ui/svg-icons/content/add';
 import CancelIo from 'material-ui/svg-icons/content/block'
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
-import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem'
-import ActionFavorite from 'material-ui/svg-icons/action/favorite';
-import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
 
 class SubCategory extends Component {
     constructor (){
@@ -57,23 +54,23 @@ class SubCategory extends Component {
         
         var categorySub = '';
         this.state.categoryTable.map((row, index) =>{
-            if(row._id == id)
+            if(row._id === id)
                 categorySub = row;
         })
         
         
-        if(opcao == 'create'){
+        if(opcao === 'create'){
             return{
                 description: this.subCategory.input.value,
                 grid: categorySub
             }  
-        }else if(opcao == 'update'){
+        }else if(opcao === 'update'){
             return{
                 _id: this.state.idSubCategory,
                 description: this.SubcategoryUpdate.input.value,
                 grid: {_id: this.state.idCategory}
             }  
-        }else if(opcao == 'delete'){
+        }else if(opcao === 'delete'){
             return{
                 _id: this.state.idSubCategory,
                 description: this.SubcategoryUpdate.input.value,
@@ -105,7 +102,7 @@ class SubCategory extends Component {
 
     createCategory = () => {
         
-        if(this.state.idCategory == 0){
+        if(this.state.idCategory === 0){
             alert('Por favor escolher uma categoria');
         }else{
             
@@ -136,7 +133,7 @@ class SubCategory extends Component {
     updateCategory = ()  => {
 
           
-        if(this.state.idCategory == 0){
+        if(this.state.idCategory === 0){
             alert('Por favor escolher uma categoria');
         }else{
             console.log(JSON.stringify(this.makeDataForCategory('update')));

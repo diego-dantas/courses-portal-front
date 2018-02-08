@@ -15,24 +15,13 @@ import NewIco from 'material-ui/svg-icons/content/add';
 import CancelIo from 'material-ui/svg-icons/content/block'
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
-import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
-import SelectField from 'material-ui/SelectField';
-import MenuItem from 'material-ui/MenuItem'
-import ActionFavorite from 'material-ui/svg-icons/action/favorite';
-import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
-import DatePicker from 'material-ui/DatePicker';
 import Toggle from 'material-ui/Toggle';
 
 import Dropzone from './../../../service/Dropzone';
 
 
 
-//Import BootStrap 
-import { 
-    FormGroup, 
-    FormControl,
-    ControlLabel
-} from 'react-bootstrap';
+
 
 
 
@@ -111,10 +100,10 @@ class Plan extends Component {
     }
 
     formateDate = (date) => {       
-        var date = new Date(date);
-        var nextDate = date.getDate();
-        date.setDate(nextDate);
-        var newDate = date.toLocaleString();
+        var dt = new Date(date);
+        var nextDate = dt.getDate();
+        dt.setDate(nextDate);
+        var newDate = dt.toLocaleString();
         return  newDate;
     }
     makeDataForPlan = () => {
@@ -250,7 +239,7 @@ class Plan extends Component {
                 <TableRow key={i}>
                     <TableRowColumn>{row._id}</TableRowColumn>
                     <TableRowColumn>{row.description}</TableRowColumn>
-                    <TableRowColumn>{row.status == true ? 'ATIVO' : 'INATIVO'}</TableRowColumn>
+                    <TableRowColumn>{row.status === true ? 'ATIVO' : 'INATIVO'}</TableRowColumn>
                 </TableRow>
             ))
            

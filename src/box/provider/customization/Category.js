@@ -15,9 +15,7 @@ import NewIco from 'material-ui/svg-icons/content/add';
 import CancelIo from 'material-ui/svg-icons/content/block'
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
-import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
-import ActionFavorite from 'material-ui/svg-icons/action/favorite';
-import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
+
 
 
 class Category extends Component {
@@ -65,18 +63,18 @@ class Category extends Component {
     }
 
     makeDataForCategory = (opcao, _id) => {
-        if(opcao == 'create'){
+        if(opcao === 'create'){
             return{
                 description: this.category.input.value,
                 provider: this.state.provider
             }  
-        }else if(opcao == 'update'){
+        }else if(opcao === 'update'){
             return{
                 _id: this.state.idCategory,
                 description: this.categoryUpdate.input.value,
                 provider: this.state.provider
             }  
-        }else if(opcao == 'delete'){
+        }else if(opcao === 'delete'){
             return{
                 _id: this.state.idCategory,
                 description: this.state.descriCategory

@@ -8,19 +8,12 @@ import {
     TableRowColumn,
   } from 'material-ui/Table';
 
-  import HttpService from '../../../service/http/HttpService';
-  import RaisedButton from 'material-ui/RaisedButton';
-  import NewIco from 'material-ui/svg-icons/content/add';
-  import CancelIo from 'material-ui/svg-icons/content/block'
-  import Dialog from 'material-ui/Dialog';
-  import TextField from 'material-ui/TextField';
-  import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
-  import SelectField from 'material-ui/SelectField';
-  import MenuItem from 'material-ui/MenuItem'
-  import ActionFavorite from 'material-ui/svg-icons/action/favorite';
-  import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
-  import DatePicker from 'material-ui/DatePicker';
-  import MaskedInput from 'react-maskedinput'
+import HttpService from '../../../service/http/HttpService';
+import RaisedButton from 'material-ui/RaisedButton';
+import NewIco from 'material-ui/svg-icons/content/add';
+import CancelIo from 'material-ui/svg-icons/content/block'
+import Dialog from 'material-ui/Dialog';
+import TextField from 'material-ui/TextField';
 
 
 //Import BootStrap 
@@ -110,10 +103,10 @@ class Promotions extends Component {
     }
 
     formateDate = (date) => {       
-        var date = new Date(date);
-        var nextDate = date.getDate();
-        date.setDate(nextDate);
-        var newDate = date.toLocaleString();
+        var dt = new Date(date);
+        var nextDate = dt.getDate();
+        dt.setDate(nextDate);
+        var newDate = dt.toLocaleString();
         return  newDate;
     }
     makeDataForPromotions = () => {

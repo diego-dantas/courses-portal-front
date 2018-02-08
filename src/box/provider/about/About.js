@@ -14,14 +14,18 @@ class About extends Component
         super();
         this.state = {
             provider: JSON.parse(localStorage.getItem('provider')),
+            category: JSON.parse(localStorage.getItem('category')),
+            subCategory: JSON.parse(localStorage.getItem('subCategory')),
             plan: JSON.parse(localStorage.getItem('plan'))
         }
     }
     componentDidMount()
     {
         PubSub.publish('header-label',"Sobre");
-        console.log("to aqui no no sobre " + this.state.provider.email);
         this.getPlan()
+        this. getCategory();
+        this.getSubCategory();
+        console.log('Carreguei os dados iniciais');
     }
     style = {
         paddingAbout :{
@@ -50,6 +54,28 @@ class About extends Component
                     .catch(error => {
                         console.log('Erro ao buscar as promoçoes');
                     })
+    }
+    getSubCategory = () =>{
+        HttpService.make().get('/getSubGrid')
+                   .then(success => {
+                        this.setState({subCategoryTable:[{"_id": "", "description": "", "grid": {"_id": "", "provider": null,"description": ""}}]});
+                        localStorage.setItem('subCategory', JSON.stringify(success.data));
+                        this.setState({subCategoryTable: JSON.parse(localStorage.getItem('subCategory'))});
+                   })
+                   .catch(error => {
+                       console.log('Erro ao carregar as categorias que estão salvas no banco');
+                   })
+    }
+    getCategory = () =>{
+        HttpService.make().get('/getGrid')
+                   .then(success => {
+                        this.setState({categoryTable:[{_id: '',description: ''}]});
+                        localStorage.setItem('category', JSON.stringify(success.data));
+                        this.setState({categoryTable: JSON.parse(localStorage.getItem('category'))});
+                   })
+                   .catch(error => {
+                       console.log('Erro ao carregar as categorias que estão salvas no banco');
+                   })
     }
     render()
     {
