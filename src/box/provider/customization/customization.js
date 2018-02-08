@@ -7,7 +7,7 @@ import PubSub from 'pubsub-js';
 import HeaderBar from '../dash/HeaderBar';
 import NavigationBar from '../dash/NavegationBar';
 import SubCategory from '../customization/SubCategory';
-import Descriptive from '../customization/Descriptive';
+import Plan from '../customization/Plan';
 import Category from '../customization/Category';
 import Promotions from '../customization/Promotions';
 
@@ -79,7 +79,7 @@ class Customization extends Component {
                     onChangeIndex={this.handleChange} >
                     <Category />
                     <SubCategory />
-                    <Descriptive />
+                    <Plan />
                     <Promotions />
                 </SwipeableViews>
                 </div>
