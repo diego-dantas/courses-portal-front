@@ -89,6 +89,7 @@ class Courses extends Component {
         
     }
 
+    //Metodos de tratamento de mudança de compo
     categoryChange = (event, index, value) => {
         this.setState({cat: value});
         this.setState({subCat: 0});
@@ -103,7 +104,21 @@ class Courses extends Component {
         this.setState({subCat: value});
        // this.setState({idCategory: value})
     }
+
+    nameChange = () => {
+        if(this.state.errorName !== '')
+            this.setState({errorName: ''});
+    }
+
+    descriptionChange = () => {
+        if(this.state.errorDescricao !== '')
+            this.setState({errorDescricao: ''});
+    }
     handleOpenCreate = () => {
+        this.setState({errorDescricao: ''});
+        this.setState({errorName: ''});
+        this.setState({cat: 0});
+        this.setState({disableField: true})
         this.setState({openCreate: true})
     }
 
@@ -187,6 +202,7 @@ class Courses extends Component {
                     actions={actions}
                     open={this.state.openCreate}
                     contentStyle={{width: '80%', height: '100%', maxWidth: 'none'}}
+                    autoScrollBodyContent={true}
                 >
                     <Toggle 
                         label={'Status: ' + this.state.labelStatus}
@@ -194,7 +210,7 @@ class Courses extends Component {
                         onToggle={(event, isInputChecked) => this.handleToggle(event, isInputChecked)}
                     />
                     <div className="row">
-                        <div className="col-md-6">
+                        <div className="col-md-6 col-sm-6">
                             <SelectField
                                 floatingLabelText="Categoria"
                                 value={this.state.cat}
@@ -207,7 +223,7 @@ class Courses extends Component {
                             
                             </SelectField>
                         </div>
-                        <div className="col-md-6">
+                        <div className="col-md-6 col-sm-6">
                             <SelectField
                                 floatingLabelText="Sub-Categoria"
                                 value={this.state.subCat}
@@ -229,6 +245,7 @@ class Courses extends Component {
                         disabled={this.state.disableField}
                         errorText={this.state.errorName}
                         ref={(input) => {this.name = input;} }
+                        onChange={this.nameChange}
                     />
                     <TextField 
                         floatingLabelText="Descrição"
@@ -236,6 +253,7 @@ class Courses extends Component {
                         disabled={this.state.disableField}
                         errorText={this.state.errorDescricao}
                         ref={(input) => {this.description = input;} }
+                        onChange={this.descriptionChange}
                     />
                     <TextField 
                         floatingLabelText="Objetivo"
@@ -244,7 +262,7 @@ class Courses extends Component {
                         ref={(input) => {this.objective = input;} }
                     />
                     <div className="row">
-                        <div className="col-md-6">
+                        <div className="col-md-6 col-sm-6">
                             <TextField 
                                 floatingLabelText="Preço"
                                 type="number"
@@ -252,7 +270,7 @@ class Courses extends Component {
                                 ref={(input) => {this.price = input;} }
                             />
                         </div>
-                        <div className="col-md-6">
+                        <div className="col-md-6 col-sm-6">
                         <TextField 
                             floatingLabelText="Carga horária"
                             type="number"
