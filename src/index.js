@@ -16,7 +16,7 @@ import Courses from './box/provider/courses/Courses';
 import Signature from './box/provider/signature/Signature';
 import Financial from './box/provider/financial/Financial';
 import Analytical from './box/provider/analytical/Analytical';
-import StepsCourses from './box/provider/courses/StepsCourses';
+import TabsCourses from './box/provider/courses/TabsCourses';
 
 import history from './service/router/history'
 
@@ -37,7 +37,7 @@ const Main = () => (
                     <Route exact path='/provider/customization' component={Customization} />
                     <Route exact path='/provider/login' component={Login}/>
                     <Route exact path='/provider/marketing' component={Marketing}/>
-                    <Route exact path='/provider/course' component={StepsCourses}/>
+                    <Route exact path='/provider/course' component={TabsCourses}/>
                     <Route exact path='/provider/signature' component={Signature}/>
                     <Route exact path='/provider/financial' component={Financial}/>
                     <Route exact path='/provider/analytical' component={Analytical}/>

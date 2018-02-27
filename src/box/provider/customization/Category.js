@@ -12,10 +12,9 @@ import HttpService from '../../../service/http/HttpService';
 
 import RaisedButton from 'material-ui/RaisedButton';
 import NewIco from 'material-ui/svg-icons/content/add';
-import CancelIo from 'material-ui/svg-icons/content/block'
+import CancelIo from 'material-ui/svg-icons/content/block';
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
-
 
 
 class Category extends Component {
@@ -29,6 +28,9 @@ class Category extends Component {
             idCategory: '',
             descriCategory: '',
             enableButton: true,
+            alert: false,
+            disable: false,
+
             //state da tabela
             fixedHeader: true,
             stripedRows: false,
@@ -48,7 +50,9 @@ class Category extends Component {
     }
   
     handleOpenCreate = () => {
-        this.setState({openCreate: true});     
+        this.setState({openCreate: true});  
+        this.setState({alert: false});
+        this.setState({disable: false});
     }
     handleOpenUpdate = () => {        
         this.setState({openUpdate: true});       
@@ -102,7 +106,8 @@ class Category extends Component {
                        this.getCategory();
                    })
                    .catch(error => {
-                       console.log('erro ao excluir o registro')
+                        this.setState({alert: true})
+                        this.setState({disable: true})
                    })
     }
 
@@ -176,6 +181,7 @@ class Category extends Component {
                 labelStyle={{color: 'white'}}
                 style={{marginRight:'20px'}}
                 onClick={this.deleteCategory}
+                disabled={this.state.disable}
             />,
             <RaisedButton
                 label="cancelar"
@@ -256,6 +262,13 @@ class Category extends Component {
                     open={this.state.openUpdate}
                     style={{textAlign: 'center'}}
                 >
+                    {
+                        this.state.alert === true ?
+                            <div className="alert alert-danger" role="alert">
+                                Não e possivel excluir uma categoria que tenha sub-categorias cadastradas
+                            </div>: ''
+                    }
+                    
                     <TextField 
                         floatingLabelText="Categoria"
                         fullWidth={true}

@@ -14,7 +14,7 @@ import SubCategory from '../customization/SubCategory';
 
 import Courses from '../courses/Courses';
 
-class StepsCourses extends Component {
+class TabsCourses extends Component {
 
     constructor(props){
         super(props);
@@ -81,4 +81,4 @@ class StepsCourses extends Component {
     }
 }
 
-export default StepsCourses;
+export default TabsCourses;

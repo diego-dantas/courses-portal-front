@@ -84,6 +84,8 @@ class Promotions extends Component {
 
     handleCellClick(col)
     {   
+        console.log(this.state.promotionTabel[col].dateInicial);
+        console.log(this.formateDate(this.state.promotionTabel[col].dateInicial));
         //converto o retorno da data do banco
         let desc = this.state.promotionTabel[col].description;
         let dataInicialC  = this.formateDate(this.state.promotionTabel[col].dateInicial).substring(0,10);
@@ -104,7 +106,7 @@ class Promotions extends Component {
 
     formateDate = (date) => {       
         var dt = new Date(date);
-        var nextDate = dt.getDate();
+        var nextDate = (dt.getDate() + 1);
         dt.setDate(nextDate);
         var newDate = dt.toLocaleString();
         return  newDate;
@@ -165,7 +167,7 @@ class Promotions extends Component {
     getPromotion = () => {
         HttpService.make().get('/getPromotion')
                     .then(success =>{
-                        
+                        console.log(success);
                         this.setState({promotionTabel: [ {
                             "_id": "",
                             "description": "",

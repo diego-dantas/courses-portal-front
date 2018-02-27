@@ -76,6 +76,25 @@ class About extends Component
                         console.log('Erro ao buscar as promoçoes');
                     })
     }
+
+    makeDataForProvider = () => {
+        return{
+            _id: "1",
+            name: this.name.input.value,
+            email: this.email.input.value,
+            password: this.password.input.value
+        }
+    }
+
+    updateProvider = () => {
+        HttpService.make().post('/updateProvider', this.makeDataForProvider())
+                   .then(success => {
+                        console.log("Dados alterado com sucesso");
+                   })
+                   .catch(error =>{
+                        console.log('Erro ao alterar os dados do Provider');
+                   })
+    }
     render()
     {
         return (
@@ -85,39 +104,28 @@ class About extends Component
                 <div style={this.style.paddingAbout}>
                     <TextField
                         id="email"
-                        value={this.state.provider.email}
-                        disabled={true}
+                        defaultValue={this.state.provider.email}
                         hintText="Email"
                         floatingLabelText="Email"
                         fullWidth={true}
+                        ref={(input) => { this.email = input; }}
                     />
                     <TextField
                         id="name"
-                        value={this.state.provider.name}
+                        defaultValue={this.state.provider.name}
                         hintText="Nome"
                         floatingLabelText="Nome"
                         fullWidth={true}
-                        onChange={ (event, value) =>  this.setData(event, value, 'name')}
                         ref={(input) => { this.name = input; }}
                     />
                     <TextField
                         id="password0"
-                        value={this.state.provider.password}
+                        defaultValue={this.state.provider.password}
                         hintText="Senha"
                         floatingLabelText="Senha"
                         type="password"
                         fullWidth={true}
-                        onChange={ (event, value) =>  this.setData(event, value, 'password')}
                         ref={(input) => { this.password = input; }}
-                    />
-                    <TextField
-                        id="password1"
-                        hintText="Confirmar senha"
-                        floatingLabelText="Confirmar senha"
-                        type="password"
-                        fullWidth={true}
-                        onChange={(event, value) =>  this.setData(event, value, 'confirmPassword')}
-                        ref={(input) => { this.confirmPassword = input; }}
                     />
                     <RaisedButton
                         label="salvar"
@@ -125,23 +133,10 @@ class About extends Component
                         labelStyle={{color: 'white'}}
                         keyboardFocused={true}
                         onTouchTap={this.fncHandleSave}
-                        style={{float: 'right', margin: '20px 0 20px 20px'}}/>
-
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                
-
-                    <RaisedButton
-                        label="salvar"
-                        backgroundColor="#0ac752"
-                        labelStyle={{color: 'white'}}
-                        keyboardFocused={true}
-                        onTouchTap={this.uploadFile}
-                        style={{float: 'right', margin: '20px 0 20px 20px'}}/>
+                        style={{float: 'right', margin: '20px 0 20px 20px'}}
+                        onClick={this.updateProvider}
+                    /> 
+                               
                 </div>
             </div>
         )
