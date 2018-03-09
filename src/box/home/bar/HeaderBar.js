@@ -5,8 +5,7 @@ import React, { Component } from 'react';
 import AppBar from 'material-ui/AppBar';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
-import IconButton from 'material-ui/IconButton';
-import AutoComplete from 'material-ui/AutoComplete';
+
 
 //componentes do menu
 import Popover from 'material-ui/Popover';
@@ -17,13 +16,9 @@ import MenuItem from 'material-ui/MenuItem';
 //Incones
 import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
 import ActionDashboard from 'material-ui/svg-icons/action/dashboard';
-import ActionSearch from 'material-ui/svg-icons/action/search';
-
-import {Grid, Row} from 'react-bootstrap';
 
 
-
-
+  
 class HeaderBar extends Component {
 
     constructor(){
@@ -34,7 +29,8 @@ class HeaderBar extends Component {
             menu:[],
             menuCurso:false,
             open: false,
-            dataSource: [],
+            dataSource: ['nome', 'casa', 'nossa'],
+            display: 'none',
         }
     }
     componentDidMount(){
@@ -99,15 +95,24 @@ class HeaderBar extends Component {
         if(categories !== undefined && categories !== null){
             
             let menu =  categories.map((category, index) =>
-                <MenuItem 
+                <MenuItem key={index}
                     rightIcon={<ArrowDropRight />}
                     value = {category.description}
                     primaryText = {category.description}
-                    menuItems={(this.validateSubMenu(category._id) === true) ? 
-                       
-                        this.buildSubMenu(category._id): null}
-                    //onClick={() => alert('item')}
-                    //onMouseOver = {() => alert('vamos brincar')}
+                    
+                    menuItems={[
+                        <MenuItem 
+                            value = 'Teste'
+                            primaryText = {'Todos em ' + category.description}
+                        />  ,
+                        (this.validateSubMenu(category._id) === true) ? 
+                        this.buildSubMenu(category._id): null
+                    ]}
+                        
+                        
+                        //onMouseOver = {() => alert('vamos brincar ' + category._id)}
+
+                        //onClick={() => alert('item')}
                 />             
             );
             
@@ -139,13 +144,16 @@ class HeaderBar extends Component {
         subCategories.map((sub, index) =>                    
                 sub.grid._id === idCategory ? 
                 arraySub.push(sub)
-               : null            
+               : 0            
         );
         
         let subMenu = arraySub.map((sub, index) =>                    
             <MenuItem 
                 value = {sub.description}
                 primaryText = {sub.description}
+                open={false}
+                onTouchTap={() => {console.log('/course/'+sub.grid.description+'/'+sub.description)}}
+                //onTouchTap={() => {window.open('/course/'+sub.description, '_self')}}
             />       
         );
         
@@ -156,15 +164,11 @@ class HeaderBar extends Component {
 
     groupButton = () => {
       return (  
-            <div style={this.style.marginNav}>
-                <FlatButton 
-                    style={{color: "#fff", marginRight: '10px'}}
-                    icon={<ActionSearch/>}
-                />
+            <div >
                 <RaisedButton 
                     label="Fazer Login"
                     primary={true}
-                    style={{marginRight: '10px'}}
+                    style={{marginRight: '10px', marginTop: '15px'}}
                 />
                 <RaisedButton
                     label="Cadastre-se"
@@ -201,42 +205,17 @@ class HeaderBar extends Component {
             </div>      
         )
       };
-      //implementação no front end 
-    grupSearch = () => {
-        return (
-        <div>
-            <AutoComplete
-                hintText="Type anything"
-                dataSource={this.state.dataSource}
-                onUpdateInput={this.handleUpdateInput}
-                floatingLabelText="Full width"
-                fullWidth={true}
-                style={this.style.search}
-            />
-        </div>
-        )
-    };
+
     render(){
         return(
             <div>
                 <AppBar 
-                    icon={this.groupMenu()}
                     iconElementLeft={this.groupMenu()}
                     iconElementRight={this.groupButton()}
+                    titleStyle={{display: 'none'}}
                 />
-                <Grid>
-                    <Row>
-                        <AutoComplete
-                            hintText="Type anything"
-                            dataSource={this.state.dataSource}
-                            onUpdateInput={this.handleUpdateInput}
-                            floatingLabelText="Full width"
-                            fullWidth={true}
-                            visible={false}
-                        />
-                    </Row>                            
-                    
-                </Grid>   
+                             
+              
                 
             </div>
         );

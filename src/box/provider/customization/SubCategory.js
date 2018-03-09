@@ -52,17 +52,18 @@ class SubCategory extends Component {
 
     makeDataForCategory = (opcao, id) => {
         
-        var categorySub = '';
-        this.state.categoryTable.map((row, index) =>{
-            if(row._id === id)
-                categorySub = row;
-        })
+        // var categorySub = '';
+        // this.state.categoryTable.map((row, index) =>{
+        //     if(row._id === id)
+        //         console.log('To aqui ' + row);
+        //         categorySub = row;
+        // })
         
         
         if(opcao === 'create'){
             return{
                 description: this.subCategory.input.value,
-                grid: categorySub
+                grid: {_id: this.state.idCategory}
             }  
         }else if(opcao === 'update'){
             return{
@@ -300,7 +301,10 @@ class SubCategory extends Component {
                     >  
                         <MenuItem value={0} primaryText="Categorias"/>
                         {this.state.categoryTable.map( (row, index) => (
-                            <MenuItem value={row._id} primaryText={row.description}/>
+                            <MenuItem 
+                                key={index}
+                                value={row._id} primaryText={row.description}
+                            />
                          ))}
                       
                     </SelectField>
@@ -325,7 +329,10 @@ class SubCategory extends Component {
                     >  
                         <MenuItem value={0} primaryText="Categorias"/>
                         {this.state.categoryTable.map( (row, index) => (
-                            <MenuItem value={row._id} primaryText={row.description}/>
+                            <MenuItem 
+                                key={index}
+                                value={row._id} primaryText={row.description}
+                            />
                          ))}
                       
                     </SelectField>

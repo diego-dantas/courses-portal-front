@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import HttpService from '../../../service/http/HttpService';
 
 import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'material-ui/Dialog';
@@ -21,10 +22,17 @@ class Courses extends Component {
     constructor(props){
         super(props);
         this.state = {
+            courses: JSON.parse(localStorage.getItem('course')),
             category: JSON.parse(localStorage.getItem('category')),
             subCategory: JSON.parse(localStorage.getItem('subCategory')),
             openCreate: false,
+            idCourse: '',
             statusCourse: false,
+            nameCourse: '',
+            descriCourse: '',
+            obejCourse: '',
+            priceCourse: '',
+            hoursCourse: '',
             cat: 0,
             subCat: 0,
             labelStatus: 'Inativo',
@@ -63,20 +71,13 @@ class Courses extends Component {
     };
 
     componentDidMount() {
-        
-        this.state.subCategory.map((row, i) => {
-            if(row.grid._id === 2){
-                console.log(row.description);
-            }
-        })
-        
-        
-        console.log(this.state.subCategory);
+        this.getCourses();
     }
     
 
     handleChange = (value) => this.setState({slideIndex: value});
     
+    //Metodo para tratamento da mudança do status
     handleToggle(event, isInputChecked){
 
         this.setState({statusCourse: isInputChecked})
@@ -89,52 +90,142 @@ class Courses extends Component {
         
     }
 
-    //Metodos de tratamento de mudança de compo
+    //Metodos de tratamento de mudança de compo da categoria
     categoryChange = (event, index, value) => {
         this.setState({cat: value});
         this.setState({subCat: 0});
-        if(value !== 0) this.setState({disableField: false})
-        if(value === 0) this.setState({disableField: true})
-
-        
-       // this.setState({idCategory: value})
+        if(value !== 0 && this.state.subCat !== 0) this.setState({disableField: false})
+        if(value === 0 && this.state.subCat === 0) this.setState({disableField: true})
     }
 
+    //Metodos de tratamento de mudança de compo da sub-categoria
     subCategoryChange = (event, index, value) => {
         this.setState({subCat: value});
+        if(value !== 0) this.setState({disableField: false})
+        if(value === 0) this.setState({disableField: true})
        // this.setState({idCategory: value})
     }
 
+    //valida o campo nome na mudança
     nameChange = () => {
         if(this.state.errorName !== '')
             this.setState({errorName: ''});
     }
 
+    //valida o campo descrição na mudança
     descriptionChange = () => {
         if(this.state.errorDescricao !== '')
             this.setState({errorDescricao: ''});
     }
+
+    //metodo para abrir o modal
     handleOpenCreate = () => {
+        this.setState({idCourse: ''});
+        this.setState({statusCourse: false});
+        this.setState({nameCourse: ''});
+        this.setState({descriCourse: ''});
+        this.setState({obejCourse: ''});
+        this.setState({priceCourse: ''});
+        this.setState({hoursCourse: ''});
+        this.setState({cat: 0});
+        this.setState({subCat: 0});
         this.setState({errorDescricao: ''});
         this.setState({errorName: ''});
-        this.setState({cat: 0});
         this.setState({disableField: true})
         this.setState({openCreate: true})
     }
 
+    //metodo para fechar o modal 
     handleCloseCreate = () => {
         this.setState({openCreate: false})
     }
 
+
+    //metodo de click da tabela
+    handleCellClick(col)
+    {         
+        this.state.courses[col].status ? this.setState({labelStatus: 'Ativo'}) : this.setState({labelStatus: 'Inativo'});
+        this.setState({idCourse: this.state.courses[col]._id});
+        this.setState({statusCourse: this.state.courses[col].status});
+        this.setState({nameCourse: this.state.courses[col].name});
+        this.setState({descriCourse: this.state.courses[col].description});
+        this.setState({obejCourse: this.state.courses[col].objective});
+        this.setState({priceCourse: this.state.courses[col].price});
+        this.setState({hoursCourse: this.state.courses[col].hours});
+        this.setState({cat: this.state.courses[col].grid._id});
+        this.setState({subCat: this.state.courses[col].subGrid._id});
+
+        this.setState({disableField: false}) 
+        this.setState({openCreate: true});     
+    }
+
     //metodo de validação de compo
     validateField = () => {
-        if(this.name.input.value === '') this.setState({errorName: 'O Nome do curso é Obrigatório'}); 
-        if(this.description.input.value === '') this.setState({errorDescricao: 'A Descrição do curso é Obrigatória'});    
+        var valid = true;
+        if(this.name.input.value === '') {
+            this.setState({errorName: 'O Nome do curso é Obrigatório'}); 
+            valid = false;
+        }
+            
+        if(this.description.input.value === '') {
+            this.setState({errorDescricao: 'A Descrição do curso é Obrigatória'}); 
+            valid = false;    
+        }
+
+        return valid;
     }
     //Metodos de crud de dados 
     createCourse = () => {
-        this.validateField();
+        console.log('to aqui mano');
+        if(this.validateField() === true) {
+            console.log(this.makeDataForCourses());
+
+            HttpService.make()
+                       .post('/createUpdateCourse', this.makeDataForCourses())
+                       .then(success => {
+                           alert('Curso Salvo com sucesso');
+                           this.getCourses();
+                           this.handleCloseCreate();
+                       })
+                       .catch(error => {
+                           console.log('Erro ao salvar o curso');
+                       }) 
+        }
     }
+
+
+    getCourses = () => {
+        HttpService.make()
+                   .get('/getCourses')
+                   .then(success => {
+                        localStorage.setItem('course', JSON.stringify(success.data));
+                        this.setState({courses: JSON.parse(localStorage.getItem('course'))});   
+                        console.log(this.state.courses);
+                   })
+                   .catch(error => {
+                       console.log('Erro ao buscar os cursos');
+                   })
+    }
+
+    makeDataForCourses = () => {
+        return {
+            _id: this.state.idCourse,
+            name: this.name.input.value,
+            description: this.description.input.value,
+            objective: this.objective.input.value,
+            hours: this.hours.input.value,
+            price: this.price.input.value,
+            wayImage: "src/img/img.jpg",
+            status: this.state.statusCourse,
+            grid: {
+                _id: this.state.cat,
+            },
+            subGrid: {
+                _id: this.state.subCat
+            }
+        }
+    }
+
     render(){
         const actions = [
             <RaisedButton
@@ -156,6 +247,16 @@ class Courses extends Component {
             />
         ]
 
+        const bodyTable = [
+            this.state.courses.map((row, i) =>(
+                <TableRow key={i}>
+                    <TableRowColumn>{row._id}</TableRowColumn>
+                    <TableRowColumn>{row.name}</TableRowColumn>
+                    <TableRowColumn>{row.description}</TableRowColumn>
+                    <TableRowColumn>{row.status === true ? 'ATIVO' : 'INATIVO'}</TableRowColumn>
+                </TableRow>
+            ))
+        ]
         return(
             <div>
                 <RaisedButton
@@ -170,29 +271,31 @@ class Courses extends Component {
                 <br/><br/><br/><br/>
                 <Table
                     height='300px'
-                    fixedHeader={this.state.fixedHeader}
+                    fixedHeader={true}
+                    selectable={true}
+                    multiSelectable={false}
                     onCellClick={(col) => this.handleCellClick(col)}                    
                 >
                     <TableHeader
-                        displaySelectAll={this.state.showCheckboxes}
-                        adjustForCheckbox={this.state.showCheckboxes}
-                        enableSelectAll={this.state.enableSelectAll}
+                        displaySelectAll={false}
+                        adjustForCheckbox={false}
+                        enableSelectAll={false}
                     >
                         <TableRow>
                             <TableHeaderColumn tooltip="ID">ID</TableHeaderColumn>
                             <TableHeaderColumn tooltip="Descrição">Nome</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="Status">Descrição</TableHeaderColumn>
                             <TableHeaderColumn tooltip="Status">Status</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="Status">Categoria</TableHeaderColumn>
                         </TableRow>
                     </TableHeader>
                     <TableBody
-                        displayRowCheckbox={this.state.showCheckboxes}
+                        displayRowCheckbox={false}
                         deselectOnClickaway={this.state.deselectOnClickaway}
                         showRowHover={this.state.showRowHover}
                         stripedRows={this.state.stripedRows}
                     >   
                         
-                      
+                    {bodyTable}
 
                     </TableBody>
                 </Table>
@@ -207,6 +310,7 @@ class Courses extends Component {
                     <Toggle 
                         label={'Status: ' + this.state.labelStatus}
                         labelPosition="right"
+                        defaultToggled={this.state.statusCourse}
                         onToggle={(event, isInputChecked) => this.handleToggle(event, isInputChecked)}
                     />
                     <div className="row">
@@ -218,7 +322,10 @@ class Courses extends Component {
                             >  
                                 <MenuItem value={0} primaryText="Categorias"/>
                                 {this.state.category.map( (row, index) => (
-                                    <MenuItem value={row._id} primaryText={row.description}/>
+                                    <MenuItem 
+                                        key={index}
+                                        value={row._id} primaryText={row.description}
+                                    />
                                 ))}
                             
                             </SelectField>
@@ -228,12 +335,14 @@ class Courses extends Component {
                                 floatingLabelText="Sub-Categoria"
                                 value={this.state.subCat}
                                 onChange={this.subCategoryChange}
-                                disabled={this.state.disableField}
+                                
                             >  
                                 <MenuItem value={0} primaryText="Sub-Categoria"/>
                                 {this.state.subCategory.map( (row, index) => (
                                     row.grid._id === this.state.cat ?
-                                        <MenuItem value={row._id} primaryText={row.description}/>:''                           
+                                        <MenuItem 
+                                            key={index}
+                                            value={row._id} primaryText={row.description}/>:''                           
                                 ))}
                             
                             </SelectField>
@@ -242,6 +351,7 @@ class Courses extends Component {
                     <TextField 
                         floatingLabelText="Nome"
                         fullWidth={true}
+                        defaultValue={this.state.nameCourse}
                         disabled={this.state.disableField}
                         errorText={this.state.errorName}
                         ref={(input) => {this.name = input;} }
@@ -249,6 +359,7 @@ class Courses extends Component {
                     />
                     <TextField 
                         floatingLabelText="Descrição"
+                        defaultValue={this.state.descriCourse}
                         fullWidth={true}
                         disabled={this.state.disableField}
                         errorText={this.state.errorDescricao}
@@ -257,6 +368,7 @@ class Courses extends Component {
                     />
                     <TextField 
                         floatingLabelText="Objetivo"
+                        defaultValue={this.state.obejCourse}
                         fullWidth={true}
                         disabled={this.state.disableField}
                         ref={(input) => {this.objective = input;} }
@@ -265,6 +377,7 @@ class Courses extends Component {
                         <div className="col-md-6 col-sm-6">
                             <TextField 
                                 floatingLabelText="Preço"
+                                defaultValue={this.state.priceCourse}
                                 type="number"
                                 disabled={this.state.disableField}
                                 ref={(input) => {this.price = input;} }
@@ -273,6 +386,7 @@ class Courses extends Component {
                         <div className="col-md-6 col-sm-6">
                         <TextField 
                             floatingLabelText="Carga horária"
+                            defaultValue={this.state.hoursCourse}
                             type="number"
                             disabled={this.state.disableField}
                             ref={(input) => {this.hours = input;} }

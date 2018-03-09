@@ -7,7 +7,6 @@ import PubSub from 'pubsub-js';
 import HeaderBar from '../dash/HeaderBar';
 import NavigationBar from '../dash/NavegationBar';
 import SubCategory from '../customization/SubCategory';
-import Plan from '../customization/Plan';
 import Category from '../customization/Category';
 import Promotions from '../customization/Promotions';
 
@@ -61,8 +60,6 @@ class Customization extends Component {
             <div >
                 <HeaderBar />
                 <NavigationBar />
-
-                <br/>
                 <br/>
                 <div style={this.styles.paddingAbout}>
                     <Tabs
@@ -71,15 +68,13 @@ class Customization extends Component {
                         value={this.state.slideIndex} >
                         <Tab style={this.styles.tab} label="Categorias" value={0} />
                         <Tab style={this.styles.tab} label="Sub Categorias" value={1} />
-                        <Tab style={this.styles.tab} label="Planos" value={2} />
-                        <Tab style={this.styles.tab} label="promoções" value={3} />
+                        <Tab style={this.styles.tab} label="promoções" value={2} />
                     </Tabs>
                     <SwipeableViews
                         index={this.state.slideIndex}
                         onChangeIndex={this.handleChange} >
                         <Category />
                         <SubCategory />
-                        <Plan />
                         <Promotions />
                     </SwipeableViews>
                 </div>

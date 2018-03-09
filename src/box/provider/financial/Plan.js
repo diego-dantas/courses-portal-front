@@ -21,10 +21,6 @@ import Dropzone from './../../../service/Dropzone';
 
 
 
-
-
-
-
 class Plan extends Component {
 
     constructor(){

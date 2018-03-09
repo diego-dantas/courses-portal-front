@@ -21,15 +21,20 @@ class Category extends Component {
     constructor(){
         super();
         this.state = {
-            openCreate: false,
-            openUpdate: false,
+            open: false,
             provider: JSON.parse(localStorage.getItem('provider')),
             categoryTable: JSON.parse(localStorage.getItem('category')),
             idCategory: '',
-            descriCategory: '',
+            description: '',
+            labelUrl: '',
             enableButton: true,
             alert: false,
             disable: false,
+
+
+            
+            errorDesc: '',
+            erroLabel:'',
 
             //state da tabela
             fixedHeader: true,
@@ -49,79 +54,90 @@ class Category extends Component {
         this.getCategory();
     }
   
-    handleOpenCreate = () => {
-        this.setState({openCreate: true});  
+    openDialog = (source) => {
+        this.setState({open: true});  
         this.setState({alert: false});
         this.setState({disable: false});
-    }
-    handleOpenUpdate = () => {        
-        this.setState({openUpdate: true});       
+        
+        if(source === 'update'){
+
+        }else{
+            this.setState({idCategory: ''});
+            this.setState({descriCategory: ''});
+            this.setState({labelUrl: ''})      
+        }
+        
     }
 
-    handleCloseCreate = () =>{
-        this.setState({openCreate: false});
+    closeDialog = () =>{
+        this.setState({open: false});
     }
 
-    handleCloseUpdate = () =>{        
-        this.setState({openUpdate: false});   
-    }
 
     makeDataForCategory = (opcao, _id) => {
-        if(opcao === 'create'){
-            return{
-                description: this.category.input.value,
-                provider: this.state.provider
-            }  
-        }else if(opcao === 'update'){
-            return{
-                _id: this.state.idCategory,
-                description: this.categoryUpdate.input.value,
-                provider: this.state.provider
-            }  
-        }else if(opcao === 'delete'){
-            return{
-                _id: this.state.idCategory,
-                description: this.state.descriCategory
-            }  
-        }
-              
+        return{
+            _id: this.state.idCategory,
+            description: this.description.input.value,
+            labelUrl: this.labelUrl.input.value,
+            provider: this.state.provider
+        }  
     }
 
-    createCategory = () => {
-        
-        HttpService.make().post('/createGrid', this.makeDataForCategory('create'))
-                   .then(success => {
-                        this.handleCloseCreate();
-                        this.getCategory();
-                   })
-                   .catch(error =>{
-                       console.log('Erro na criação da categoria');
-                   })
+    fieldValidation = () => {
+        var valid = true;
+        if(this.description.input.value === '') {
+            valid = false;
+            this.setState({errorDesc: 'Nome da categoria é obrigatorio'});
+        }
+        if(this.labelUrl.input.value === '') {
+            valid = false;
+            this.setState({erroLabel: 'Label da URL, da categoria é obrigatorio'});
+        }
+
+        return valid;
+    }
+    createUpdateCategory = () => {
+        console.log('to aqui')
+        if(this.fieldValidation() === true){
+            console.log(this.makeDataForCategory());
+            HttpService.make().post('/createUpdateGrid', this.makeDataForCategory())
+                              .then(success => {
+                                  this.closeDialog();
+                                  this.getCategory();
+                              })
+                              .catch(error =>{
+                                  console.log('Erro ao salvar a categoria');
+                              })
+        }
+       
     }
 
     deleteCategory = () => {
-        HttpService.make().post('/deleteGrid', this.makeDataForCategory('delete'))
-                   .then(success =>{
-                       this.handleCloseUpdate();
-                       this.getCategory();
-                   })
-                   .catch(error => {
-                        this.setState({alert: true})
-                        this.setState({disable: true})
-                   })
+        if(this.fieldValidation() === true){
+            HttpService.make().post('/deleteGrid', this.makeDataForCategory('delete'))
+                       .then(success =>{
+                           this.handleCloseUpdate();
+                           this.getCategory();
+                        })
+                        .catch(error => {
+                            this.setState({alert: true})
+                            this.setState({disable: true})
+                       })
+        }
     }
 
     updateCategory = ()  => {
-       
-        HttpService.make().post('/updateGrid', this.makeDataForCategory('update'))
-                   .then(success => {
-                       alert('dados atualizados com sucesso');
-                       this.handleCloseUpdate();
-                       this.getCategory();
-                   })
-                   .catch(error => {
-                       console.log('erro ao atualizar o cadastro de categoria');
-                   })
+        if(this.fieldValidation() === true){
+            HttpService.make().post('/updateGrid', this.makeDataForCategory('update'))
+                              .then(success => {
+                                  alert('dados atualizados com sucesso');
+                                  this.handleCloseUpdate();
+                                  this.getCategory();
+                              })
+                              .catch(error => {
+                                  console.log('erro ao atualizar o cadastro de categoria');
+                              })
+        }
     }
 
     getCategory = () =>{
@@ -140,8 +156,9 @@ class Category extends Component {
     {   
         let desc = this.state.categoryTable[col].description;
         this.setState({idCategory: this.state.categoryTable[col]._id});
-        this.setState({descriCategory: desc});
-        this.handleOpenUpdate();          
+        this.setState({description: desc});
+        this.setState({labelUrl: this.state.categoryTable[col].labelUrl})
+        this.openDialog('update');          
     }
   
     render(){
@@ -152,7 +169,7 @@ class Category extends Component {
                 icon={<NewIco color="#FFF"/>}
                 labelStyle={{color: 'white'}}
                 style={{marginRight:'20px'}}
-                onClick={this.createCategory}
+                onClick={this.createUpdateCategory}
 
             />,
             <RaisedButton
@@ -160,40 +177,9 @@ class Category extends Component {
                 backgroundColor="#DD2C00"
                 icon={<CancelIo color="#FFF"/>}
                 labelStyle={{color: 'white'}}
-                onClick={this.handleCloseCreate}
+                onClick={this.closeDialog}
             />
         ]
-
-        const actionsUpdate = [
-            <RaisedButton
-                label="Atualizar"
-                backgroundColor="#0ac752"
-                icon={<NewIco color="#FFF"/>}
-                labelStyle={{color: 'white'}}
-                style={{marginRight:'20px'}}
-                onClick={this.updateCategory}
-
-            />,
-            <RaisedButton
-                label="Excluir"
-                backgroundColor="#DD2C00"
-                icon={<CancelIo color="#FFF"/>}
-                labelStyle={{color: 'white'}}
-                style={{marginRight:'20px'}}
-                onClick={this.deleteCategory}
-                disabled={this.state.disable}
-            />,
-            <RaisedButton
-                label="cancelar"
-                backgroundColor="#FF9800"
-                icon={<CancelIo color="#FFF"/>}
-                labelStyle={{color: 'white'}}
-                style={{marginRight:'20px'}}
-                onClick={this.handleCloseUpdate}
-            />
-        ]
-        
-
 
         return(
             <div>
@@ -204,7 +190,7 @@ class Category extends Component {
                     labelStyle={{color: 'white'}}
                     style={{float: 'right', margin:'20px'}}
                     fullWidth={true}
-                    onClick={this.handleOpenCreate}
+                    onClick={this.openDialog}
                 />
                 <br/><br/><br/><br/>
                 <Table
@@ -223,6 +209,7 @@ class Category extends Component {
                         <TableRow>
                             <TableHeaderColumn tooltip="The ID">ID</TableHeaderColumn>
                             <TableHeaderColumn tooltip="The Name">Descrição</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="The Name">Label URL</TableHeaderColumn>
                         </TableRow>
                     </TableHeader>
                     <TableBody
@@ -235,6 +222,7 @@ class Category extends Component {
                             <TableRow key={index}>
                                 <TableRowColumn>{row._id}</TableRowColumn>
                                 <TableRowColumn>{row.description}</TableRowColumn>
+                                <TableRowColumn>{row.labelUrl}</TableRowColumn>
                             </TableRow>
                          ))}
                     </TableBody>
@@ -242,24 +230,10 @@ class Category extends Component {
 
 
                 <Dialog
-                    title="Adicionar categoria"
+                    title="Categoria"
                     actions={actions}
                     modal={true}
-                    open={this.state.openCreate}
-                    style={{textAlign: 'center'}}
-                >
-                    <TextField 
-                        floatingLabelText="Categoria"
-                        fullWidth={true}
-                        ref={(input) => {this.category = input;} }
-                    />
-                </Dialog>
-
-                <Dialog
-                    title="Categoria"
-                    actions={actionsUpdate}
-                    modal={true}
-                    open={this.state.openUpdate}
+                    open={this.state.open}
                     style={{textAlign: 'center'}}
                 >
                     {
@@ -268,15 +242,22 @@ class Category extends Component {
                                 Não e possivel excluir uma categoria que tenha sub-categorias cadastradas
                             </div>: ''
                     }
-                    
                     <TextField 
                         floatingLabelText="Categoria"
                         fullWidth={true}
-                        defaultValue={this.state.descriCategory}
-                        ref={(input) => {this.categoryUpdate = input;} }
+                        defaultValue={this.state.description}
+                        ref={(input) => {this.description = input;} }
+                        errorText={this.state.errorDesc}
                     />
-                </Dialog>
-                
+                    <TextField 
+                        floatingLabelText="Label url"
+                        fullWidth={true}
+                        defaultValue={this.state.labelUrl}
+                        ref={(input) => {this.labelUrl = input;} }
+                        errorText={this.state.erroLabel}
+                    />
+
+                </Dialog>                
             </div>
         );
     }

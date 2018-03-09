@@ -7,12 +7,16 @@ import { BrowserRouter, Router, Route } from 'react-router-dom'
 
 //import of components
 import App from './App';
+
+//import of home
+import Courses from './box/home/course/Courses'
+
+//import of dash
 import Dash from './box/provider/dash/Dash';
 import About from './box/provider/about/About';
 import Customization from './box/provider/customization/customization'
 import Login from './box/provider/dash/Login';
 import Marketing from './box/provider/marketing/Marketing';
-import Courses from './box/provider/courses/Courses';
 import Signature from './box/provider/signature/Signature';
 import Financial from './box/provider/financial/Financial';
 import Analytical from './box/provider/analytical/Analytical';
@@ -32,6 +36,7 @@ const Main = () => (
             <Router history={history}>
                 <div>
                     <Route exact path='/' component={App} />
+                    <Route exact path='/course/:option' component={Courses} />
                     <Route exact path='/provider' component={Dash} />
                     <Route exact path='/provider/about' component={About} />
                     <Route exact path='/provider/customization' component={Customization} />

@@ -24,7 +24,7 @@ class About extends Component
     {
         PubSub.publish('header-label',"Sobre");
         this.getPlan()
-        this. getCategory();
+        this.getCategory();
         this.getSubCategory();
         this.getPromotion();
         console.log('Carreguei os dados iniciais');

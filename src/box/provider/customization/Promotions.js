@@ -84,6 +84,7 @@ class Promotions extends Component {
 
     handleCellClick(col)
     {   
+        
         console.log(this.state.promotionTabel[col].dateInicial);
         console.log(this.formateDate(this.state.promotionTabel[col].dateInicial));
         //converto o retorno da data do banco
@@ -117,8 +118,8 @@ class Promotions extends Component {
             description: this.description.input.value,
             codigoCupom: this.coupon.input.value,
             percentual: this.percentage.input.value,
-            dateInicial: this.state.dataIni.value,
-            dateFinal: this.state.dataFin.value
+            dateInicial: this.dataI.value,
+            dateFinal: this.dataF.value
         }
     }
 
@@ -185,9 +186,8 @@ class Promotions extends Component {
     }
 
     render(){
-        
-        //Botões para o Modal
-        const actions = [
+         //Botões para o Modal
+         const actions = [
             <RaisedButton
                 label="salvar"
                 backgroundColor="#0ac752"
@@ -205,7 +205,7 @@ class Promotions extends Component {
                 onClick={this.handleCloseCreate}
             />
         ]
-
+        
         const actionsUpdate = [
             <RaisedButton
                 label="atualizar"
@@ -255,9 +255,10 @@ class Promotions extends Component {
                     icon={<NewIco color="#FFF"/>}
                     labelStyle={{color: 'white'}}
                     style={{float: 'right', marginTop:'20px'}}
+                    //onClick={() => alert('To aqui')}
                     onClick={this.handleOpenCreate}
                 />
-                 <br/><br/><br/>
+                <br/><br/><br/>
                 <Table
                     height='300px'
                     fixedHeader={this.state.fixedHeader}
@@ -291,7 +292,6 @@ class Promotions extends Component {
 
                     </TableBody>
                 </Table>
-
                 <Dialog
                     title="Adicionar Promoção"
                     actions={actions}
@@ -326,7 +326,7 @@ class Promotions extends Component {
                                 <ControlLabel>Data Inicial</ControlLabel>{' '}
                                 <FormControl 
                                     type="date" 
-                                    inputRef={(ref) => {this.state.dataIni = ref}} 
+                                    inputRef={(ref) => {this.dataI = ref}} 
                                 />
                             </FormGroup>{' '}
                         </div>
@@ -335,14 +335,13 @@ class Promotions extends Component {
                                 <ControlLabel>Data Final</ControlLabel>{' '}
                                 <FormControl 
                                 type="date" 
-                                inputRef={(ref) => {this.state.dataFin = ref}} 
+                                inputRef={(ref) => {this.dataF = ref}}
                                 />
                                 
                             </FormGroup>{' '}
                         </div>
                     </div>
                 </Dialog>
-
                 <Dialog
                     title="Alterar ou Excluir Promoção"
                     actions={actionsUpdate}
@@ -381,7 +380,7 @@ class Promotions extends Component {
                                 <FormControl 
                                     type="date" 
                                     defaultValue={this.state.dataIni}
-                                    inputRef={(ref) => {this.state.dataIni = ref}} 
+                                    inputRef={(ref) => {this.dataI = ref}} 
                                 />
                             </FormGroup>{' '}
                         </div>
@@ -391,9 +390,8 @@ class Promotions extends Component {
                                 <FormControl 
                                     type="date" 
                                     defaultValue={this.state.dataFin}
-                                    inputRef={(ref) => {this.state.dataFin = ref}} 
+                                    inputRef={(ref) => {this.dataF = ref}}
                                 />
-                                
                             </FormGroup>{' '}
                         </div>
                     </div>

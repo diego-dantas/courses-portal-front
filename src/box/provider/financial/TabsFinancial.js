@@ -1,20 +1,15 @@
 import React, { Component } from 'react';
 
-
-import HeaderBar from '../dash/HeaderBar';
-import NavigationBar from '../dash/NavegationBar';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import SwipeableViews from 'react-swipeable-views'
 
 import PubSub from 'pubsub-js';
 
-
-import Courses from '../courses/Courses';
+import Plan from '../financial/Plan';
+import CoursesPlan from '../financial/CoursePlan';
 import Steps from '../courses/Steps';
-import Material from '../courses/Material';
 
-class TabsCourses extends Component {
-
+class TabsFinancial extends Component {
     constructor(props){
         super(props);
         this.state = {
@@ -57,26 +52,22 @@ class TabsCourses extends Component {
     render(){
         return(
             <div>
-                <HeaderBar />
-                <NavigationBar />
-
-                <br/>
                 <br/>
                 <div style={this.styles.paddingAbout}>
                     <Tabs
                         inkBarStyle={this.styles.tabs}
                         onChange={this.handleChange}
                         value={this.state.slideIndex} >
-                        <Tab style={this.styles.tab} label="Cursos" value={0} />
-                        <Tab style={this.styles.tab} label="Steps" value={1} />
-                        <Tab style={this.styles.tab} label="Material" value={2} />
+                        <Tab style={this.styles.tab} label="Plano" value={0} />
+                        <Tab style={this.styles.tab} label="Curso / Plano" value={1} />
+                        <Tab style={this.styles.tab} label="Steps" value={2} />
                     </Tabs>
                     <SwipeableViews
                         index={this.state.slideIndex}
                         onChangeIndex={this.handleChange} >
-                        <Courses />
+                        <Plan />
+                        <CoursesPlan />
                         <Steps />
-                        <Material />
                     </SwipeableViews>
                 </div>
             </div>
@@ -84,4 +75,4 @@ class TabsCourses extends Component {
     }
 }
 
-export default TabsCourses;
+export default TabsFinancial;

@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 
 //import of component
-import HeaderBar from './box/generic/HeaderBar';
+import HeaderBar from './box/home/bar/HeaderBar';
 
 //import of css
 import  './static/style/css/global.css';
@@ -12,9 +12,8 @@ import HttpService from '../src/service/http/HttpService';
 
 
 class App extends Component {
-    constructor(){
-        super();
-    }
+    
+    
 
     componentDidMount(){
         this.getCategory();
@@ -25,7 +24,6 @@ class App extends Component {
         HttpService.make().get('/getGrid')
                    .then(success => {
                         localStorage.setItem('category', JSON.stringify(success.data));
-                        console.log('To aqui e carreguei as categorias');
                    })
                    .catch(error => {
                        console.log('Erro ao carregar as categorias que estão salvas no banco');
