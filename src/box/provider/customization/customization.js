@@ -49,9 +49,9 @@ class Customization extends Component {
             color:"rgb(0, 188, 212)"
         },
         paddingAbout :{
-            paddingLeft: "150px",
+            paddingLeft: "10px",
             paddingRight: "10px",
-            marginLeft: "100px",
+            marginLeft: "10px",
             marginRight: "10px"
         }
     };
@@ -59,7 +59,6 @@ class Customization extends Component {
     render(){
         return (
             <div >
-                <HeaderBar />
                 <NavigationBar />
                 <br/>
                 <div style={this.styles.paddingAbout}>

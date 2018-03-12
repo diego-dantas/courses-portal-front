@@ -31,7 +31,7 @@ class About extends Component
     }
     style = {
         paddingAbout :{
-            paddingLeft: "200px",
+            paddingLeft: "10",
             marginLeft: "92px",
             marginRight: "92px"
         }
@@ -99,7 +99,6 @@ class About extends Component
     {
         return (
             <div>            
-                <HeaderBar />
                 <NavigationBar />
                 <div style={this.style.paddingAbout}>
                     <TextField

@@ -10,6 +10,7 @@ import {
 
 import HttpService from '../../../service/http/HttpService';
 import RaisedButton from 'material-ui/RaisedButton';
+
 import NewIco from 'material-ui/svg-icons/content/add';
 import CancelIo from 'material-ui/svg-icons/content/block'
 import Dialog from 'material-ui/Dialog';
@@ -41,6 +42,7 @@ class Promotions extends Component {
             percentual:'',
             dataIni: '',
             dataFin: '',
+            btnCurso: false,
 
              //state da tabela
              fixedHeader: true,
@@ -84,25 +86,30 @@ class Promotions extends Component {
 
     handleCellClick(col)
     {   
+        if(this.state.btnCurso === true){
+            alert(col);
+            this.setState({btnCurso: false});
+        }else{
+            console.log(this.state.promotionTabel[col].dateInicial);
+            console.log(this.formateDate(this.state.promotionTabel[col].dateInicial));
+            //converto o retorno da data do banco
+            let desc = this.state.promotionTabel[col].description;
+            let dataInicialC  = this.formateDate(this.state.promotionTabel[col].dateInicial).substring(0,10);
+            let dataFinalC  = this.formateDate(this.state.promotionTabel[col].dateFinal).substring(0,10);
+            let dtIn = dataInicialC.substring(6,10) + '-' + dataInicialC.substring(3,5) + '-' + dataInicialC.substring(0,2)
+            let dtFn = dataFinalC.substring(6,10) + '-' + dataFinalC.substring(3,5) + '-' + dataFinalC.substring(0,2);        
+            
+            //populo os valores para os states
+            this.setState({idPromotion: this.state.promotionTabel[col]._id});
+            this.setState({descPromotion: desc});
+            this.setState({codCupomPromotion: this.state.promotionTabel[col].codigoCupom});
+            this.setState({percentual: this.state.promotionTabel[col].percentual});
+            this.setState({dataIni: dtIn});
+            this.setState({dataFin: dtFn});
+    
+            this.handleOpenUpdate();          
+        }
         
-        console.log(this.state.promotionTabel[col].dateInicial);
-        console.log(this.formateDate(this.state.promotionTabel[col].dateInicial));
-        //converto o retorno da data do banco
-        let desc = this.state.promotionTabel[col].description;
-        let dataInicialC  = this.formateDate(this.state.promotionTabel[col].dateInicial).substring(0,10);
-        let dataFinalC  = this.formateDate(this.state.promotionTabel[col].dateFinal).substring(0,10);
-        let dtIn = dataInicialC.substring(6,10) + '-' + dataInicialC.substring(3,5) + '-' + dataInicialC.substring(0,2)
-        let dtFn = dataFinalC.substring(6,10) + '-' + dataFinalC.substring(3,5) + '-' + dataFinalC.substring(0,2);        
-        
-        //populo os valores para os states
-        this.setState({idPromotion: this.state.promotionTabel[col]._id});
-        this.setState({descPromotion: desc});
-        this.setState({codCupomPromotion: this.state.promotionTabel[col].codigoCupom});
-        this.setState({percentual: this.state.promotionTabel[col].percentual});
-        this.setState({dataIni: dtIn});
-        this.setState({dataFin: dtFn});
-
-        this.handleOpenUpdate();          
     }
 
     formateDate = (date) => {       
@@ -184,7 +191,9 @@ class Promotions extends Component {
                         console.log('Erro ao buscar as promoçoes');
                     })
     }
-
+    promotionForCourse = () => {
+        this.setState({btnCurso: true});
+    }
     render(){
          //Botões para o Modal
          const actions = [
@@ -234,16 +243,18 @@ class Promotions extends Component {
         ]
 
         const bodyTable = [
-            this.state.promotionTabel.map( (row, index) => (
-                <TableRow key={index}>
-                    <TableRowColumn>{row._id}</TableRowColumn>
-                    <TableRowColumn>{row.description}</TableRowColumn>
-                    <TableRowColumn>{row.codigoCupom}</TableRowColumn>
-                    <TableRowColumn>{row.percentual}</TableRowColumn>
-                    <TableRowColumn>{this.formateDate(row.dateInicial).substring(0,10)}</TableRowColumn>
-                    <TableRowColumn>{this.formateDate(row.dateFinal).substring(0,10)}</TableRowColumn>
-                </TableRow>
-            ))
+            this.state.promotionTabel !== null ?
+                this.state.promotionTabel.map( (row, index) => (
+                    <TableRow key={index}>
+                        <TableRowColumn>{row._id}</TableRowColumn>
+                        <TableRowColumn>{row.description}</TableRowColumn>
+                        <TableRowColumn>{row.codigoCupom}</TableRowColumn>
+                        <TableRowColumn>{row.percentual}</TableRowColumn>
+                        <TableRowColumn>{this.formateDate(row.dateInicial).substring(0,10)}</TableRowColumn>
+                        <TableRowColumn>{this.formateDate(row.dateFinal).substring(0,10)}</TableRowColumn>
+                    </TableRow>
+                ))
+            :''
         ]
 
         return(
@@ -297,8 +308,8 @@ class Promotions extends Component {
                     actions={actions}
                     modal={true}
                     open={this.state.openCreate}
+                    autoScrollBodyContent={true}
                 >   
-                    
                     <TextField 
                         floatingLabelText="Descrição"
                         fullWidth={true}

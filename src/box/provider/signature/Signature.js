@@ -8,7 +8,6 @@ class Signature extends Component {
     render(){
         return(
             <div>
-                <HeaderBar />
                 <NavigationBar />
             </div>
         );

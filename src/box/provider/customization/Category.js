@@ -48,7 +48,6 @@ class Category extends Component {
             enableSelectAll: false,
             deselectOnClickaway: true,
             showCheckboxes: false,
-            height: '300px',
         }
     }
 

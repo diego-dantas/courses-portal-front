@@ -8,7 +8,6 @@ class Financial extends Component {
     render(){
         return(
             <div>
-                <HeaderBar />
                 <NavigationBar />
                 <TabsFinancial/>
             </div>

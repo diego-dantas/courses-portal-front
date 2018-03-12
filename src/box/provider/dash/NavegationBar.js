@@ -12,16 +12,47 @@ import FinancialIco from 'material-ui/svg-icons/editor/attach-money';
 import AnalyticIco from 'material-ui/svg-icons/action/trending-up';
 import {Link} from 'react-router-dom';
 
+import PubSub from 'pubsub-js';
 class NavigationBar extends Component 
 {
+    constructor(props) {
+        super(props);
+        this.state = {
+            open: false,
+            label:''
+        }
+
+        PubSub.subscribe('header-label', this.fncChangeHeaderLabel);
+    }
+    fncChangeHeaderLabel = (key, label)=>
+    {
+        this.setState({'label':label});
+    };
+
+    handleToggle = () => this.setState({open: !this.state.open});
+    
+    handleClose = () => this.setState({open: false});
+
     render() {
         return (
             <div>
-                <Drawer open={true} width={220}>
+                <AppBar
+                    title={this.state.label}
+                    showMenuIconButton={true}
+                    onLeftIconButtonClick={this.handleToggle}
+                    style={{paddingLeft:'100px'}}
+                />  
+                <Drawer 
+                    docked={false}
+                    open={this.state.open}
+                    width={220}
+                    onRequestChange={(open) => this.setState({open})}
+                >
                     <AppBar
-                        title="Title"
+                        title="Menu"
                         showMenuIconButton={false}
-                    />
+                        
+                    />  
                     <Link to={'/provider/about'} className={"link-routes"} >
                         <MenuItem
                             primaryText="Sobre"

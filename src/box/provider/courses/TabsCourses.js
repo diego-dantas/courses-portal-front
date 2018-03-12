@@ -40,10 +40,10 @@ class TabsCourses extends Component {
             color:"rgb(0, 188, 212)"
         },
         paddingAbout :{
-            paddingLeft: "150px",
-            paddingRight: "10px",
-            marginLeft: "100px",
-            marginRight: "10px"
+            paddingLeft: "20px",
+            paddingRight: "20px",
+            marginLeft: "20px",
+            marginRight: "20px"
         }
     };
 
@@ -57,7 +57,6 @@ class TabsCourses extends Component {
     render(){
         return(
             <div>
-                <HeaderBar />
                 <NavigationBar />
                 <br/>
                 <div style={this.styles.paddingAbout}>
