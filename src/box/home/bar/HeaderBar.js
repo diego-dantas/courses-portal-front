@@ -1,5 +1,7 @@
 //import of react
 import React, { Component } from 'react';
+import {Link} from 'react-router-dom';
+import PubSub from 'pubsub-js'
 
 //import mateiral-ui
 import AppBar from 'material-ui/AppBar';
@@ -26,15 +28,22 @@ class HeaderBar extends Component {
         this.state = {
             category: JSON.parse(localStorage.getItem('category')),
             subCategory: JSON.parse(localStorage.getItem('subCategory')),
-            menu:[],
+            menu:null,
             menuCurso:false,
             open: false,
             dataSource: ['nome', 'casa', 'nossa'],
             display: 'none',
+            
         }
+        
     }
     componentDidMount(){
         this.buildCourseMenu();
+        console.log('menu null ' + this.state.menu);
+        // while(this.state.menu === null){
+        //     console.log('menu null');
+        // }
+        
     }
 
    
@@ -92,34 +101,30 @@ class HeaderBar extends Component {
     buildCourseMenu = () =>{
 
         let categories = JSON.parse(localStorage.getItem('category'));
+        
         if(categories !== undefined && categories !== null){
             
             let menu =  categories.map((category, index) =>
-                <MenuItem key={index}
-                    rightIcon={<ArrowDropRight />}
-                    value = {category.description}
-                    primaryText = {category.description}
-                    
-                    menuItems={[
-                        <MenuItem 
-                            value = 'Teste'
-                            primaryText = {'Todos em ' + category.description}
-                        />  ,
-                        (this.validateSubMenu(category._id) === true) ? 
-                        this.buildSubMenu(category._id): null
-                    ]}
+                (this.validateSubMenu(category._id) === true) ?
+                    <MenuItem key={index}
+                        rightIcon={<ArrowDropRight />}
+                        value = {category.description}
+                        primaryText = {category.description}
                         
-                        
-                        //onMouseOver = {() => alert('vamos brincar ' + category._id)}
-
-                        //onClick={() => alert('item')}
-                />             
-            );
+                        menuItems={[
+                            <MenuItem 
+                                value = 'Teste'
+                                primaryText = {category.description}
+                            />,
+                            this.buildSubMenu(category._id)
+                            
+                        ]}
+                    />   
+                : ''          
+            ); 
+            this.setState({'menu': menu});
             
-            
-        this.setState({'menu': menu});
-        }
-        
+        }        
     };
 
     validateSubMenu = (idCategory) => {
@@ -148,13 +153,17 @@ class HeaderBar extends Component {
         );
         
         let subMenu = arraySub.map((sub, index) =>                    
-            <MenuItem 
-                value = {sub.description}
-                primaryText = {sub.description}
-                open={false}
-                onTouchTap={() => {console.log('/course/'+sub.grid.description+'/'+sub.description)}}
-                //onTouchTap={() => {window.open('/course/'+sub.description, '_self')}}
-            />       
+            <Link to={'/course/'+sub.grid.labelUrl+'/'+sub.labelUrl} className={"link-routes"}>
+                <MenuItem 
+                    key={index}
+                    value = {sub.description}
+                    primaryText = {sub.description}
+                    open={false}
+                    //onTouchTap={() => {console.log('/course/'+sub.grid.labelUrl+'/'+sub.labelUrl)}}
+                    onTouchTap={() => {PubSub.publish('idCat', sub.grid._id)}}
+                />    
+            </Link>
+              
         );
         
         return subMenu;
@@ -213,10 +222,7 @@ class HeaderBar extends Component {
                     iconElementLeft={this.groupMenu()}
                     iconElementRight={this.groupButton()}
                     titleStyle={{display: 'none'}}
-                />
-                             
-              
-                
+                />            
             </div>
         );
     }

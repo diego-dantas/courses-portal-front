@@ -202,15 +202,16 @@ class Steps extends Component {
             />
         ]
         const bodyTable = [
-            this.state.steps.map((row, i) =>(
-                <TableRow key={i}>
-                    <TableRowColumn>{row._id}</TableRowColumn>
-                    <TableRowColumn>{row.name}</TableRowColumn>
-                    <TableRowColumn>{row.description}</TableRowColumn>
-                    <TableRowColumn>{row.stepsOrder}</TableRowColumn>
-                    <TableRowColumn>{row.course.name}</TableRowColumn>
-                </TableRow>
-            ))
+            this.state.steps !== null ?
+                this.state.steps.map((row, i) =>(
+                    <TableRow key={i}>
+                        <TableRowColumn>{row._id}</TableRowColumn>
+                        <TableRowColumn>{row.name}</TableRowColumn>
+                        <TableRowColumn>{row.description}</TableRowColumn>
+                        <TableRowColumn>{row.stepsOrder}</TableRowColumn>
+                        <TableRowColumn>{row.course.name}</TableRowColumn>
+                    </TableRow>
+                )): ''
         ]
         return(
             <div>
@@ -270,12 +271,16 @@ class Steps extends Component {
                                 onChange={this.changeCourse}
                             >  
                                 <MenuItem value={0} primaryText="Curso"/>
-                                {this.state.courses.map( (row, index) => (
-                                        <MenuItem 
-                                            key={index}    
-                                            value={row._id} primaryText={row.name}
-                                        />
-                                ))}
+                                {   
+                                    this.state.courses !== null ?
+                                        this.state.courses.map( (row, index) => (
+                                            <MenuItem 
+                                                key={index}    
+                                                value={row._id} primaryText={row.name}
+                                            />
+                                        ))
+                                    :''
+                                }
                         
                             </SelectField>
                         </div>         

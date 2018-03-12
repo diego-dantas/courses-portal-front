@@ -59,8 +59,6 @@ class TabsCourses extends Component {
             <div>
                 <HeaderBar />
                 <NavigationBar />
-
-                <br/>
                 <br/>
                 <div style={this.styles.paddingAbout}>
                     <Tabs

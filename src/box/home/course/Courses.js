@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PubSub from 'pubsub-js'
 
 import HeaderBar from '../bar/HeaderBar';
 
@@ -11,7 +12,9 @@ class Courses extends Component {
     };
 
     fncGetInformation = () => {
-        console.log(this.props.match.params.option);
+        console.log(this.props.match.params.cat);
+        console.log(this.props.match.params.subCat);
+        console.log(PubSub.subscribe('idCat'))
         /*
         HttpService.make().get('/course/information/' + this.props.match.params.id)
                    .then(success =>

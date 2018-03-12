@@ -179,14 +179,15 @@ class CoursesPlan extends Component{
         ]
 
         const bodyTable = [
-            this.state.coursePlan.map((row, i) =>(          
-                <TableRow key={i}>
-                    <TableRowColumn>{row._id}</TableRowColumn>
-                    <TableRowColumn>{row.course.name}</TableRowColumn>
-                    <TableRowColumn>{row.plan.description}</TableRowColumn>
-                    <TableRowColumn>{row.price}</TableRowColumn>
-                </TableRow>
-            ))           
+            this.state.coursePlan === null ? '' :
+                this.state.coursePlan.map((row, i) =>(          
+                    <TableRow key={i}>
+                        <TableRowColumn>{row._id}</TableRowColumn>
+                        <TableRowColumn>{row.course.name}</TableRowColumn>
+                        <TableRowColumn>{row.plan.description}</TableRowColumn>
+                        <TableRowColumn>{row.price}</TableRowColumn>
+                    </TableRow>
+                ))           
         ]
         return(
             <div>

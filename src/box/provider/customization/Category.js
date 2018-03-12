@@ -11,10 +11,14 @@ import {
 import HttpService from '../../../service/http/HttpService';
 
 import RaisedButton from 'material-ui/RaisedButton';
-import NewIco from 'material-ui/svg-icons/content/add';
-import CancelIo from 'material-ui/svg-icons/content/block';
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
+
+//Icon
+import NewIco from 'material-ui/svg-icons/content/add';
+import CancelIo from 'material-ui/svg-icons/content/block';
+import Delete from 'material-ui/svg-icons/action/delete';
+
 
 
 class Category extends Component {
@@ -30,8 +34,7 @@ class Category extends Component {
             enableButton: true,
             alert: false,
             disable: false,
-
-
+            enableDelete: true,
             
             errorDesc: '',
             erroLabel:'',
@@ -48,7 +51,6 @@ class Category extends Component {
             height: '300px',
         }
     }
-    
 
     componentDidMount() {
         this.getCategory();
@@ -60,13 +62,12 @@ class Category extends Component {
         this.setState({disable: false});
         
         if(source === 'update'){
-
+            this.setState({enableDelete: false})
         }else{
             this.setState({idCategory: ''});
             this.setState({descriCategory: ''});
             this.setState({labelUrl: ''})      
         }
-        
     }
 
     closeDialog = () =>{
@@ -97,9 +98,7 @@ class Category extends Component {
         return valid;
     }
     createUpdateCategory = () => {
-        console.log('to aqui')
         if(this.fieldValidation() === true){
-            console.log(this.makeDataForCategory());
             HttpService.make().post('/createUpdateGrid', this.makeDataForCategory())
                               .then(success => {
                                   this.closeDialog();
@@ -114,29 +113,15 @@ class Category extends Component {
 
     deleteCategory = () => {
         if(this.fieldValidation() === true){
-            HttpService.make().post('/deleteGrid', this.makeDataForCategory('delete'))
+            HttpService.make().post('/deleteGrid', this.makeDataForCategory())
                        .then(success =>{
-                           this.handleCloseUpdate();
+                           this.closeDialog();
                            this.getCategory();
                         })
                         .catch(error => {
                             this.setState({alert: true})
                             this.setState({disable: true})
                        })
-        }
-    }
-
-    updateCategory = ()  => {
-        if(this.fieldValidation() === true){
-            HttpService.make().post('/updateGrid', this.makeDataForCategory('update'))
-                              .then(success => {
-                                  alert('dados atualizados com sucesso');
-                                  this.handleCloseUpdate();
-                                  this.getCategory();
-                              })
-                              .catch(error => {
-                                  console.log('erro ao atualizar o cadastro de categoria');
-                              })
         }
     }
 
@@ -173,8 +158,17 @@ class Category extends Component {
 
             />,
             <RaisedButton
-                label="cancelar"
+                label="Excluir"
                 backgroundColor="#DD2C00"
+                icon={<Delete color="#FFF"/>}
+                labelStyle={{color: 'white'}}
+                style={{marginRight:'20px'}}
+                disabled={this.state.enableDelete}
+                onClick={this.deleteCategory}
+            />,
+            <RaisedButton
+                label="cancelar"
+                backgroundColor="#FF9800"
                 icon={<CancelIo color="#FFF"/>}
                 labelStyle={{color: 'white'}}
                 onClick={this.closeDialog}

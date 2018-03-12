@@ -32,27 +32,42 @@ class Material extends Component{
         this.state = {
             courses: JSON.parse(localStorage.getItem('course')),
             steps: JSON.parse(localStorage.getItem('steps')),
-            plan: JSON.parse(localStorage.getItem('plan')),
-            coursePlan: JSON.parse(localStorage.getItem('coursePlan')),
+            material: JSON.parse(localStorage.getItem('material')),
             open: false,
             enable:true,
             enableDelete: true,
             idCourse: 0,
-            idCoursePlan:'',
-            valorCourse: 0,
-            idPlan: 0,
-            valorPlano: 0,
+            idSteps: 0,
+            idMaterial: 0,
+            type: '',
+            name: '',
+            order: '',
+            url: '',
+            statusMaterial: false,
+            labelMaterial: 'Inativo',
+            statusDownload: false,
+            labelDownload: 'Não',
+
+
+            //state error 
+            errorType: '',
+            errorName: '',
+            errorOrder: '',
+            errorUrl: '',
         }
 
     }
     
     componentDidMount() {
-        this.getCoursePlan();
-        console.log(this.state.steps);
+        this.getMaterial();
     }
 
     openDialog = (source) => {
         this.setState({open: true});
+        this.setState({errorName: ''});
+        this.setState({errorOrder: ''});
+        this.setState({errorType: ''});
+        this.setState({errorUrl: ''});
        
         if(source === 'update'){
             this.setState({enable: false});
@@ -60,11 +75,17 @@ class Material extends Component{
         }else{
             this.setState({enable: true});
             this.setState({enableDelete: true});
-            this.setState({idCoursePlan: ''});
-            this.setState({idCourse: ''});
-            this.setState({idPlan: ''});
-            this.setState({valorPlano: ''});
-            this.setState({valorCourse: ''})
+            this.setState({idMaterial: ''});
+            this.setState({idCourse: 0});
+            this.setState({idSteps: 0});
+            this.setState({order: ''});
+            this.setState({name: ''});
+            this.setState({url: ''});
+            this.setState({type: ''});
+            this.setState({statusMaterial: false});
+            this.setState({labelMaterial: 'Inativo'});
+            this.setState({statusDownload: false});
+            this.setState({labelDownload: 'Não'});
         }
     }
 
@@ -74,63 +95,118 @@ class Material extends Component{
 
     changeCourse = (event, index, idCourse) => {
         this.setState({idCourse});
-        this.state.courses.map( (row, index) => (
-            
-            row._id === idCourse ? 
-                this.setState({valorCourse: row.price}) : null
-        ))
-        if(idCourse !== 0 && this.state.idPlan !== 0) this.setState({enable: false});
+        this.setState({steps: JSON.parse(localStorage.getItem('steps'))});
+        if(idCourse !== 0 && this.state.idSteps !== 0) this.setState({enable: false});
         if(idCourse === 0) this.setState({enable: true});
     }
 
-    changePlan = (event, index, idPlan) => {
-        this.setState({idPlan});
-        if(idPlan !== 0 && this.state.idCourse !== 0) this.setState({enable: false});
-        if(idPlan === 0) this.setState({enable: true});
+    changeSteps = (event, index, idSteps) => {
+        this.setState({idSteps});
+        if(idSteps !== 0 && this.state.idCourse !== 0) this.setState({enable: false});
+        if(idSteps === 0) this.setState({enable: true});
+    }
+    //Metodo para tratamento da mudança do status
+    changeStatus(event, isInputChecked){
+        this.setState({statusMaterial: isInputChecked})
+        
+        if(!this.state.statusMaterial){
+            this.setState({labelMaterial: 'Ativo'})
+        }else{
+            this.setState({labelMaterial: 'Inativo'})
+        }
+                
     }
 
+    changeDownload(event, isInputChecked){
+        this.setState({statusDownload: isInputChecked})
+        
+        if(!this.state.statusDownload){
+            this.setState({labelDownload: 'Sim'})
+        }else{
+            this.setState({labelDownload: 'Não'})
+        }     
+    }
     handleCellClick(col){   
                
         //populo os valores para os states
-        this.setState({idCoursePlan: this.state.coursePlan[col]._id});
-        this.setState({idCourse: this.state.coursePlan[col].course._id});
-        this.setState({idPlan: this.state.coursePlan[col].plan._id});
-        this.setState({valorPlano: this.state.coursePlan[col].price});
-        this.setState({valorCourse: this.state.coursePlan[col].course.price})
+        this.setState({idCourse: this.state.material[col].steps.course._id});
+        this.setState({idSteps: this.state.material[col].steps._id});
+        this.setState({idMaterial: this.state.material[col]._id});
+        this.setState({order: this.state.material[col].materialOrder});
+        this.setState({name: this.state.material[col].name});
+        this.setState({type: this.state.material[col].type});
+        this.setState({url: this.state.material[col].url});
+        this.setState({statusMaterial: this.state.material[col].status});
+        this.state.material[col].status === true ? this.setState({labelMaterial: 'Ativo'}) : this.setState({labelMaterial: 'Inativo'});
+        this.setState({statusDownload: this.state.material[col].download});
+        this.state.material[col].download === true ? this.setState({labelDownload: 'Sim'}) : this.setState({labelDownload: 'Não'});
         
         this.openDialog('update');   
     }
 
-    getCoursePlan = () => {
-        HttpService.make().get('/getCoursesPlans')
+    getMaterial = () => {
+        HttpService.make().get('/getMaterial')
                           .then(success => {
                               console.log(success.data);
-                              localStorage.setItem('coursePlan', JSON.stringify(success.data));
-                              this.setState({coursePlan: JSON.parse(localStorage.getItem('coursePlan'))});
+                              localStorage.setItem('material', JSON.stringify(success.data));
+                              this.setState({material: JSON.parse(localStorage.getItem('material'))});
                           })
                           .catch(Error =>{
                               console.log('Erro ao buscar os cursos/planos');
                           })
     }
+    validateField = () => {
+        var valid = true;
+        if(this.order.input.value === '') {
+            this.setState({errorOrder: 'Order é Obrigatório'}); 
+            valid = false;
+        }
+            
+        if(this.name.input.value === '') {
+            this.setState({errorName: 'O nome é Obrigatório'}); 
+            valid = false;    
+        }
 
-    createUpdateCoursePlan = () =>{
+        if(this.type.input.value === ''){
+            this.setState({errorType: 'O Tipo é Obrigatório'}); 
+            valid = false;    
+        }
+
+        if(this.url.input.value === ''){
+            this.setState({errorUrl: 'A url é Obrigatório'}); 
+            valid = false;    
+        }
+
+        return valid;
+    }
+    changedField = () => {
+        if(this.order.input.value !== '') this.setState({errorOrder: ''});
+        if(this.name.input.value  !== '') this.setState({errorName: ''});
+        if(this.type.input.value  !== '') this.setState({errorType: ''});
+        if(this.url.input.value   !== '') this.setState({errorUrl: ''});
+    }
+    createUpdateMaterial = () =>{
+        if(this.validateField()){
+            console.log(this.makeForDataMaterial());
+            HttpService.make().post('/createUpdateMaterial', this.makeForDataMaterial())
+                              .then(success => {
+                                  alert('Dados salvo com sucesso');
+                                  this.getMaterial();
+                                  this.closeDialog();
+                              })
+                              .catch(error => {
+                                  console.log('Erro ao salvar o curso/plano');
+                              })
+        }
         
-        HttpService.make().post('/createUpdateCoursePlan', this.makeForDataCoursePlan())
-                          .then(success => {
-                              alert('Dados salvo com sucesso');
-                              this.getCoursePlan();
-                              this.closeDialog();
-                          })
-                          .catch(error => {
-                              console.log('Erro ao salvar o curso/plano');
-                          })
+        
     }
 
-    deleteCoursePlan = () => {
-        HttpService.make().post('/deleteCoursePlan', this.makeForDataCoursePlan())
+    deleteMaterial = () => {
+        HttpService.make().post('/deleteMaterial', this.makeForDataMaterial())
                    .then(success => {
                         alert('Dados excluido com sucesso');
-                        this.getCoursePlan();
+                        this.getMaterial();
                         this.closeDialog();
                    })
                    .catch(error => {
@@ -138,15 +214,17 @@ class Material extends Component{
                    })
     }
 
-    makeForDataCoursePlan = () =>{
+    makeForDataMaterial = () =>{
         return{
-            _id: this.state.idCoursePlan,
-            price: this.valorPlano.input.value,
-            plan: {
-                _id: this.state.idPlan
-            },
-            course: {
-                _id: this.state.idCourse
+            _id: this.state.idMaterial,
+            materialOrder: this.order.input.value,
+            name: this.name.input.value,
+            type: this.type.input.value,
+            url: this.url.input.value,
+            download: this.state.statusDownload,
+            status: this.state.statusMaterial,
+            steps: {
+                _id: this.state.idSteps
             }
         }
     }
@@ -159,7 +237,7 @@ class Material extends Component{
                 icon={<NewIco color="#FFF"/>}
                 labelStyle={{color: 'white'}}
                 style={{marginRight:'20px'}}
-                onClick={this.createUpdateCoursePlan}
+                onClick={this.createUpdateMaterial}
                 disabled={this.state.enable}
 
             />,
@@ -170,7 +248,7 @@ class Material extends Component{
                 labelStyle={{color: 'white'}}
                 style={{marginRight:'20px'}}
                 disabled={this.state.enableDelete}
-                onClick={this.deleteCoursePlan}
+                onClick={this.deleteMaterial}
             />,
             <RaisedButton
                 label="cancelar"
@@ -182,15 +260,19 @@ class Material extends Component{
         ]
 
         const bodyTable = [
-            this.state.coursePlan.map((row, i) =>(          
-                <TableRow key={i}>
-                    <TableRowColumn>{row._id}</TableRowColumn>
-                    <TableRowColumn>{row.course.name}</TableRowColumn>
-                    <TableRowColumn>{row.plan.description}</TableRowColumn>
-                    <TableRowColumn>{row.price}</TableRowColumn>
-                </TableRow>
-            ))           
+            this.state.material !== null ?
+                this.state.material.map((row, i) =>(          
+                    <TableRow key={i}>
+                        <TableRowColumn>{row._id}</TableRowColumn>
+                        <TableRowColumn>{row.name}</TableRowColumn>
+                        <TableRowColumn>{row.status === true ? 'ATIVO' : 'INATIVO'}</TableRowColumn>
+                        <TableRowColumn>{row.download === true ? 'SIM' : 'Não'}</TableRowColumn>
+                        <TableRowColumn>{row.steps.name}</TableRowColumn>
+                    </TableRow>
+                )) :''         
         ]
+
+        
         return(
             <div>
                 <RaisedButton
@@ -219,9 +301,10 @@ class Material extends Component{
                     >
                         <TableRow>
                             <TableHeaderColumn tooltip="ID">ID</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="Descrição">Curso</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="Status">Plano</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="Status">Valor</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="Descrição">Nome</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="Status">Status</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="Status">Download</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="Status">Steps</TableHeaderColumn>
                         </TableRow>
                     </TableHeader>
                     <TableBody
@@ -245,18 +328,18 @@ class Material extends Component{
                     <div className="row">
                         <div className="col-md-6 col-sm-6">
                             <Toggle 
-                                label={'Status: ' + this.state.labelStatus}
+                                label={'Status: ' + this.state.labelMaterial}
                                 labelPosition="right"
-                                defaultToggled={this.state.statusCourse}
-                                onToggle={(event, isInputChecked) => this.handleToggle(event, isInputChecked)}
+                                defaultToggled={this.state.statusMaterial}
+                                onToggle={(event, isInputChecked) => this.changeStatus(event, isInputChecked)}
                             />
                         </div>
                         <div className="col-md-6 col-sm-6">
                             <Toggle 
-                                label={'Status: ' + this.state.labelStatus}
+                                label={'Download: ' + this.state.labelDownload}
                                 labelPosition="right"
-                                defaultToggled={this.state.statusCourse}
-                                onToggle={(event, isInputChecked) => this.handleToggle(event, isInputChecked)}
+                                defaultToggled={this.state.statusDownload}
+                                onToggle={(event, isInputChecked) => this.changeDownload(event, isInputChecked)}
                             />
                         </div>
                     </div>
@@ -268,12 +351,16 @@ class Material extends Component{
                                 onChange={this.changeCourse}
                             >  
                                 <MenuItem value={0} primaryText="Curso"/>
-                                {this.state.courses.map( (row, index) => (
-                                        <MenuItem 
-                                            key={index}
-                                            value={row._id} primaryText={row.name}
-                                        />
-                                ))}
+                                {
+                                    this.state.courses === null ? '' :
+                                        this.state.courses.map( (row, index) => (
+                                            <MenuItem 
+                                                key={index}
+                                                value={row._id} primaryText={row.name}
+                                            />
+                                        ))
+                                   
+                                }
                         
                             </SelectField>
                         </div>         
@@ -281,39 +368,46 @@ class Material extends Component{
                         <div className="col-md-6 col-sm-6">
                             <SelectField
                                 floatingLabelText="Steps"
-                                value={this.state.idPlan}
-                                onChange={this.changePlan}
+                                value={this.state.idSteps}
+                                onChange={this.changeSteps}
                                 
                             >  
-                                <MenuItem value={0} primaryText="Plano"/>
-                                {this.state.steps.map( (row, index) => (
-                                        row.course._id === this.state.idCourse ?
-                                            <MenuItem 
-                                                key={index}
-                                                value={row._id} primaryText={row.description}
-                                            />: ''
-                                ))}
+                                <MenuItem value={0} primaryText="Steps"/>
+                                {   this.state.steps !== null ?
+                                        this.state.steps.map( (row, index) => (
+                                            row.course._id === this.state.idCourse ?
+                                                <MenuItem 
+                                                    key={index}
+                                                    value={row._id} primaryText={row.name}
+                                                />: ''
+                                        )): ''
+                                }
                             </SelectField>
                         </div>
                     </div>
                     <div className="row">
                         <div className="col-md-6 col-sm-6">
                             <TextField
-                                floatingLabelText="Valor do Curso"
+                                floatingLabelText="Ordem"
                                 type="number"
-                                value={this.state.valorCourse}
-                                disabled={true}
+                                disabled={this.state.enable}
+                                onChange={this.changedField}
+                                errorText={this.state.errorOrder}
+                                defaultValue={this.state.order}
+                                ref={(input) => {this.order = input;} }
                             />  
                                
                         </div>         
             
                         <div className="col-md-6 col-sm-6">
                             <TextField
-                                floatingLabelText="Valor do Plano"
+                                floatingLabelText="Nome"
                                 type="text"
                                 disabled={this.state.enable}
-                                defaultValue={this.state.valorPlano}
-                                ref={(input) => {this.valorPlano = input;} }
+                                onChange={this.changedField}
+                                errorText={this.state.errorName}
+                                defaultValue={this.state.name}
+                                ref={(input) => {this.name = input;} }
                             />  
                                
                         </div>
@@ -321,23 +415,28 @@ class Material extends Component{
                     <div className="row">
                         <div className="col-md-6 col-sm-6">
                             <TextField
-                                floatingLabelText="Valor do Curso"
+                                floatingLabelText="Tipo"
                                 type="text"
-                                value={this.state.valorCourse}
-                                disabled={true}
+                                disabled={this.state.enable}
+                                onChange={this.changedField}
+                                errorText={this.state.errorType}
+                                defaultValue={this.state.type}
+                                ref={(input) => {this.type = input;} }
+                                
                             />  
                                
                         </div>         
             
                         <div className="col-md-6 col-sm-6">
                             <TextField
-                                floatingLabelText="Valor do Plano"
+                                floatingLabelText="URL"
                                 type="text"
                                 disabled={this.state.enable}
-                                defaultValue={this.state.valorPlano}
-                                ref={(input) => {this.valorPlano = input;} }
+                                onChange={this.changedField}
+                                errorText={this.state.errorUrl}
+                                defaultValue={this.state.url}
+                                ref={(input) => {this.url = input;} }
                             />  
-                               
                         </div>
                     </div>
                 </ Dialog>

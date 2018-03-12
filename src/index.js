@@ -9,7 +9,8 @@ import { BrowserRouter, Router, Route } from 'react-router-dom'
 import App from './App';
 
 //import of home
-import Courses from './box/home/course/Courses'
+import Courses from './box/home/course/Courses';
+import ListCourses from './box/home/course/ListCourses';
 
 //import of dash
 import Dash from './box/provider/dash/Dash';
@@ -36,7 +37,7 @@ const Main = () => (
             <Router history={history}>
                 <div>
                     <Route exact path='/' component={App} />
-                    <Route exact path='/course/:option' component={Courses} />
+                    <Route exact path='/course/:cat/:subCat' component={ListCourses} />
                     <Route exact path='/provider' component={Dash} />
                     <Route exact path='/provider/about' component={About} />
                     <Route exact path='/provider/customization' component={Customization} />

@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import HttpService from '../../../service/http/HttpService';
+
 import {
     Table,
     TableBody,
@@ -7,22 +9,21 @@ import {
     TableRow,
     TableRowColumn,
   } from 'material-ui/Table';
-
-import HttpService from '../../../service/http/HttpService';
 import RaisedButton from 'material-ui/RaisedButton';
-import NewIco from 'material-ui/svg-icons/content/add';
-import CancelIo from 'material-ui/svg-icons/content/block'
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem'
 
+//Incon
+import NewIco from 'material-ui/svg-icons/content/add';
+import CancelIo from 'material-ui/svg-icons/content/block'
+import Delete from 'material-ui/svg-icons/action/delete';
 class SubCategory extends Component {
     constructor (){
         super();
         this.state = {
-            openCreate: false,
-            openUpdate: false,
+            open: false,
             value: 0,
             provider: JSON.parse(localStorage.getItem('provider')),
             categoryTable: JSON.parse(localStorage.getItem('category')),
@@ -30,8 +31,14 @@ class SubCategory extends Component {
             idCategory: 0,
             descriCategory: '',
             idSubCategory: 0,
-            descriSubCategory: '',
+            description: '',
+            labelUrl: '',
 
+
+            disableField: true,
+            enableDelete: true,
+            errorDesc: '',
+            erroLabel:'',
 
             //state da tabela
             fixedHeader: true,
@@ -50,68 +57,64 @@ class SubCategory extends Component {
         this.getSubCategory();
     }
 
-    makeDataForCategory = (opcao, id) => {
-        
-        // var categorySub = '';
-        // this.state.categoryTable.map((row, index) =>{
-        //     if(row._id === id)
-        //         console.log('To aqui ' + row);
-        //         categorySub = row;
-        // })
-        
-        
-        if(opcao === 'create'){
-            return{
-                description: this.subCategory.input.value,
-                grid: {_id: this.state.idCategory}
-            }  
-        }else if(opcao === 'update'){
-            return{
-                _id: this.state.idSubCategory,
-                description: this.SubcategoryUpdate.input.value,
-                grid: {_id: this.state.idCategory}
-            }  
-        }else if(opcao === 'delete'){
-            return{
-                _id: this.state.idSubCategory,
-                description: this.SubcategoryUpdate.input.value,
-                grid: {_id: this.state.idCategory}
-            }  
-        }
-              
+    makeDataForCategory = () => {
+        return{
+            _id: this.state.idSubCategory,
+            description: this.description.input.value,
+            labelUrl: this.labelUrl.input.value,
+            grid: {_id: this.state.idCategory}
+        }  
     }
+
+
     handleChange = (event, index, value) => {
         this.setState({value});
         this.setState({idCategory: value})
+        if(value === 0) this.setState({disableField: true})
+        if(value !== 0) this.setState({disableField: false})
     }
 
-    handleOpenCreate = () => {
-        this.getCategory();
-        this.setState({openCreate: true});   
-    }
-    handleOpenUpdate = () => {        
-        this.setState({openUpdate: true});       
-    }
-
-    handleCloseCreate = () =>{
-        this.setState({openCreate: false});        
-    }
-
-    handleCloseUpdate = () =>{        
-        this.setState({openUpdate: false});   
-    }
-
-    createCategory = () => {
-        
-        if(this.state.idCategory === 0){
-            alert('Por favor escolher uma categoria');
+    openDialog = (source) => {
+        this.setState({open: true});   
+        this.setState({disableField: true});
+        this.setState({errorDesc: ''});
+        this.setState({erroLabel: ''});
+        if(source === 'update'){
+            this.setState({enableDelete: false});
+            this.setState({disableField: false});
         }else{
-            
-            
-            HttpService.make().post('/createSubGrid', this.makeDataForCategory('create', this.state.idCategory))
+            this.setState({description: ''});
+            this.setState({value: ''});
+            this.setState({idCategory: ''});
+            this.setState({labelUrl: ''});
+        }
+    }
+   
+    closeDialog = () =>{
+        this.setState({open: false});        
+    }
+    fieldValidation = () => {
+        var valid = true;
+        if(this.description.input.value === '') {
+            valid = false;
+            this.setState({errorDesc: 'Nome da Sub Categoria é obrigatorio'});
+        }
+        if(this.labelUrl.input.value === '') {
+            valid = false;
+            this.setState({erroLabel: 'Label da URL, da categoria é obrigatorio'});
+        }
+
+        return valid;
+    }
+
+    createUpdateCategory = () => {
+        if(this.fieldValidation()){          
+            HttpService.make().post('/createUpdateSubGrid', this.makeDataForCategory())
                     .then(success => {
-                            this.handleCloseCreate();
                             this.getSubCategory();
+                            alert('Dados salvos com sucesso!');
+                            this.closeDialog();
+                            
                     })
                     .catch(error =>{
                         console.log('Erro na criação da categoria');
@@ -120,42 +123,26 @@ class SubCategory extends Component {
     }
 
     deleteCategory = () => {
-        
-        HttpService.make().post('/deleteSubGrid', this.makeDataForCategory('delete', this.state.idCategory))
-                   .then(success =>{
-                       this.handleCloseUpdate();
-                       this.getSubCategory();
-                   })
-                   .catch(error => {
-                       console.log('erro ao excluir o registro')
-                   })
-    }
-
-    updateCategory = ()  => {
-
-          
-        if(this.state.idCategory === 0){
-            alert('Por favor escolher uma categoria');
-        }else{
-            console.log(JSON.stringify(this.makeDataForCategory('update')));
-            HttpService.make().post('/updateSubGrid', this.makeDataForCategory('update'))
-                        .then(success => {
-                            alert('dados atualizados com sucesso');
-                            this.handleCloseUpdate();
-                            this.getSubCategory();
-                        })
-                        .catch(error => {
-                            console.log('erro ao atualizar o cadastro de categoria');
-                        })
+        if(this.fieldValidation()){  
+            HttpService.make().post('/deleteSubGrid', this.makeDataForCategory())
+                    .then(success =>{
+                        this.getSubCategory();
+                        alert('Dados excluidos com sucesso!');
+                        this.closeDialog();
+                    })
+                    .catch(error => {
+                        console.log('erro ao excluir o registro')
+                    })
         }
     }
+
 
     getSubCategory = () =>{
         HttpService.make().get('/getSubGrid')
                    .then(success => {
-                        this.setState({subCategoryTable:[{"_id": "", "description": "", "grid": {"_id": "", "provider": null,"description": ""}}]});
                         localStorage.setItem('subCategory', JSON.stringify(success.data));
                         this.setState({subCategoryTable: JSON.parse(localStorage.getItem('subCategory'))});
+                        console.log(this.state.subCategoryTable);
                    })
                    .catch(error => {
                        console.log('Erro ao carregar as categorias que estão salvas no banco');
@@ -174,12 +161,13 @@ class SubCategory extends Component {
     }
     handleCellClick(col)
     {   
-        let desc = this.state.subCategoryTable[col].description;
+        //let desc = this.state.subCategoryTable[col].description;
         this.setState({idSubCategory: this.state.subCategoryTable[col]._id});
-        this.setState({descriSubCategory: desc});
+        this.setState({description: this.state.subCategoryTable[col].description});
         this.setState({value: this.state.subCategoryTable[col].grid._id});
         this.setState({idCategory: this.state.subCategoryTable[col].grid._id});
-        this.handleOpenUpdate();          
+        this.setState({labelUrl: this.state.subCategoryTable[col].labelUrl})
+        this.openDialog('update');          
     }
 
     render () {
@@ -191,34 +179,16 @@ class SubCategory extends Component {
                 icon={<NewIco color="#FFF"/>}
                 labelStyle={{color: 'white'}}
                 style={{marginRight:'20px'}}
-                onClick={this.createCategory}
-
-            />,
-            <RaisedButton
-                label="cancelar"
-                backgroundColor="#DD2C00"
-                icon={<CancelIo color="#FFF"/>}
-                labelStyle={{color: 'white'}}
-                onClick={this.handleCloseCreate}
-            />
-        ]
-
-        const actionsUpdate = [
-            <RaisedButton
-                label="Atualizar"
-                backgroundColor="#0ac752"
-                icon={<NewIco color="#FFF"/>}
-                labelStyle={{color: 'white'}}
-                style={{marginRight:'20px'}}
-                onClick={this.updateCategory}
+                onClick={this.createUpdateCategory}
 
             />,
             <RaisedButton
                 label="Excluir"
                 backgroundColor="#DD2C00"
-                icon={<CancelIo color="#FFF"/>}
+                icon={<Delete color="#FFF"/>}
                 labelStyle={{color: 'white'}}
                 style={{marginRight:'20px'}}
+                disabled={this.state.enableDelete}
                 onClick={this.deleteCategory}
             />,
             <RaisedButton
@@ -226,12 +196,9 @@ class SubCategory extends Component {
                 backgroundColor="#FF9800"
                 icon={<CancelIo color="#FFF"/>}
                 labelStyle={{color: 'white'}}
-                style={{marginRight:'20px'}}
-                onClick={this.handleCloseUpdate}
+                onClick={this.closeDialog}
             />
-        ]
-
-       
+        ]    
 
         
         const bodyTable = [
@@ -240,6 +207,7 @@ class SubCategory extends Component {
                     <TableRowColumn>{row._id}</TableRowColumn>
                     <TableRowColumn>{row.description}</TableRowColumn>
                     <TableRowColumn>{row.grid.description}</TableRowColumn>
+                    <TableRowColumn>{row.labelUrl}</TableRowColumn>
                 </TableRow>
             ))  
         ]
@@ -255,7 +223,7 @@ class SubCategory extends Component {
                     labelStyle={{color: 'white'}}
                     style={{float: 'right', marginTop:'20px'}}
                     fullWidth={true}
-                    onClick={this.handleOpenCreate}
+                    onClick={this.openDialog}
                 />
                 <br/><br/><br/>
                 <Table
@@ -275,6 +243,7 @@ class SubCategory extends Component {
                             <TableHeaderColumn tooltip="The ID">ID</TableHeaderColumn>
                             <TableHeaderColumn tooltip="The Name">Sub Categoria</TableHeaderColumn>
                             <TableHeaderColumn tooltip="The Name">Categoria</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="The Name">Label URL</TableHeaderColumn>
                         </TableRow>
                     </TableHeader>
                     <TableBody
@@ -292,7 +261,7 @@ class SubCategory extends Component {
                     title="Adicionar Sub Categoria"
                     actions={actions}
                     modal={true}
-                    open={this.state.openCreate}
+                    open={this.state.open}
                 >   
                     <SelectField
                         floatingLabelText="Categoria"
@@ -312,35 +281,17 @@ class SubCategory extends Component {
                         floatingLabelText="Sub Categoria"
                         fullWidth={true}
                         disabled={this.state.disableField}
-                        ref={(input) => {this.subCategory = input;} }
+                        defaultValue={this.state.description}
+                        errorText={this.state.errorDesc}
+                        ref={(input) => {this.description = input;} }
                     />
-                </Dialog>
-
-                <Dialog
-                    title="Sub Categoria"
-                    actions={actionsUpdate}
-                    modal={true}
-                    open={this.state.openUpdate}
-                >
-                     <SelectField
-                        floatingLabelText="Categoria"
-                        value={this.state.value}
-                        onChange={this.handleChange}
-                    >  
-                        <MenuItem value={0} primaryText="Categorias"/>
-                        {this.state.categoryTable.map( (row, index) => (
-                            <MenuItem 
-                                key={index}
-                                value={row._id} primaryText={row.description}
-                            />
-                         ))}
-                      
-                    </SelectField>
                     <TextField 
-                        floatingLabelText="Sub Categoria"
+                        floatingLabelText="Label URL"
                         fullWidth={true}
-                        defaultValue={this.state.descriSubCategory}
-                        ref={(input) => {this.SubcategoryUpdate = input;} }
+                        disabled={this.state.disableField}
+                        defaultValue={this.state.labelUrl}
+                        errorText={this.state.erroLabel}
+                        ref={(input) => {this.labelUrl = input;} }
                     />
                 </Dialog>
             </div>
