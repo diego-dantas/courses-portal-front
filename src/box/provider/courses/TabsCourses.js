@@ -12,6 +12,7 @@ import PubSub from 'pubsub-js';
 import Courses from '../courses/Courses';
 import Steps from '../courses/Steps';
 import Material from '../courses/Material';
+import Question from '../courses/Question';
 
 class TabsCourses extends Component {
 
@@ -67,6 +68,7 @@ class TabsCourses extends Component {
                         <Tab style={this.styles.tab} label="Cursos" value={0} />
                         <Tab style={this.styles.tab} label="Steps" value={1} />
                         <Tab style={this.styles.tab} label="Material" value={2} />
+                        <Tab style={this.styles.tab} label="Questão" value={3} />
                     </Tabs>
                     <SwipeableViews
                         index={this.state.slideIndex}
@@ -74,6 +76,7 @@ class TabsCourses extends Component {
                         <Courses />
                         <Steps />
                         <Material />
+                        <Question />
                     </SwipeableViews>
                 </div>
             </div>
