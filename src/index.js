@@ -9,7 +9,7 @@ import { BrowserRouter, Router, Route } from 'react-router-dom'
 import App from './App';
 
 //import of home
-import Courses from './box/home/course/Courses';
+//import Courses from './box/home/course/Courses';
 import ListCourses from './box/home/course/ListCourses';
 
 //import of dash

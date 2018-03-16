@@ -4,7 +4,6 @@ import HttpService from '../../../service/http/HttpService';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
-import Checkbox from 'material-ui/Checkbox';
 import Toggle from 'material-ui/Toggle';
 import Dialog from 'material-ui/Dialog';
 import DatePicker from 'material-ui/DatePicker';
@@ -23,15 +22,6 @@ import CancelIo from 'material-ui/svg-icons/content/block'
 import Delete from 'material-ui/svg-icons/action/delete';
 
 
-
-const styles = {
-    block: {
-      maxWidth: 250,
-    },
-    checkbox: {
-      marginBottom: 16,
-    },
-};
 class Promotions extends Component {
 
     constructor(){
@@ -46,7 +36,7 @@ class Promotions extends Component {
             description: '',
             coupon: '',
             percentage: '',
-            dateStart: new Date,
+            dateStart: new Date(),
             dateFinish: new Date(),
 
             errorDescription: '',

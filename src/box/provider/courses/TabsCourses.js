@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 
-
-import HeaderBar from '../dash/HeaderBar';
 import NavigationBar from '../dash/NavegationBar';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import SwipeableViews from 'react-swipeable-views'
@@ -13,6 +11,7 @@ import Courses from '../courses/Courses';
 import Steps from '../courses/Steps';
 import Material from '../courses/Material';
 import Question from '../courses/Question';
+import Evaluation from '../courses/Evaluation';
 
 class TabsCourses extends Component {
 
@@ -69,6 +68,7 @@ class TabsCourses extends Component {
                         <Tab style={this.styles.tab} label="Steps" value={1} />
                         <Tab style={this.styles.tab} label="Material" value={2} />
                         <Tab style={this.styles.tab} label="Questão" value={3} />
+                        <Tab style={this.styles.tab} label="Avaliação" value={4} />
                     </Tabs>
                     <SwipeableViews
                         index={this.state.slideIndex}
@@ -77,6 +77,7 @@ class TabsCourses extends Component {
                         <Steps />
                         <Material />
                         <Question />
+                        <Evaluation />
                     </SwipeableViews>
                 </div>
             </div>

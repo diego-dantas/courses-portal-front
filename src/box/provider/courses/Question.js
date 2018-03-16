@@ -68,6 +68,11 @@ class Question extends Component {
             this.setState({enable:       true});
             this.setState({status:       false});
 
+            this.setState({idAlter:    0});
+            this.setState({idCourse:   0});
+            this.setState({idSteps:    0});
+            this.setState({idQuestion: 0});
+
             this.setState({description: ''});
             this.setState({alterA:      ''});
             this.setState({alterB:      ''});

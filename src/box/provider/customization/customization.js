@@ -4,7 +4,6 @@ import SwipeableViews from 'react-swipeable-views'
 
 import PubSub from 'pubsub-js';
 
-import HeaderBar from '../dash/HeaderBar';
 import NavigationBar from '../dash/NavegationBar';
 import SubCategory from '../customization/SubCategory';
 import Category from '../customization/Category';

@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
-
-import HeaderBar from '../dash/HeaderBar';
 import NavigationBar from '../dash/NavegationBar';
 import HttpService from '../../../service/http/HttpService';
 
