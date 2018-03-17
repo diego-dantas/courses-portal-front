@@ -32,6 +32,7 @@ class Evaluation extends Component {
             steps:       JSON.parse(localStorage.getItem('steps')),
             questions:   JSON.parse(localStorage.getItem('questions')),
             evaluations: JSON.parse(localStorage.getItem('evaluations')),
+            evalQuestio: JSON.parse(localStorage.getItem('evalQuestio')),
             //IDs
             idCourse:     0,
             idSteps:      0,
@@ -56,6 +57,7 @@ class Evaluation extends Component {
 
     componentDidMount() {
         this.getEvaluations();
+        this.getEvaluationQuestion();
     }
 
     handleToggle = (event, toggled, col) => {
@@ -100,6 +102,7 @@ class Evaluation extends Component {
             this.setState({idCourse:     0});
             this.setState({idSteps:      0});
             this.setState({idEvaluation: 0});
+            this.setState({name: ''});  
 
         }
 
@@ -195,21 +198,15 @@ class Evaluation extends Component {
     }
 
 
-    linkCourses = (col) => {
-        this.setState({arrayNewQuestion: []});
-        this.state.arrayQuestion.map((row, index) => (
-            this.state.arrayNewQuestion.push(row)
-        ))
-        this.setState({disableToggle: false});  
-        this.setState({idPromotion: this.state.promotions[col]._id});
-        this.setState({description: this.state.promotions[col].description});
-        this.setState({coupon: this.state.promotions[col].codigoCupom});
-        this.setState({openQuestion: true});
-    }
 
-    openLinkQuestion = (col) => {
+    openLinkQuestion = (col) => {       
+        console.log('open')
+        this.setState({arrayQuestion : []});
+        this.setState({arrayNewQuestion : []});
+        
         this.setState({questions : JSON.parse(localStorage.getItem('questions'))});
         this.setState({idEvaluation: this.state.evaluations[col]._id});
+        this.setState({name:         this.state.evaluations[col].name});
         this.setState({idSteps:      this.state.evaluations[col].steps._id});
         this.setState({openQuestion: true});
     }
@@ -230,11 +227,11 @@ class Evaluation extends Component {
     }
 
     saveEvaluationQuestion = () => {
-        console.log(this.makeDataForQuestion());
         HttpService.make().post('/saveEvaluationQuestion', this.makeDataForQuestion())
                           .then(success => {
-                              alert('Questões atualizadas com sucesso');
-                              this.closeLinkQuestion();
+                                this.getEvaluationQuestion();
+                                alert('Questões atualizadas com sucesso');
+                                this.closeLinkQuestion();
                           })
                           .catch(error => {
                               console.log('deu merda kkkkk');
@@ -242,7 +239,7 @@ class Evaluation extends Component {
     }
 
     makeDataForQuestion = () => {
-       
+        
         let valor = [];
         this.state.arrayNewQuestion.map((row, index) => (
                valor.push({
@@ -261,17 +258,45 @@ class Evaluation extends Component {
     }
 
     //valida se a questão está salva no banco
-    validStatus = (id) => {
+    validStatus = (id, i) => {
+        
+        this.state.evalQuestio.map((row1, index) => (
+            
+            row1.evaluation._id === this.state.idEvaluation ?
+                this.validID(row1.question._id) : ''
+        ))            
 
         var status = false;
         this.state.arrayQuestion.map((row, i) => (
-            id === row ? status = true : ''
+             id === row ? status = true : ''
         ))
 
         return status;
     }
 
-  
+    validID = (id) => {
+        var find = false;
+
+        this.state.arrayQuestion.map((row2, index) =>(
+            row2 === id ? find = true : ''
+        ))
+
+        if(!find){
+            this.state.arrayQuestion.push(id);
+            this.state.arrayNewQuestion.push(id);
+        }
+    }
+
+    getEvaluationQuestion = () => {
+        HttpService.make().get('/getEvaluationQuestion')
+                          .then(success => {
+                                localStorage.setItem('evalQuestio', JSON.stringify(success.data));
+                                this.setState({evalQuestio: JSON.parse(localStorage.getItem('evalQuestio'))});
+                          })
+                          .catch(error => {
+                              console.log('Erro ao buscar as questões da avaliação');
+                          })
+    }
        
     render() {
 
@@ -463,7 +488,7 @@ class Evaluation extends Component {
                     />  
                 </Dialog>
                 <Dialog
-                    title="Questões"
+                    title={"Questões para Avaliação " + this.state.name}
                     actions={actQuestion}
                     modal={true}
                     open={this.state.openQuestion}
@@ -507,7 +532,7 @@ class Evaluation extends Component {
                                                         name={'name' + row._id}
                                                         label=""
                                                         onToggle={(event, toggled) => this.handleToggle(event, toggled, index)}
-                                                        defaultToggled={this.validStatus(row._id)}
+                                                        defaultToggled={this.validStatus(row._id, index)}
                                                     />
                                                 </TableRowColumn>
                                             </TableRow>

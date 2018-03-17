@@ -66,7 +66,7 @@ class About extends Component
                    })
     }
     getPromotion = () => {
-        HttpService.make().get('/getPromotion')
+        HttpService.make().get('/getPromotions')
                     .then(success =>{
                         localStorage.setItem('promotion', JSON.stringify(success));
                     })

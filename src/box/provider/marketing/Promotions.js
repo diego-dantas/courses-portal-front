@@ -273,34 +273,34 @@ class Promotions extends Component {
         ]
 
 
-        const bodyTable = [
-            this.state.promotions !== null ?
-                this.state.promotions.map( (row, index) => (
-                    <TableRow key={index}>
-                        <TableRowColumn>{row._id}</TableRowColumn>
-                        <TableRowColumn>{row.description}</TableRowColumn>
-                        <TableRowColumn>{row.codigoCupom}</TableRowColumn>
-                        <TableRowColumn>{row.percentual}</TableRowColumn>
-                        <TableRowColumn>{this.formateDate(row.dateInicial)}</TableRowColumn>
-                        <TableRowColumn>{this.formateDate(row.dateFinal)}</TableRowColumn>
-                        <TableRowColumn>
-                            <FlatButton
-                                label="Alterar"
-                                primary={true}
-                                onClick={() => this.updatePromotion(index)}
-                            />
-                        </TableRowColumn>
-                        <TableRowColumn>
-                            <FlatButton
-                                label="Cursos"
-                                primary={true}
-                                onClick={() => this.linkCourses(index)}
-                            />
-                        </TableRowColumn>
-                    </TableRow>
-                ))
-            : ''
-        ]
+        // const bodyTable = [
+        //     this.state.promotions !== null ?
+        //         this.state.promotions.map( (row, index) => (
+        //             <TableRow key={index}>
+        //                 <TableRowColumn>{row._id}</TableRowColumn>
+        //                 <TableRowColumn>{row.description}</TableRowColumn>
+        //                 <TableRowColumn>{row.codigoCupom}</TableRowColumn>
+        //                 <TableRowColumn>{row.percentual}</TableRowColumn>
+        //                 <TableRowColumn>{this.formateDate(row.dateInicial)}</TableRowColumn>
+        //                 <TableRowColumn>{this.formateDate(row.dateFinal)}</TableRowColumn>
+        //                 <TableRowColumn>
+        //                     <FlatButton
+        //                         label="Alterar"
+        //                         primary={true}
+        //                         onClick={() => this.updatePromotion(index)}
+        //                     />
+        //                 </TableRowColumn>
+        //                 <TableRowColumn>
+        //                     <FlatButton
+        //                         label="Cursos"
+        //                         primary={true}
+        //                         onClick={() => this.linkCourses(index)}
+        //                     />
+        //                 </TableRowColumn>
+        //             </TableRow>
+        //         ))
+        //     : ''
+        // ]
 
 
         return(
@@ -343,7 +343,7 @@ class Promotions extends Component {
                         showRowHover={this.state.showRowHover}
                         stripedRows={this.state.stripedRows}
                     >   
-                        {bodyTable}  
+                        
                     </TableBody>
                 </Table>
                 <Dialog
