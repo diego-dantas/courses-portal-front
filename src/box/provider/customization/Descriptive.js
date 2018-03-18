@@ -130,7 +130,6 @@ class Descriptive extends Component {
     getDescriptive = () => {
         HttpService.make().get('/getDescriptive')
                           .then(success => {
-                            console.log(success.data);
                             localStorage.setItem('descriptive', JSON.stringify(success.data));
                             this.setState({descriptive: JSON.parse(localStorage.getItem('descriptive'))});
                           })

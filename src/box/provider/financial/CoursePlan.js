@@ -101,7 +101,6 @@ class CoursesPlan extends Component{
     getCoursePlan = () => {
         HttpService.make().get('/getCoursesPlans')
                           .then(success => {
-                              console.log(success.data);
                               localStorage.setItem('coursePlan', JSON.stringify(success.data));
                               this.setState({coursePlan: JSON.parse(localStorage.getItem('coursePlan'))});
                           })

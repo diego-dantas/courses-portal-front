@@ -200,7 +200,6 @@ class Courses extends Component {
                    .then(success => {
                         localStorage.setItem('course', JSON.stringify(success.data));
                         this.setState({courses: JSON.parse(localStorage.getItem('course'))});   
-                        console.log(this.state.courses);
                    })
                    .catch(error => {
                        console.log('Erro ao buscar os cursos');

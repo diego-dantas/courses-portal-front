@@ -25,7 +25,6 @@ class About extends Component
         this.getCategory();
         this.getSubCategory();
         this.getPromotion();
-        console.log('Carreguei os dados iniciais');
     }
     style = {
         paddingAbout :{
@@ -36,12 +35,9 @@ class About extends Component
     }
 
     getPlan = () => {
-        console.log('vamos la buscar os planos');
         HttpService.make().get('/getPlan')
                     .then(success =>{
                         localStorage.setItem('plan', JSON.stringify(success.data));
-
-                        console.log(JSON.parse(localStorage.getItem('plan')));
                     })
                     .catch(error => {
                         console.log('Erro ao buscar as promoçoes');
@@ -68,7 +64,7 @@ class About extends Component
     getPromotion = () => {
         HttpService.make().get('/getPromotions')
                     .then(success =>{
-                        localStorage.setItem('promotion', JSON.stringify(success));
+                        localStorage.setItem('promotion', JSON.stringify(success.data));
                     })
                     .catch(error => {
                         console.log('Erro ao buscar as promoçoes');
@@ -96,7 +92,7 @@ class About extends Component
     render()
     {
         return (
-            <div>            
+            <div>       
                 <NavigationBar />
                 <div style={this.style.paddingAbout}>
                     <TextField

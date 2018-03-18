@@ -131,8 +131,6 @@ class Promotions extends Component {
     }
 
     createPromotions = () => {     
-         
-        console.log(JSON.stringify(this.makeDataForPromotions()));
         HttpService.make().post('/createPromotion', this.makeDataForPromotions())
                             .then(success => {
                                 alert('Dados incluido com sucesso');
@@ -145,8 +143,6 @@ class Promotions extends Component {
     }
 
     updatePromotions = () => {     
-        
-       console.log(JSON.stringify(this.makeDataForPromotions()));
        HttpService.make().post('/updatePromotion', this.makeDataForPromotions())
                            .then(success => {
                                alert('Dados atualizados com sucesso');
@@ -158,33 +154,22 @@ class Promotions extends Component {
                            })
    }
 
-   deletePromotions = () => {     
-    
-   console.log(JSON.stringify(this.makeDataForPromotions()));
-   HttpService.make().post('/deletePromotion', this.makeDataForPromotions())
-                       .then(success => {
-                           alert('Dados excluido com sucesso');
-                           this.getPromotion();
-                           this.handleCloseUpdate();
-                       })
-                       .catch(error =>{
-                           console.log('Erro ao exluir uma promoção');
-                       })
+    deletePromotions = () => {     
+        HttpService.make().post('/deletePromotion', this.makeDataForPromotions())
+                          .then(success => {
+                              alert('Dados excluido com sucesso');
+                              this.getPromotion();
+                              this.handleCloseUpdate();
+                          })
+                          .catch(error =>{
+                              console.log('Erro ao exluir uma promoção');
+                          })
     }
 
     getPromotion = () => {
-        HttpService.make().get('/getPromotion')
+        HttpService.make().get('/getPromotions')
                     .then(success =>{
-                        console.log(success);
-                        this.setState({promotionTabel: [ {
-                            "_id": "",
-                            "description": "",
-                            "dateInicial": "",
-                            "dateFinal": "",
-                            "percentual": "",
-                            "codigoCupom": ""
-                        }]});
-                        localStorage.setItem('promotion', JSON.stringify(success));
+                        localStorage.setItem('promotion', JSON.stringify(success.data));
                         this.setState({promotionTabel: JSON.parse(localStorage.getItem('promotion'))});
                     })
                     .catch(error => {
@@ -242,20 +227,7 @@ class Promotions extends Component {
             />
         ]
 
-        const bodyTable = [
-            this.state.promotionTabel !== null ?
-                this.state.promotionTabel.map( (row, index) => (
-                    <TableRow key={index}>
-                        <TableRowColumn>{row._id}</TableRowColumn>
-                        <TableRowColumn>{row.description}</TableRowColumn>
-                        <TableRowColumn>{row.codigoCupom}</TableRowColumn>
-                        <TableRowColumn>{row.percentual}</TableRowColumn>
-                        <TableRowColumn>{this.formateDate(row.dateInicial).substring(0,10)}</TableRowColumn>
-                        <TableRowColumn>{this.formateDate(row.dateFinal).substring(0,10)}</TableRowColumn>
-                    </TableRow>
-                ))
-            :''
-        ]
+       
 
         return(
             <div>
@@ -299,8 +271,7 @@ class Promotions extends Component {
                         stripedRows={this.state.stripedRows}
                     >   
                         
-                        {bodyTable}
-
+                     
                     </TableBody>
                 </Table>
                 <Dialog

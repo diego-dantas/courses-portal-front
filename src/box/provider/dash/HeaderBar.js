@@ -22,8 +22,9 @@ class HeaderBar extends Component
             <div>
                 <AppBar
                     title={this.state.label}
-                    showMenuIconButton={false}
-                    style={{paddingLeft:'250px'}}
+                    showMenuIconButton={true}
+                    onLeftIconButtonClick={this.handleToggle}
+                    style={{paddingLeft:'100px'}}
                 />  
             </div>
         )

@@ -160,7 +160,6 @@ class Question extends Component {
     getQuestions = () => {
         HttpService.make().get('/getQuestions')
                           .then(success => {
-                              console.log(success.data);
                                 localStorage.setItem('questions', JSON.stringify(success.data));
                                 this.setState({questions: JSON.parse(localStorage.getItem('questions'))});
                           })

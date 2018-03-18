@@ -48,8 +48,6 @@ class Plan extends Component {
 
     componentDidMount() {
         this.getPlan();
-        console.log(this.state.tablePlan);
-        console.log(this.state.subCategoryTable);
     }
     
 
@@ -154,20 +152,10 @@ class Plan extends Component {
     }
 
     getPlan = () => {
-        console.log('vamos la buscar os planos');
         HttpService.make().get('/getPlan')
                     .then(success =>{
-                        
-                        this.setState({tablePlan: [ {
-                            "_id": "",
-                            "description": "",
-                            "status": "",
-                            "wayImagen": ""
-                        }]});
                         localStorage.setItem('plan', JSON.stringify(success.data));
                         this.setState({tablePlan: JSON.parse(localStorage.getItem('plan'))});
-
-                        console.log(JSON.parse(localStorage.getItem('plan')));
                     })
                     .catch(error => {
                         console.log('Erro ao buscar as promoçoes');

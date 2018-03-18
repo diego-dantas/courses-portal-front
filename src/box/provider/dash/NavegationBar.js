@@ -18,8 +18,9 @@ class NavigationBar extends Component
     constructor(props) {
         super(props);
         this.state = {
-            open: false,
+            open: props.open,
             label:''
+            
         }
 
         PubSub.subscribe('header-label', this.fncChangeHeaderLabel);

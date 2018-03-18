@@ -142,7 +142,6 @@ class SubCategory extends Component {
                    .then(success => {
                         localStorage.setItem('subCategory', JSON.stringify(success.data));
                         this.setState({subCategoryTable: JSON.parse(localStorage.getItem('subCategory'))});
-                        console.log(this.state.subCategoryTable);
                    })
                    .catch(error => {
                        console.log('Erro ao carregar as categorias que estão salvas no banco');
@@ -151,7 +150,6 @@ class SubCategory extends Component {
     getCategory = () =>{
         HttpService.make().get('/getGrid')
                    .then(success => {
-                        this.setState({categoryTable:[{_id: '',description: ''}]});
                         localStorage.setItem('category', JSON.stringify(success.data));
                         this.setState({categoryTable: JSON.parse(localStorage.getItem('category'))});
                    })

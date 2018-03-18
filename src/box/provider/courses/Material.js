@@ -147,7 +147,6 @@ class Material extends Component{
     getMaterial = () => {
         HttpService.make().get('/getMaterial')
                           .then(success => {
-                              console.log(success.data);
                               localStorage.setItem('material', JSON.stringify(success.data));
                               this.setState({material: JSON.parse(localStorage.getItem('material'))});
                           })

@@ -4,6 +4,7 @@ import HttpService from '../../../service/http/HttpService';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
+import Checkbox from 'material-ui/Checkbox';
 import Toggle from 'material-ui/Toggle';
 import Dialog from 'material-ui/Dialog';
 import DatePicker from 'material-ui/DatePicker';
@@ -29,6 +30,7 @@ class Promotions extends Component {
         this.state = {
             promotions: JSON.parse(localStorage.getItem('promotion')),
             courses: JSON.parse(localStorage.getItem('course')),
+            coursePromotion: JSON.parse(localStorage.getItem('coursePromotion')),
             open: false,
             openCourse: false,
             
@@ -47,8 +49,12 @@ class Promotions extends Component {
 
             disableDelete: true,
             disableToggle: false,
+            allCourses:    false,
+            checked:       false,
 
-            listCourses: [],
+            arrayCourses:    [],
+            arrayNewCourses: [],
+            arrayAllCourses: []
             
         }
     }
@@ -56,6 +62,7 @@ class Promotions extends Component {
 
     componentDidMount() {
         this.getPromotions();
+        this.getCoursePromotion();
     }
     
 
@@ -98,6 +105,41 @@ class Promotions extends Component {
             dateFinal: this.state.dateFinish
         }
     }
+    makeDataForCourses = () => {
+        
+        let valor = [];
+        if(this.state.checked){
+            this.state.arrayAllCourses.map((row, index) => (
+                valor.push({
+                             _id: "",
+                             course : { 
+                                 _id : row 
+                             }, 
+                             promotion : { 
+                                 _id :  this.state.idPromotion  
+                             } 
+                         }
+                     )
+            ))
+        }else{
+            this.state.arrayNewCourses.map((row, index) => (
+                valor.push({
+                             _id: "",
+                             course : { 
+                                 _id : row 
+                             }, 
+                             promotion : { 
+                                 _id :  this.state.idPromotion  
+                             } 
+                         }
+                     )
+             
+            ))
+        }
+        
+        return valor;
+    }
+
     validateField = () => {
         var valid = true;
         if(this.description.input.value === '') {
@@ -145,10 +187,10 @@ class Promotions extends Component {
                               })
         }
     }
+
     getPromotions = () => {
         HttpService.make().get('/getPromotions')
                     .then(success =>{
-                        console.log(success.data);
                         localStorage.setItem('promotion', JSON.stringify(success.data));
                         this.setState({promotions: JSON.parse(localStorage.getItem('promotion'))});
                     })
@@ -156,6 +198,19 @@ class Promotions extends Component {
                         console.log('Erro ao buscar as promoçoes');
                     })
     }
+
+    getCoursePromotion = () => {
+        HttpService.make().get('/getCoursePromotion')
+                    .then(success =>{
+                        localStorage.setItem('coursePromotion', JSON.stringify(success.data));
+                        this.setState({coursePromotion: JSON.parse(localStorage.getItem('coursePromotion'))}); 
+                    })
+                    .catch(error => {
+                        console.log('Erro ao buscar as promoçoes');
+                    })
+    }
+
+   
 
     formateDate = (date) => {   
         var dt = new Date(date);    
@@ -186,7 +241,17 @@ class Promotions extends Component {
     }
 
     linkCourses = (col) => {
-        this.setState({disableToggle: false});  
+
+        this.setState({arrayCourses : []});
+        this.setState({arrayNewCourses : []});
+        this.setState({arrayAllCourses : []});
+
+        this.setState({courses: JSON.parse(localStorage.getItem('course'))});
+        this.state.courses.map((row, index) => (
+            this.state.arrayAllCourses.push(row._id) 
+        ))     
+        this.setState({statusCourse: false});
+        this.setState({checked: false});
         this.setState({idPromotion: this.state.promotions[col]._id});
         this.setState({description: this.state.promotions[col].description});
         this.setState({coupon: this.state.promotions[col].codigoCupom});
@@ -197,33 +262,126 @@ class Promotions extends Component {
         this.setState({openCourse: false});
     }
 
-    //Metodo para tratamento da mudança do status
-    handleToggle(event, isInputChecked, id){
-        
-        if(id === 'all' && isInputChecked){
-            this.setState({disableToggle: true});
-        }else if(isInputChecked){
+    
+    handleToggle(event, toggled, col){
 
-            if(this.state.listCourses.indexOf(id) === -1){
-                this.state.listCourses.push(id);
-            }
-            console.log('valor ' + isInputChecked + ' id ' + id);
-            this.setState({disableToggle: false});
-        }else if(!isInputChecked){
-            if(this.state.listCourses.indexOf(id) !== -1){
-                this.state.listCourses.pop(id);
-            }
+        this.setState({
+            [event.target.name]: toggled,
+          });
+          if(toggled){
+            
+            var find = false;
+            this.state.arrayNewCourses.map((row, index) =>(
+                row === this.state.promotions[col]._id ? find = true : ''
+            ))
+
+            if(!find)
+                this.state.arrayNewCourses.push(this.state.promotions[col]._id);
+
+        }else{
+
+            var i = -1;        
+            this.state.arrayNewCourses.map((row, index) =>(
+                row === this.state.promotions[col]._id ? 
+                    i = index: ''
+            ))
+            if(i >= 0)
+                this.state.arrayNewCourses.splice(i, 1);
         }
+        console.log(this.state.arrayNewCourses);
+    }
+
+    handleAllToggle(event, toggled, col){
+        
+        this.setState({
+            [event.target.name]: toggled,
+          });
+          if(toggled){
+            
+            var find = false;
+            this.state.arrayAllCourses.map((row, index) =>(
+                row === this.state.promotions[col]._id ? find = true : ''
+            ))
+
+            if(!find)
+                this.state.arrayAllCourses.push(this.state.promotions[col]._id);
+
+        }else{
+
+            var i = -1;        
+            this.state.arrayAllCourses.map((row, index) =>(
+                row === this.state.promotions[col]._id ? 
+                    i = index: ''
+            ))
+            if(i >= 0)
+                this.state.arrayAllCourses.splice(i, 1);
+        }
+        console.log(this.state.arrayAllCourses);
+    }
+
+    validAllCourses(event, toggled){
+        this.setState({allCourses: toggled});
     }
 
     linkCoursesPromotions = () => {
-        
-        console.log(this.state.listCourses)
-        // .map((row, index) =>(
-        //     console.log(row)
-        // ))
+        console.log(this.makeDataForCourses());
+        HttpService.make().post('/saveCoursePromotion', this.makeDataForCourses())
+                          .then(success => {
+                              this.getCoursePromotion();
+                              alert('Dados salvos com sucesso');
+                              this.closeLinkCourse();
+                          })
+                          .catch(error => {
+                              console.log('Erro ao salvar as informções');
+                          })
+
+    }
+    validStatus = (id, i) => {
+        this.state.coursePromotion !== null ?
+            this.state.coursePromotion.map((row1, index) => (
+                
+                row1.promotion._id === this.state.idPromotion ?
+                    this.validID(row1.course._id) : ''
+            ))    
+        : ''        
+
+        var status = false;
+        this.state.arrayCourses.map((row, i) => (
+             id === row ? status = true : ''
+        ))
+
+        return status;
     }
 
+    validAllStatus = (id, i) => {
+        
+        var status = false;
+        this.state.arrayAllCourses.map((row, i) => (
+             id === row ? status = true : ''
+        ))
+        return status;
+    }
+
+    validID = (id) => {
+        var find = false;
+
+        this.state.arrayCourses.map((row2, index) =>(
+            row2 === id ? find = true : ''
+        ))
+
+        if(!find){
+            this.state.arrayCourses.push(id);
+            this.state.arrayNewCourses.push(id);
+        }
+    }
+    updateCheck() {
+       
+        this.setState((oldState) => {
+          return {
+            checked: !oldState.checked,
+          };
+        });
+      }
     render(){
         const actions = [
             <RaisedButton
@@ -273,35 +431,64 @@ class Promotions extends Component {
         ]
 
 
-        // const bodyTable = [
-        //     this.state.promotions !== null ?
-        //         this.state.promotions.map( (row, index) => (
-        //             <TableRow key={index}>
-        //                 <TableRowColumn>{row._id}</TableRowColumn>
-        //                 <TableRowColumn>{row.description}</TableRowColumn>
-        //                 <TableRowColumn>{row.codigoCupom}</TableRowColumn>
-        //                 <TableRowColumn>{row.percentual}</TableRowColumn>
-        //                 <TableRowColumn>{this.formateDate(row.dateInicial)}</TableRowColumn>
-        //                 <TableRowColumn>{this.formateDate(row.dateFinal)}</TableRowColumn>
-        //                 <TableRowColumn>
-        //                     <FlatButton
-        //                         label="Alterar"
-        //                         primary={true}
-        //                         onClick={() => this.updatePromotion(index)}
-        //                     />
-        //                 </TableRowColumn>
-        //                 <TableRowColumn>
-        //                     <FlatButton
-        //                         label="Cursos"
-        //                         primary={true}
-        //                         onClick={() => this.linkCourses(index)}
-        //                     />
-        //                 </TableRowColumn>
-        //             </TableRow>
-        //         ))
-        //     : ''
-        // ]
+        const bodyTable = [
+            this.state.promotions !== null ?
+                this.state.promotions.map( (row, index) => (
+                    <TableRow key={index}>
+                        <TableRowColumn>{row._id}</TableRowColumn>
+                        <TableRowColumn>{row.description}</TableRowColumn>
+                        <TableRowColumn>{row.codigoCupom}</TableRowColumn>
+                        <TableRowColumn>{row.percentual}</TableRowColumn>
+                        <TableRowColumn>{this.formateDate(row.dateInicial)}</TableRowColumn>
+                        <TableRowColumn>{this.formateDate(row.dateFinal)}</TableRowColumn>
+                        <TableRowColumn>
+                            <FlatButton
+                                label="Alterar"
+                                primary={true}
+                                onClick={() => this.updatePromotion(index)}
+                            />
+                        </TableRowColumn>
+                        <TableRowColumn>
+                            <FlatButton
+                                label="Cursos"
+                                primary={true}
+                                onClick={() => this.linkCourses(index)}
+                            />
+                        </TableRowColumn>
+                    </TableRow>
+                ))
+            : ''
+        ]
 
+        const listCourses = [
+            this.state.courses !== null ?
+                this.state.courses.map((row, index)=> (
+                    <Toggle
+                        key={index}
+                        name={'Toggle' + row._id}
+                        label={row.name}
+                        labelPosition="right"
+                        onToggle={(event, toggled) => this.handleToggle(event, toggled, index)}
+                        defaultToggled={this.validStatus(row._id, index)}
+                    />
+                ))
+            : ''
+        ]
+
+        const listAllCourses = [
+            this.state.courses !== null ?
+                this.state.courses.map((row, index)=> (
+                    <Checkbox
+                        key={index}
+                        name={'Checkbox' + row._id}
+                        label={row.name}
+                        //defaultChecked={this.state.checked}
+                        defaultChecked={this.validAllStatus(row._id, index)}
+                        onCheck={(event, toggled) => this.handleAllToggle(event, toggled, index)}
+                  />
+                ))
+            : ''
+        ]
 
         return(
             <div>
@@ -343,7 +530,7 @@ class Promotions extends Component {
                         showRowHover={this.state.showRowHover}
                         stripedRows={this.state.stripedRows}
                     >   
-                        
+                        {bodyTable}  
                     </TableBody>
                 </Table>
                 <Dialog
@@ -447,22 +634,14 @@ class Promotions extends Component {
                         label={'TODOS OS CURSOS'}
                         labelPosition="right"
                         defaultToggled={this.state.statusCourse}
-                        onToggle={(event, isInputChecked) => this.handleToggle(event, isInputChecked, 'all')}
+//                        onToggle={(event, isInputChecked) => this.validAllCourses(event, isInputChecked)}
+                        onToggle={this.updateCheck.bind(this)}
                     />
                     
                     {
-                        this.state.courses !== null ?
-                            this.state.courses.map((row, index)=> (
-                                <Toggle 
-                                    key={index}
-                                    label={row.description}
-                                    labelPosition="right"
-                                    disabled={this.state.disableToggle}
-                                    defaultToggled={this.state.allChecked}
-                                    onToggle={(event, isInputChecked) => this.handleToggle(event, isInputChecked, row._id)}
-                                />
-                            ))
-                            : ''
+                        (this.state.checked) ?
+                            listAllCourses :                            
+                            listCourses
                     }
                     
                 </Dialog>

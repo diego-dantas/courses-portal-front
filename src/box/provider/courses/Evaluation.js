@@ -188,7 +188,6 @@ class Evaluation extends Component {
     getEvaluations = () => {
         HttpService.make().get('/getEvaluations')
                           .then(success => {
-                              console.log(success.data);
                                 localStorage.setItem('evaluations', JSON.stringify(success.data));
                                 this.setState({evaluations: JSON.parse(localStorage.getItem('evaluations'))});
                           })

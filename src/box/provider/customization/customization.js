@@ -24,7 +24,6 @@ class Customization extends Component {
     componentDidMount()
     {
         PubSub.publish('header-label',"Personalização");
-        console.log("to aqui e tenho o provider " + this.state.provider.email);
     }
 
     handleChange = (value) => this.setState({slideIndex: value});
