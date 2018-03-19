@@ -214,7 +214,7 @@ class Promotions extends Component {
 
     formateDate = (date) => {   
         var dt = new Date(date);    
-        var nextDate = (dt.getDate() + 1);
+        var nextDate = (dt.getDate());
         dt.setDate(nextDate);
         var newDate = dt.toLocaleString();
         return  newDate.substring(0, 10);
@@ -235,7 +235,9 @@ class Promotions extends Component {
           this.setState({coupon: this.state.promotions[col].codigoCupom});
           this.setState({percentage: this.state.promotions[col].percentual});
           this.setState({dateStart: this.formateDateTable(this.state.promotions[col].dateInicial)})
+          //this.setState({dateStart: this.state.promotions[col].dateInicial})
           this.setState({dateFinish: this.formateDateTable(this.state.promotions[col].dateFinal)})
+          //this.setState({dateFinish: this.state.promotions[col].dateFinal})
             
           this.openDialog('update');         
     }
@@ -245,11 +247,7 @@ class Promotions extends Component {
         this.setState({arrayCourses : []});
         this.setState({arrayNewCourses : []});
         this.setState({arrayAllCourses : []});
-
-        this.setState({courses: JSON.parse(localStorage.getItem('course'))});
-        this.state.courses.map((row, index) => (
-            this.state.arrayAllCourses.push(row._id) 
-        ))     
+ 
         this.setState({statusCourse: false});
         this.setState({checked: false});
         this.setState({idPromotion: this.state.promotions[col]._id});
@@ -300,17 +298,17 @@ class Promotions extends Component {
             
             var find = false;
             this.state.arrayAllCourses.map((row, index) =>(
-                row === this.state.promotions[col]._id ? find = true : ''
+                row === this.state.courses[col]._id ? find = true : ''
             ))
 
             if(!find)
-                this.state.arrayAllCourses.push(this.state.promotions[col]._id);
+                this.state.arrayAllCourses.push(this.state.courses[col]._id);
 
         }else{
 
             var i = -1;        
             this.state.arrayAllCourses.map((row, index) =>(
-                row === this.state.promotions[col]._id ? 
+                row === this.state.courses[col]._id ? 
                     i = index: ''
             ))
             if(i >= 0)
@@ -352,16 +350,6 @@ class Promotions extends Component {
 
         return status;
     }
-
-    validAllStatus = (id, i) => {
-        
-        var status = false;
-        this.state.arrayAllCourses.map((row, i) => (
-             id === row ? status = true : ''
-        ))
-        return status;
-    }
-
     validID = (id) => {
         var find = false;
 
@@ -374,6 +362,28 @@ class Promotions extends Component {
             this.state.arrayNewCourses.push(id);
         }
     }
+
+    validAllStatus = (id, i) => {
+        
+        var status = true;
+        this.state.courses.map((row, i) => (
+             id === row._id ? this.validAllID(id) : ''
+        ))
+        return status;
+    }
+
+    validAllID = (id) => {
+        var find = false;
+
+        this.state.arrayAllCourses.map((row2, index) =>(
+            row2 === id ? find = true : ''
+        ))
+
+        if(!find){
+            this.state.arrayAllCourses.push(id);
+        }
+    }
+   
     updateCheck() {
        
         this.setState((oldState) => {
@@ -381,7 +391,9 @@ class Promotions extends Component {
             checked: !oldState.checked,
           };
         });
-      }
+    }
+
+
     render(){
         const actions = [
             <RaisedButton
