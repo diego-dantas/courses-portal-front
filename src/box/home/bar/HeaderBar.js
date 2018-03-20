@@ -19,6 +19,8 @@ import MenuItem from 'material-ui/MenuItem';
 import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
 import ActionDashboard from 'material-ui/svg-icons/action/dashboard';
 
+import SignIn from '../student/account/SignIn';
+
 
   
 class HeaderBar extends Component {
@@ -33,11 +35,13 @@ class HeaderBar extends Component {
             open: false,
             dataSource: ['nome', 'casa', 'nossa'],
             display: 'none',
+            showModalSignIn: false
             
         }
         
     }
     componentDidMount(){
+        PubSub.subscribe('close-home-model', this.closeAll);
         this.buildCourseMenu();
         console.log('menu null ' + this.state.menu);
         // while(this.state.menu === null){
@@ -46,7 +50,10 @@ class HeaderBar extends Component {
         
     }
 
-   
+    
+    closeAll = (key, value) =>{
+        this.setState({'showModalSignIn':false});
+    };
     handleClick = (event) => {
         // This prevents ghost click.
         event.preventDefault();
@@ -182,6 +189,7 @@ class HeaderBar extends Component {
                 <RaisedButton
                     label="Cadastre-se"
                     secondary={true}
+                    onClick={()=>this.showModal('showModalSignIn')}
                  />
             </div>
             )
@@ -215,6 +223,10 @@ class HeaderBar extends Component {
         )
       };
 
+    showModal = (type)=>{
+        let modal = {[type]:true};
+        this.setState(modal);
+    };
     render(){
         return(
             <div>
@@ -222,7 +234,8 @@ class HeaderBar extends Component {
                     iconElementLeft={this.groupMenu()}
                     iconElementRight={this.groupButton()}
                     titleStyle={{display: 'none'}}
-                />            
+                />   
+                {(this.state.showModalSignIn) ? <SignIn/> : null}         
             </div>
         );
     }
