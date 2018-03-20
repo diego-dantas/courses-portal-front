@@ -7,6 +7,7 @@ import PubSub from 'pubsub-js';
 import NavigationBar from '../dash/NavegationBar';
 
 import Promotions from '../marketing/Promotions';
+import Email from '../marketing/Email';
 
 class Marketing extends Component {
 
@@ -63,11 +64,13 @@ class Marketing extends Component {
                         onChange={this.handleChange}
                         value={this.state.slideIndex} >
                         <Tab style={this.styles.tab} label="Promoções" value={0} />
+                        <Tab style={this.styles.tab} label="E-mail" value={1} />
                     </Tabs>
                     <SwipeableViews
                         index={this.state.slideIndex}
                         onChangeIndex={this.handleChange} >                    
                         <Promotions />
+                        <Email />
                     </SwipeableViews>
                 </div>
             </div>
