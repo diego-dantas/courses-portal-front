@@ -335,13 +335,13 @@ class Promotions extends Component {
 
     }
     validStatus = (id, i) => {
-        this.state.coursePromotion !== null ?
+        
+        if(this.state.coursePromotion !== null){
             this.state.coursePromotion.map((row1, index) => (
-                
                 row1.promotion._id === this.state.idPromotion ?
                     this.validID(row1.course._id) : ''
-            ))    
-        : ''        
+            ))   
+        }        
 
         var status = false;
         this.state.arrayCourses.map((row, i) => (

@@ -7,9 +7,8 @@ import PubSub from 'pubsub-js';
 import 'react-dropzone-component/styles/filepicker.css';
 import 'dropzone/dist/min/dropzone.min.css';
 
-import FileService from './repository/FileService';
-import HttpService from './http/HttpService';
 import axios from 'axios';
+import HttpService from '../service/http/HttpService';
 
 
 class Dropzone extends Component
@@ -17,7 +16,12 @@ class Dropzone extends Component
     constructor(props)
     {
         super(props);
-        this.state = {file: '', limitFile: props.limitFile};
+        this.state = {
+                file: '', 
+                limitFile: props.limitFile,
+                local: props.local
+
+            };
 
         this.djsConfig =
             {
@@ -31,7 +35,7 @@ class Dropzone extends Component
             {
                 iconFiletypes: ['.jpg', '.png', '.gif', '.pdf', '.txt'],
                 showFiletypeIcon: true,
-                postUrl: 'http://localhost:8080/api/upload'
+                postUrl: 'http://localhost:8080/api/upload/'+this.state.local
             };
 
         this.dropzone = null;
@@ -65,29 +69,43 @@ class Dropzone extends Component
         this.setState({file: file});
     };
 
+    returnWay = (way, id) => {
+        return{
+            wayImage: way,
+            _id: id
+        }
+   }
+
     handlePost = () =>
     {
         this.dropzone.processQueue();
-
-        // const fd = new FormData();
-        // fd.append('files', this.state.file,this.state.file.name)
-        // axios.post('http://localhost:8080/api/upload', this.state.file)
-        //     .then(success => console.log('success ' + success))
-        //     .catch(error => console.log(error));
         
-            const fb = new FormData();
-            for(var i = 0; i < this.dropzone.files.length; i++){
-                console.log(this.dropzone.files[i]);
-                fb.append('files', this.dropzone.files[i], this.dropzone.files[i].name) 
-            }
+        const fb = new FormData();
+        for(var i = 0; i < this.dropzone.files.length; i++){
+            console.log(this.dropzone.files[i]);
+            fb.append('files', this.dropzone.files[i], this.dropzone.files[i].name) 
+        }
+        let url = 'http://localhost:8080/api/upload/'+this.state.local;
+        axios.post(url, fb)
+        .then(res => {
+            console.log(res);
             
-            axios.post('http://localhost:8080/api/upload', fb)
-            .then(res => {
-                console.log(res);
-            })
-            .catch(error =>{
-                console.log(error)
-            })
+            let urlCourse = '/'+this.state.local;
+            let way = urlCourse + '/' + this.dropzone.files[0].name;
+
+            console.log(this.returnWay(way, 1));
+            HttpService.make().post(urlCourse, this.returnWay(way, 1))
+                              .then(success =>{
+                                  console.log(success);
+                                  this.handlePost()
+                              })
+                              .catch(error =>{
+                                  console.log(error);
+                              })
+        })
+        .catch(error =>{
+            console.log(error)
+        })
     };
 
     render()
@@ -111,6 +129,8 @@ class Dropzone extends Component
                 <RaisedButton 
                     label="salvar arquivo"
                     onClick={this.handlePost}
+                    fullWidth={true}
+                    style={{marginTop: '20px'}}
                 />
             </div>
         );

@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import HttpService from '../../../service/http/HttpService';
+import Dropzone from '../../../service/Dropzone';
 
 import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
 import Toggle from 'material-ui/Toggle';
 import TextField from 'material-ui/TextField';
@@ -26,6 +28,7 @@ class Courses extends Component {
             category: JSON.parse(localStorage.getItem('category')),
             subCategory: JSON.parse(localStorage.getItem('subCategory')),
             openCreate: false,
+            openImg: false,
             idCourse: '',
             statusCourse: false,
             nameCourse: '',
@@ -36,6 +39,7 @@ class Courses extends Component {
             cat: 0,
             subCat: 0,
             labelStatus: 'Inativo',
+            wayImage: '',
 
             //state da validação de compo
             errorName: '',
@@ -138,7 +142,7 @@ class Courses extends Component {
     //metodo para fechar o modal 
     handleCloseCreate = () => {
         this.setState({openCreate: false})
-    }
+    }   
 
 
     //metodo de click da tabela
@@ -152,6 +156,7 @@ class Courses extends Component {
         this.setState({obejCourse: this.state.courses[col].objective});
         this.setState({priceCourse: this.state.courses[col].price});
         this.setState({hoursCourse: this.state.courses[col].hours});
+        this.setState({wayImage: this.state.courses[col].wayImage});
         this.setState({cat: this.state.courses[col].grid._id});
         this.setState({subCat: this.state.courses[col].subGrid._id});
 
@@ -159,6 +164,13 @@ class Courses extends Component {
         this.setState({openCreate: true});     
     }
 
+    openDialogImg = () => {
+        this.setState({openImg: true});
+    }
+
+    closeDialogImg = () => {
+        this.setState({openImg: false});
+    }
     //metodo de validação de compo
     validateField = () => {
         var valid = true;
@@ -254,9 +266,26 @@ class Courses extends Component {
                         <TableRowColumn>{row.name}</TableRowColumn>
                         <TableRowColumn>{row.description}</TableRowColumn>
                         <TableRowColumn>{row.status === true ? 'ATIVO' : 'INATIVO'}</TableRowColumn>
+                        <TableRowColumn>
+                            <FlatButton
+                                label={'Alterar'}
+                                primary={true}
+                                onTouchTap={() => this.handleCellClick(i)}                
+                                
+                            />
+                        </TableRowColumn>
+                        <TableRowColumn>
+                            <FlatButton
+                                label={'Imagem'}
+                                primary={true}
+                                onTouchTap={this.openDialogImg}                
+                            />
+                        </TableRowColumn>
                     </TableRow>
                 )): ''
         ]
+
+        
         return(
             <div>
                 <RaisedButton
@@ -274,7 +303,7 @@ class Courses extends Component {
                     fixedHeader={true}
                     selectable={true}
                     multiSelectable={false}
-                    onCellClick={(col) => this.handleCellClick(col)}                    
+                    //onCellClick={(col) => this.handleCellClick(col)}                    
                 >
                     <TableHeader
                         displaySelectAll={false}
@@ -286,6 +315,8 @@ class Courses extends Component {
                             <TableHeaderColumn tooltip="Descrição">Nome</TableHeaderColumn>
                             <TableHeaderColumn tooltip="Status">Descrição</TableHeaderColumn>
                             <TableHeaderColumn tooltip="Status">Status</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="Status">Alterar</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="Status">Imagem</TableHeaderColumn>
                         </TableRow>
                     </TableHeader>
                     <TableBody
@@ -384,15 +415,31 @@ class Courses extends Component {
                             />
                         </div>
                         <div className="col-md-6 col-sm-6">
-                        <TextField 
-                            floatingLabelText="Carga horária"
-                            defaultValue={this.state.hoursCourse}
-                            type="number"
-                            disabled={this.state.disableField}
-                            ref={(input) => {this.hours = input;} }
-                        />
+                            <TextField 
+                                floatingLabelText="Carga horária"
+                                defaultValue={this.state.hoursCourse}
+                                type="number"
+                                disabled={this.state.disableField}
+                                ref={(input) => {this.hours = input;} }
+                            />
                         </div>
                     </div>
+                    <TextField 
+                        floatingLabelText="Caminho da imagem"
+                        defaultValue={this.state.wayImage}
+                        type="text"
+                        disabled={true}
+                                    
+                    />
+                </Dialog>
+                <Dialog
+                    open={this.state.openImg}
+                    actions={<FlatButton label='Sair' primary={true} onTouchTap={this.closeDialogImg} fullWidth={true}/>}
+                >
+                    <Dropzone 
+                        limitFile={true}
+                        local={'courses'}
+                    />
                 </Dialog>
             </div>
         );

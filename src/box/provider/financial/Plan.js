@@ -344,15 +344,6 @@ class Plan extends Component {
                     style={{paddingLeft: '600px'}}
                     onToggle={(event, isInputChecked) => this.handleToggle(event, isInputChecked)}
                 />
-
-                <div>
-                    <input 
-                        type="file" multiple="multiple"
-                        onChange={this.fileSelected}
-                    />
-                    
-                    <button onClick={this.bindFile}>Salvar</button>
-                </div>
                 
                 <Dropzone limitFile={false}/>
                 </Dialog>

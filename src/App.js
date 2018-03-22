@@ -42,8 +42,7 @@ class App extends Component {
     render(){
         return(
             <div>
-                <HeaderBar />
-                <img id="ItemPreview" src="http://localhost:8080/files/aq.png" />
+                <HeaderBar />        
             </div>
         );
     } 

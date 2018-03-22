@@ -247,12 +247,15 @@ class CoursesPlan extends Component{
                                 onChange={this.changeCourse}
                             >  
                                 <MenuItem value={0} primaryText="Curso"/>
-                                {this.state.courses.map( (row, index) => (
-                                        <MenuItem 
-                                            key={index}
-                                            value={row._id} primaryText={row.name}
-                                        />
-                                ))}
+                                {
+                                    this.state.courses !== null ?
+                                        this.state.courses.map( (row, index) => (
+                                            <MenuItem 
+                                                key={index}
+                                                value={row._id} primaryText={row.name}
+                                            />
+                                        )): ''
+                                }
                         
                             </SelectField>
                         </div>         

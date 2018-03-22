@@ -7,7 +7,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import GearIco from 'material-ui/svg-icons/action/gavel';
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
-import PubSub from 'pubsub-js';
+
 
 
 class ConfigEmail extends Component {
