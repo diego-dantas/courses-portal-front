@@ -11,6 +11,7 @@ import {Step, StepLabel, Stepper,} from 'material-ui/Stepper';
 import SendIco from 'material-ui/svg-icons/content/send';
 import ArrowForwardIcon from 'material-ui/svg-icons/navigation/arrow-forward';
 
+import ListStudents from '../component/ListStudents';
 
 class SendEmail extends Component {
 
@@ -140,42 +141,7 @@ class SendEmail extends Component {
             case 1:
                 return (
                     <div>
-
-                        {/* <span className="display-block">
-                             <TextField
-                                 hintText="informe o nome do aluno"
-                                 floatingLabelText="Pesquisar assinatura"
-                                 type="text"
-                                 errorText={this.state.errorText.recipients}
-                                 fullWidth={true}
-                                 onChange={() => this.fncFilterRows()}
-                                 ref={(input) => this.search = input}/>
-                        </span>
-                        <Table
-                            height={'300px'}
-                            fixedHeader={true}
-                            selectable={true}
-                            multiSelectable={true}
-                            onRowSelection={(item) => this.rowSelected(item)}>
-                            <TableHeader
-                                style={this.styles.tableHeader}
-                                displaySelectAll={true}
-                                adjustForCheckbox={true}
-                                enableSelectAll={true}>
-
-                                <TableRow>
-                                    <TableHeaderColumn>Nome do aluno</TableHeaderColumn>
-                                    <TableHeaderColumn>Email do aluno</TableHeaderColumn>
-                                    <TableHeaderColumn>Situação da assinatura</TableHeaderColumn>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody displayRowCheckbox={true}
-                                       showRowHover={true}
-                                       deselectOnClickaway={false}
-                                       style={this.styles.tableBody}>
-                                {this.state.rows}
-                            </TableBody>
-                        </Table> */}
+                        <ListStudents />
                     </div>
                 );
 

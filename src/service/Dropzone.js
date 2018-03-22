@@ -1,12 +1,15 @@
 import React, {Component} from 'react';
 import DropzoneComponent from 'react-dropzone-component';
 
+import RaisedButton from 'material-ui/RaisedButton';
 import PubSub from 'pubsub-js';
 
 import 'react-dropzone-component/styles/filepicker.css';
 import 'dropzone/dist/min/dropzone.min.css';
 
-import FileService from './http/HttpService';
+import FileService from './repository/FileService';
+import HttpService from './http/HttpService';
+import axios from 'axios';
 
 
 class Dropzone extends Component
@@ -28,7 +31,7 @@ class Dropzone extends Component
             {
                 iconFiletypes: ['.jpg', '.png', '.gif', '.pdf', '.txt'],
                 showFiletypeIcon: true,
-                postUrl: 'http://localhost:4212/file'
+                postUrl: 'http://localhost:8080/api/upload'
             };
 
         this.dropzone = null;
@@ -64,13 +67,27 @@ class Dropzone extends Component
 
     handlePost = () =>
     {
-        console.log("Uploading ...");
         this.dropzone.processQueue();
 
-        FileService.make()
-            .post('/file', this.state.file)
-            .then(success => console.log('success'))
-            .catch(error => console.log(error));
+        // const fd = new FormData();
+        // fd.append('files', this.state.file,this.state.file.name)
+        // axios.post('http://localhost:8080/api/upload', this.state.file)
+        //     .then(success => console.log('success ' + success))
+        //     .catch(error => console.log(error));
+        
+            const fb = new FormData();
+            for(var i = 0; i < this.dropzone.files.length; i++){
+                console.log(this.dropzone.files[i]);
+                fb.append('files', this.dropzone.files[i], this.dropzone.files[i].name) 
+            }
+            
+            axios.post('http://localhost:8080/api/upload', fb)
+            .then(res => {
+                console.log(res);
+            })
+            .catch(error =>{
+                console.log(error)
+            })
     };
 
     render()
@@ -91,6 +108,10 @@ class Dropzone extends Component
                     config={config}
                     eventHandlers={eventHandlers}
                     djsConfig={djsConfig} />
+                <RaisedButton 
+                    label="salvar arquivo"
+                    onClick={this.handlePost}
+                />
             </div>
         );
     }

@@ -43,6 +43,7 @@ class App extends Component {
         return(
             <div>
                 <HeaderBar />
+                <img id="ItemPreview" src="http://localhost:8080/files/aq.png" />
             </div>
         );
     } 

@@ -19,7 +19,7 @@ import Toggle from 'material-ui/Toggle';
 
 import Dropzone from './../../../service/Dropzone';
 
-
+import axios from 'axios';
 
 class Plan extends Component {
 
@@ -43,6 +43,8 @@ class Plan extends Component {
              enableSelectAll: false,
              deselectOnClickaway: true,
              showCheckboxes: false,
+
+             fileSelec: [],
         }
     }
 
@@ -167,6 +169,29 @@ class Plan extends Component {
         PubSub.publish('dropzone-make-upload');
     };
 
+    fileSelected = event => {
+        this.setState({fileSelec: event.target.files});
+    }
+
+    bindFile = () => {        
+    
+        const fb = new FormData();
+        for(var i = 0; i < this.state.fileSelec.length; i++){
+            console.log(this.state.fileSelec[i]);
+            fb.append('files', this.state.fileSelec[i], this.state.fileSelec[i].name) 
+        }
+        
+        axios.post('http://localhost:8080/api/upload', fb)
+        .then(res => {
+            console.log(res);
+        })
+        .catch(error =>{
+            console.log(error)
+        })
+    }
+
+    
+   
     render(){
         
         //Botões para o Modal
@@ -279,6 +304,7 @@ class Plan extends Component {
                     actions={actions}
                     modal={true}
                     open={this.state.openCreate}
+                    autoScrollBodyContent={true}
                 >   
                     
                     <TextField 
@@ -302,6 +328,7 @@ class Plan extends Component {
                     actions={actionsUpdate}
                     modal={true}
                     open={this.state.openUpdate}
+                    autoScrollBodyContent={true}
                 >   
                     
                     <TextField 
@@ -317,7 +344,17 @@ class Plan extends Component {
                     style={{paddingLeft: '600px'}}
                     onToggle={(event, isInputChecked) => this.handleToggle(event, isInputChecked)}
                 />
-                <Dropzone limitFile={true}/>
+
+                <div>
+                    <input 
+                        type="file" multiple="multiple"
+                        onChange={this.fileSelected}
+                    />
+                    
+                    <button onClick={this.bindFile}>Salvar</button>
+                </div>
+                
+                <Dropzone limitFile={false}/>
                 </Dialog>
 
             </div>
