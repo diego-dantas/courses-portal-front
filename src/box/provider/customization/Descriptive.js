@@ -102,12 +102,11 @@ class Descriptive extends Component {
             console.log(this.makeForDataDescriptive());
             HttpService.make().post('/createUpdateDescriptive', this.makeForDataDescriptive())
                               .then(success => {
-                                  alert('Dados salvo com sucesso');
                                   this.getDescriptive();
                                   this.closeDialog();
                               })
                               .catch(error => {
-                                  console.log('Erro ao salvar o curso/plano');
+                                  console.log('Erro ao salvar o descritivo');
                               })
         }
     }

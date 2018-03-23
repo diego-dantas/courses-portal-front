@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import HttpService from '../../../service/http/HttpService';
+import Dropzone from '../../../service/Dropzone';
+import PubSub from 'pubsub-js';
 
 import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField'
 import Dialog from 'material-ui/Dialog';
 import SelectField from 'material-ui/SelectField';
@@ -44,21 +47,37 @@ class Question extends Component {
             enableDelete: true,            
 
             //labels
-            labelStatus:      '',
-            description:      '',
-            alterA:           '',
-            alterB:           '',
-            alterC:           '',
-            alterD:           '',
-            alterE:           '',                   
+            labelStatus: '',
+            description: '',
+            alterA:      '',
+            alterB:      '',
+            alterC:      '',
+            alterD:      '',
+            alterE:      '',   
+            wayImage:    '',    
+            
+            showDropzone: false,
         }
     }
 
     componentDidMount() {
         this.getQuestions();
+        PubSub.subscribe('close-home-model', this.closeAll);
+    }
+
+    closeAll = (key, value) =>{
+        this.setState({'showDropzone':false});
+        this.getCourses();
+    };
+
+    openDialogImg = (id) => {
+        this.setState({idQuestion: id});
+        this.showModal('showDropzone')
     }
 
     openDialog = (source) => {
+        this.setState({steps: JSON.parse(localStorage.getItem('steps'))});
+        this.setState({courses: JSON.parse(localStorage.getItem('course'))});
         if(source === 'update'){
             
             this.setState({enableDelete: false});
@@ -119,6 +138,7 @@ class Question extends Component {
             description : this.description.input.refs.input.value,
             status      : this.state.status,
             correct     : this.state.idAlter,
+            wayImage    : this.state.wayImage,
             alterA      : this.alterA.input.refs.input.value,     
             alterB      : this.alterB.input.refs.input.value,     
             alterC      : this.alterC.input.refs.input.value,     
@@ -135,7 +155,6 @@ class Question extends Component {
         HttpService.make().post('/createUpdateQuestion', this.makeDataForQuestion())
                           .then(success => {
                                 this.getQuestions();
-                                alert('Dados salvo com sucesso');
                                 this.closeDialog();
                           })
                           .catch(error => {
@@ -176,6 +195,7 @@ class Question extends Component {
         this.setState({idCourse:    this.state.questions[col].steps.course._id});
         this.setState({idSteps:     this.state.questions[col].steps._id});
         this.setState({description: this.state.questions[col].description});
+        this.setState({wayImage:    this.state.questions[col].wayImage});
         this.setState({alterA:      this.state.questions[col].alterA});
         this.setState({alterB:      this.state.questions[col].alterB});
         this.setState({alterC:      this.state.questions[col].alterC});
@@ -227,6 +247,21 @@ class Question extends Component {
                         <TableRowColumn>{row.status ? 'ATIVO': 'INATIVO'}</TableRowColumn>
                         <TableRowColumn>{row.steps.course.name}</TableRowColumn>
                         <TableRowColumn>{row.steps.name}</TableRowColumn>
+                        <TableRowColumn>
+                            <FlatButton
+                                label={'Alterar'}
+                                primary={true}
+                                onTouchTap={() => this.handleCellClick(index)}                
+                                
+                            />
+                        </TableRowColumn>
+                        <TableRowColumn>
+                            <FlatButton
+                                label={'Imagem'}
+                                primary={true}
+                                onClick={() => this.openDialogImg(row._id)}                
+                            />
+                        </TableRowColumn>
                     </TableRow>
                 ))
             :''
@@ -247,8 +282,7 @@ class Question extends Component {
                     height='300px'
                     fixedHeader={true}
                     selectable={true}
-                    multiSelectable={false}
-                    onCellClick={(col) => this.handleCellClick(col)}                    
+                    multiSelectable={false}               
                 >
                     <TableHeader
                         displaySelectAll={false}
@@ -261,6 +295,8 @@ class Question extends Component {
                             <TableHeaderColumn tooltip="Código">Status</TableHeaderColumn>
                             <TableHeaderColumn tooltip="%">Curso</TableHeaderColumn>
                             <TableHeaderColumn tooltip="%">Steps</TableHeaderColumn>
+                            <TableHeaderColumn>Alterar</TableHeaderColumn>
+                            <TableHeaderColumn>Imagem</TableHeaderColumn>
                         </TableRow>
                     </TableHeader>
                     <TableBody
@@ -412,7 +448,25 @@ class Question extends Component {
                         defaultValue={this.state.alterE}
                         ref={(input) => {this.alterE = input;} }
                     />  
+                    
+                    <figure>
+                        <img 
+                            alt={this.state.description}
+                            src={'http://localhost:8080/api/upload/filesTeste?name='+this.state.wayImage} 
+                            style={{width: '50%', height: '50%', border: 'solid 2px', marginTop: '20px'}}
+                        />
+                    </figure>
+                    
                 </Dialog>
+
+                {
+                    this.state.showDropzone ?
+                        <Dropzone 
+                            limitFile={true}
+                            local={'question'}
+                            id={this.state.idQuestion}
+                        />: null
+                }
             </div>
         )
     }

@@ -64,7 +64,7 @@ class Category extends Component {
             this.setState({enableDelete: false})
         }else{
             this.setState({idCategory: ''});
-            this.setState({descriCategory: ''});
+            this.setState({description: ''});
             this.setState({labelUrl: ''})      
         }
     }

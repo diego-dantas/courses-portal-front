@@ -99,7 +99,6 @@ class Dropzone extends Component
 
             HttpService.make().post(urlCourse, this.returnWay(way, this.state.id))
                               .then(success =>{
-                                  alert('imagem salva com sucesso');
                                   this.closeDialog();
                                   
                               })

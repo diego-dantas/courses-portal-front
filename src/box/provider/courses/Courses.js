@@ -204,7 +204,6 @@ class Courses extends Component {
             HttpService.make()
                        .post('/createUpdateCourse', this.makeDataForCourses())
                        .then(success => {
-                           alert('Curso Salvo com sucesso');
                            this.getCourses();
                            this.handleCloseCreate();
                        })
@@ -437,17 +436,15 @@ class Courses extends Component {
                             />
                         </div>
                     </div>
-                    <TextField 
-                        floatingLabelText="Caminho da imagem"
-                        defaultValue={this.state.wayImage}
-                        type="text"
-                        disabled={true}                
-                    />
-                    <br/>
-                    <img 
-                        src={'http://localhost:8080/api/upload/filesTeste?name='+this.state.wayImage} 
-                        style={{width: '50%', height: '50%'}}
-                    />
+                    <div className="row">
+                        <figure>
+                            <img 
+                                alt={this.state.description}
+                                src={'http://localhost:8080/api/upload/filesTeste?name='+this.state.wayImage} 
+                                style={{width: '50%', height: '50%', border: 'solid 2px', marginTop: '20px'}}
+                            />
+                        </figure>
+                    </div>
                 </Dialog>
                 {
                     this.state.showDropzone ?

@@ -75,6 +75,7 @@ class SubCategory extends Component {
     }
 
     openDialog = (source) => {
+        this.getCategory();
         this.setState({open: true});   
         this.setState({disableField: true});
         this.setState({errorDesc: ''});
@@ -112,7 +113,6 @@ class SubCategory extends Component {
             HttpService.make().post('/createUpdateSubGrid', this.makeDataForCategory())
                     .then(success => {
                             this.getSubCategory();
-                            alert('Dados salvos com sucesso!');
                             this.closeDialog();
                             
                     })

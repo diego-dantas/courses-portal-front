@@ -50,6 +50,7 @@ class Steps extends Component {
     
 
     openDialog = (source) => {
+        this.setState({courses: JSON.parse(localStorage.getItem('course'))});
         this.setState({open: true});
         this.setState({errorName: ''});
         this.setState({errorDescription: ''});
@@ -109,7 +110,6 @@ class Steps extends Component {
             HttpService.make()
                        .post('/createUpdateSteps', this.makeForDataSteps())
                        .then(success => {
-                           alert('Steps salvo com sucesso');
                            this.getSteps();
                            this.closeDialog();
                        })

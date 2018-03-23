@@ -63,6 +63,9 @@ class Material extends Component{
     }
 
     openDialog = (source) => {
+        this.setState({steps: JSON.parse(localStorage.getItem('steps'))});
+        this.setState({courses: JSON.parse(localStorage.getItem('course'))});
+
         this.setState({open: true});
         this.setState({errorName: ''});
         this.setState({errorOrder: ''});
@@ -189,12 +192,11 @@ class Material extends Component{
             console.log(this.makeForDataMaterial());
             HttpService.make().post('/createUpdateMaterial', this.makeForDataMaterial())
                               .then(success => {
-                                  alert('Dados salvo com sucesso');
                                   this.getMaterial();
                                   this.closeDialog();
                               })
                               .catch(error => {
-                                  console.log('Erro ao salvar o curso/plano');
+                                  console.log('Erro ao salvar o material');
                               })
         }
         
