@@ -83,7 +83,7 @@ class About extends Component
     updateProvider = () => {
         HttpService.make().post('/updateProvider', this.makeDataForProvider())
                    .then(success => {
-                        console.log("Dados alterado com sucesso");
+                        alert("Dados salvo com sucesso");
                    })
                    .catch(error =>{
                         console.log('Erro ao alterar os dados do Provider');

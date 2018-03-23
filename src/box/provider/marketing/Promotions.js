@@ -8,6 +8,7 @@ import Checkbox from 'material-ui/Checkbox';
 import Toggle from 'material-ui/Toggle';
 import Dialog from 'material-ui/Dialog';
 import DatePicker from 'material-ui/DatePicker';
+
 import {
     Table,
     TableBody,
@@ -22,6 +23,8 @@ import NewIco from 'material-ui/svg-icons/content/add';
 import CancelIo from 'material-ui/svg-icons/content/block'
 import Delete from 'material-ui/svg-icons/action/delete';
 
+
+let DateTimeFormat = global.Intl.DateTimeFormat;
 
 class Promotions extends Component {
 
@@ -69,7 +72,9 @@ class Promotions extends Component {
     openDialog = (source) => {
         
         if(source === 'update'){
-
+            this.setState({errorDescription: ''});
+            this.setState({errorCoupon: ''});
+            this.setState({errorPercentage: ''});
         }else{
             this.setState({disableDelete: true});
             this.setState({idPromotion: ''});
@@ -101,8 +106,8 @@ class Promotions extends Component {
             description: this.description.input.value,
             codigoCupom: this.coupon.input.value,
             percentual: this.percentage.input.value,
-            dateInicial: this.state.dateStart,
-            dateFinal: this.state.dateFinish
+            dateInicial: this.state.idPromotion === '' ? this.state.dateStart : this.formateDateTableUpdate(this.state.dateStart),
+            dateFinal: this.state.idPromotion === '' ? this.state.dateFinish : this.formateDateTableUpdate(this.state.dateFinish)
         }
     }
     makeDataForCourses = () => {
@@ -214,7 +219,7 @@ class Promotions extends Component {
 
     formateDate = (date) => {   
         var dt = new Date(date);    
-        var nextDate = (dt.getDate());
+        var nextDate = (dt.getDate() + 1);
         dt.setDate(nextDate);
         var newDate = dt.toLocaleString();
         return  newDate.substring(0, 10);
@@ -226,20 +231,25 @@ class Promotions extends Component {
         dt.setDate(nextDate);
         return  dt;
     }
+
+    formateDateTableUpdate = (date) => {   
+        var dt = new Date(date);    
+        var nextDate = (dt.getDate());
+        dt.setDate(nextDate);
+        return  dt;
+    }
     
     updatePromotion = (col) => {
 
-          //populo os valores para os states
-          this.setState({idPromotion: this.state.promotions[col]._id});
-          this.setState({description: this.state.promotions[col].description});
-          this.setState({coupon: this.state.promotions[col].codigoCupom});
-          this.setState({percentage: this.state.promotions[col].percentual});
-          this.setState({dateStart: this.formateDateTable(this.state.promotions[col].dateInicial)})
-          //this.setState({dateStart: this.state.promotions[col].dateInicial})
-          this.setState({dateFinish: this.formateDateTable(this.state.promotions[col].dateFinal)})
-          //this.setState({dateFinish: this.state.promotions[col].dateFinal})
+        //populo os valores para os states
+        this.setState({idPromotion: this.state.promotions[col]._id});
+        this.setState({description: this.state.promotions[col].description});
+        this.setState({coupon: this.state.promotions[col].codigoCupom});
+        this.setState({percentage: this.state.promotions[col].percentual});
+        this.setState({dateStart: this.state.promotions[col].dateInicial})
+        this.setState({dateFinish: this.state.promotions[col].dateFinal})
             
-          this.openDialog('update');         
+        this.openDialog('update');         
     }
 
     linkCourses = (col) => {
@@ -590,9 +600,18 @@ class Promotions extends Component {
                                 floatingLabelText="Data inicial "
                                 hintText="Data Inicial" 
                                 fullWidth={true}
-                                defaultDate={this.state.dateStart}
+                                defaultDate={
+                                    this.state.idPromotion === '' ? 
+                                    this.formateDateTableUpdate(this.state.dateStart) :
+                                    this.formateDateTable(this.state.dateStart)
+                                }
                                 onChange={this.changeDateStart}
                                 errorText={this.state.errorDataStart}
+                                formatDate={new DateTimeFormat('pt-BR', {
+                                    day: 'numeric',
+                                    month: 'numeric',
+                                    year: 'numeric',
+                                }).format}
                             />
                         </div>
                         <div className="col-md-6 col-sm-6">
@@ -600,9 +619,18 @@ class Promotions extends Component {
                                 floatingLabelText="Data Final "
                                 hintText="Data Inicial" 
                                 fullWidth={true}
-                                defaultDate={this.state.dateFinish}
+                                defaultDate={
+                                    this.state.idPromotion === '' ? 
+                                        this.formateDateTableUpdate(this.state.dateFinish) :
+                                        this.formateDateTable(this.state.dateFinish)
+                                }
                                 onChange={this.changeDateFinish}
                                 errorText={this.state.errorDataFinish}
+                                formatDate={new DateTimeFormat('pt-BR', {
+                                    day: 'numeric',
+                                    month: 'numeric',
+                                    year: 'numeric',
+                                }).format}
                             />
                         </div>
                     </div>

@@ -43,7 +43,6 @@ class HeaderBar extends Component {
     componentDidMount(){
         PubSub.subscribe('close-home-model', this.closeAll);
         this.buildCourseMenu();
-        console.log('menu null ' + this.state.menu);
         // while(this.state.menu === null){
         //     console.log('menu null');
         // }

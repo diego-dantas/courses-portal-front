@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import DropzoneComponent from 'react-dropzone-component';
 
 import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
+import Dialog from 'material-ui/Dialog';
 import PubSub from 'pubsub-js';
 
 import 'react-dropzone-component/styles/filepicker.css';
@@ -19,8 +21,9 @@ class Dropzone extends Component
         this.state = {
                 file: '', 
                 limitFile: props.limitFile,
-                local: props.local
-
+                local: props.local,
+                open: true,
+                id: props.id
             };
 
         this.djsConfig =
@@ -44,6 +47,7 @@ class Dropzone extends Component
     componentDidMount()
     {
         PubSub.subscribe('dropzone-make-upload', this.handlePost);
+        
     };
 
     limitFileService = () =>
@@ -79,7 +83,8 @@ class Dropzone extends Component
     handlePost = () =>
     {
         this.dropzone.processQueue();
-        
+
+
         const fb = new FormData();
         for(var i = 0; i < this.dropzone.files.length; i++){
             console.log(this.dropzone.files[i]);
@@ -88,16 +93,15 @@ class Dropzone extends Component
         let url = 'http://localhost:8080/api/upload/'+this.state.local;
         axios.post(url, fb)
         .then(res => {
-            console.log(res);
             
             let urlCourse = '/'+this.state.local;
             let way = urlCourse + '/' + this.dropzone.files[0].name;
 
-            console.log(this.returnWay(way, 1));
-            HttpService.make().post(urlCourse, this.returnWay(way, 1))
+            HttpService.make().post(urlCourse, this.returnWay(way, this.state.id))
                               .then(success =>{
-                                  console.log(success);
-                                  this.handlePost()
+                                  alert('imagem salva com sucesso');
+                                  this.closeDialog();
+                                  
                               })
                               .catch(error =>{
                                   console.log(error);
@@ -107,7 +111,10 @@ class Dropzone extends Component
             console.log(error)
         })
     };
-
+    closeDialog = () => {
+        this.setState({open: false});
+        PubSub.publish('close-home-model', false);
+    }
     render()
     {
         const config = this.componentConfig;
@@ -122,16 +129,21 @@ class Dropzone extends Component
 
         return (
             <div>
-                <DropzoneComponent
-                    config={config}
-                    eventHandlers={eventHandlers}
-                    djsConfig={djsConfig} />
-                <RaisedButton 
-                    label="salvar arquivo"
-                    onClick={this.handlePost}
-                    fullWidth={true}
-                    style={{marginTop: '20px'}}
-                />
+                <Dialog
+                    open={this.state.open}
+                    actions={<FlatButton label='Sair' primary={true} onTouchTap={this.closeDialog} fullWidth={true}/>}
+                >
+                    <DropzoneComponent
+                        config={config}
+                        eventHandlers={eventHandlers}
+                        djsConfig={djsConfig} />
+                    <RaisedButton 
+                        label="salvar arquivo"
+                        onClick={this.handlePost}
+                        fullWidth={true}
+                        style={{marginTop: '20px'}}
+                    />
+                </Dialog>
             </div>
         );
     }

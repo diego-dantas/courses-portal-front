@@ -344,7 +344,8 @@ class Plan extends Component {
                     style={{paddingLeft: '600px'}}
                     onToggle={(event, isInputChecked) => this.handleToggle(event, isInputChecked)}
                 />
-                
+
+         
                 <Dropzone limitFile={false}/>
                 </Dialog>
 

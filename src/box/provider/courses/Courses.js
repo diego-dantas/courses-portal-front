@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import HttpService from '../../../service/http/HttpService';
 import Dropzone from '../../../service/Dropzone';
+import PubSub from 'pubsub-js';
 
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
@@ -46,6 +47,8 @@ class Courses extends Component {
             errorDescricao: '',
 
             disableField: true,
+
+            showDropzone: false,
         }
     }
     styles = {
@@ -76,8 +79,13 @@ class Courses extends Component {
 
     componentDidMount() {
         this.getCourses();
+        PubSub.subscribe('close-home-model', this.closeAll);
     }
     
+    closeAll = (key, value) =>{
+        this.setState({'showDropzone':false});
+        this.getCourses();
+    };
 
     handleChange = (value) => this.setState({slideIndex: value});
     
@@ -164,8 +172,9 @@ class Courses extends Component {
         this.setState({openCreate: true});     
     }
 
-    openDialogImg = () => {
-        this.setState({openImg: true});
+    openDialogImg = (id) => {
+        this.setState({idCourse: id});
+        this.showModal('showDropzone')
     }
 
     closeDialogImg = () => {
@@ -237,6 +246,10 @@ class Courses extends Component {
         }
     }
 
+    showModal = (type)=>{
+        let modal = {[type]:true};
+        this.setState(modal);
+    };
     render(){
         const actions = [
             <RaisedButton
@@ -278,7 +291,7 @@ class Courses extends Component {
                             <FlatButton
                                 label={'Imagem'}
                                 primary={true}
-                                onTouchTap={this.openDialogImg}                
+                                onClick={() => this.openDialogImg(row._id)}                
                             />
                         </TableRowColumn>
                     </TableRow>
@@ -428,19 +441,24 @@ class Courses extends Component {
                         floatingLabelText="Caminho da imagem"
                         defaultValue={this.state.wayImage}
                         type="text"
-                        disabled={true}
-                                    
+                        disabled={true}                
+                    />
+                    <br/>
+                    <img 
+                        src={'http://localhost:8080/api/upload/filesTeste?name='+this.state.wayImage} 
+                        style={{width: '50%', height: '50%'}}
                     />
                 </Dialog>
-                <Dialog
-                    open={this.state.openImg}
-                    actions={<FlatButton label='Sair' primary={true} onTouchTap={this.closeDialogImg} fullWidth={true}/>}
-                >
-                    <Dropzone 
-                        limitFile={true}
-                        local={'courses'}
-                    />
-                </Dialog>
+                {
+                    this.state.showDropzone ?
+                        <Dropzone 
+                            limitFile={true}
+                            local={'courses'}
+                            id={this.state.idCourse}
+                        />: null
+                }
+                
+                
             </div>
         );
     }
