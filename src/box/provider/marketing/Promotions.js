@@ -36,6 +36,7 @@ class Promotions extends Component {
             coursePromotion: JSON.parse(localStorage.getItem('coursePromotion')),
             open: false,
             openCourse: false,
+            openClear: false,
             
             idPromotion: '',
             description: '',
@@ -57,7 +58,8 @@ class Promotions extends Component {
 
             arrayCourses:    [],
             arrayNewCourses: [],
-            arrayAllCourses: []
+            arrayAllCourses: [],
+            arrayAllNewCourses: []
             
         }
     }
@@ -68,6 +70,13 @@ class Promotions extends Component {
         this.getCoursePromotion();
     }
     
+    openClear = () => {
+        this.setState({openClear: true});
+    }
+
+    closeClear = () => {
+        this.setState({openClear: false});
+    }
 
     openDialog = (source) => {
         
@@ -114,7 +123,7 @@ class Promotions extends Component {
         
         let valor = [];
         if(this.state.checked){
-            this.state.arrayAllCourses.map((row, index) => (
+            this.state.arrayAllNewCourses.map((row, index) => (
                 valor.push({
                              _id: "",
                              course : { 
@@ -257,6 +266,7 @@ class Promotions extends Component {
         this.setState({arrayCourses : []});
         this.setState({arrayNewCourses : []});
         this.setState({arrayAllCourses : []});
+        this.setState({arrayAllNewCourses : []});
  
         this.setState({statusCourse: false});
         this.setState({checked: false});
@@ -280,17 +290,17 @@ class Promotions extends Component {
             
             var find = false;
             this.state.arrayNewCourses.map((row, index) =>(
-                row === this.state.promotions[col]._id ? find = true : ''
+                row === this.state.courses[col]._id ? find = true : ''
             ))
 
             if(!find)
-                this.state.arrayNewCourses.push(this.state.promotions[col]._id);
+                this.state.arrayNewCourses.push(this.state.courses[col]._id);
 
         }else{
 
             var i = -1;        
             this.state.arrayNewCourses.map((row, index) =>(
-                row === this.state.promotions[col]._id ? 
+                row === this.state.courses[col]._id ? 
                     i = index: ''
             ))
             if(i >= 0)
@@ -307,24 +317,24 @@ class Promotions extends Component {
           if(toggled){
             
             var find = false;
-            this.state.arrayAllCourses.map((row, index) =>(
+            this.state.arrayAllNewCourses.map((row, index) =>(
                 row === this.state.courses[col]._id ? find = true : ''
             ))
 
             if(!find)
-                this.state.arrayAllCourses.push(this.state.courses[col]._id);
+                this.state.arrayAllNewCourses.push(this.state.courses[col]._id);
 
         }else{
 
             var i = -1;        
-            this.state.arrayAllCourses.map((row, index) =>(
+            this.state.arrayAllNewCourses.map((row, index) =>(
                 row === this.state.courses[col]._id ? 
                     i = index: ''
             ))
             if(i >= 0)
-                this.state.arrayAllCourses.splice(i, 1);
+                this.state.arrayAllNewCourses.splice(i, 1);
         }
-        console.log(this.state.arrayAllCourses);
+        console.log(this.state.arrayAllNewCourses);
     }
 
     validAllCourses(event, toggled){
@@ -332,7 +342,6 @@ class Promotions extends Component {
     }
 
     linkCoursesPromotions = () => {
-        console.log(this.makeDataForCourses());
         HttpService.make().post('/saveCoursePromotion', this.makeDataForCourses())
                           .then(success => {
                               this.getCoursePromotion();
@@ -344,8 +353,23 @@ class Promotions extends Component {
                           })
 
     }
+
+    deleteLinkCoursesPromotions = () => {
+        HttpService.make().post('/deleteCoursePromotion', this.makeDataForCourses())
+                          .then(success => {
+                              this.getCoursePromotion();
+                              this.closeClear();
+                              this.closeLinkCourse();
+                          })
+                          .catch(error => {
+                              console.log('Erro ao salvar as informções');
+                          })
+
+    }
     validStatus = (id, i) => {
         
+        var status = false;
+            
         if(this.state.coursePromotion !== null){
             this.state.coursePromotion.map((row1, index) => (
                 row1.promotion._id === this.state.idPromotion ?
@@ -353,11 +377,12 @@ class Promotions extends Component {
             ))   
         }        
 
-        var status = false;
+        
         this.state.arrayCourses.map((row, i) => (
              id === row ? status = true : ''
-        ))
-
+        ))    
+        
+        
         return status;
     }
     validID = (id) => {
@@ -382,6 +407,13 @@ class Promotions extends Component {
         return status;
     }
 
+    validAllClearStatus = (id, i) => {
+        
+        var status = false;
+        
+        return status;
+    }
+
     validAllID = (id) => {
         var find = false;
 
@@ -391,11 +423,11 @@ class Promotions extends Component {
 
         if(!find){
             this.state.arrayAllCourses.push(id);
+            this.state.arrayAllNewCourses.push(id);
         }
     }
    
     updateCheck() {
-       
         this.setState((oldState) => {
           return {
             checked: !oldState.checked,
@@ -403,6 +435,9 @@ class Promotions extends Component {
         });
     }
 
+    clearCourses = () => {
+        alert("to aqui");
+    }
 
     render(){
         const actions = [
@@ -452,6 +487,24 @@ class Promotions extends Component {
             />
         ]
 
+        const actionsClear = [
+            <RaisedButton
+                label="SIM"
+                backgroundColor="#0ac752"
+                icon={<NewIco color="#FFF"/>}
+                labelStyle={{color: 'white'}}
+                style={{marginRight:'20px'}}
+                onClick={this.deleteLinkCoursesPromotions}
+    
+            />,
+            <RaisedButton
+                label="NÃO"
+                backgroundColor="#FF9800"
+                icon={<CancelIo color="#FFF"/>}
+                labelStyle={{color: 'white'}}
+                onClick={this.closeClear}
+            />
+        ]
 
         const bodyTable = [
             this.state.promotions !== null ?
@@ -670,20 +723,39 @@ class Promotions extends Component {
                     </div>
 
                     <hr/>
-                    <Toggle 
-                        label={'TODOS OS CURSOS'}
-                        labelPosition="right"
-                        defaultToggled={this.state.statusCourse}
-//                        onToggle={(event, isInputChecked) => this.validAllCourses(event, isInputChecked)}
-                        onToggle={this.updateCheck.bind(this)}
-                    />
-                    
-                    {
-                        (this.state.checked) ?
-                            listAllCourses :                            
-                            listCourses
-                    }
-                    
+                    <div className="row">
+                        <div className="col-md-6">
+                            <Toggle 
+                                label={'TODOS OS CURSOS'}
+                                labelPosition="right"
+                                defaultToggled={this.state.statusCourse}
+        //                        onToggle={(event, isInputChecked) => this.validAllCourses(event, isInputChecked)}
+                                onToggle={this.updateCheck.bind(this)}
+                            />
+                            {
+                                (this.state.checked) ?
+                                    listAllCourses :                            
+                                    listCourses
+                            }
+                        </div>
+                        <div className="col-md-6">
+                            <FlatButton 
+                                label={'LIMPAR TODOS'}
+                                primary={true}
+                                onClick={this.openClear}
+                            />
+                        </div>
+                    </div>
+                </Dialog>
+
+                <Dialog
+                    title="Vincular Curso"
+                    actions={actionsClear}
+                    modal={true}
+                    open={this.state.openClear}
+                    autoScrollBodyContent={true}
+                >   
+                    <h3>Deseja limpar todos os cursos e sair ?</h3>
                 </Dialog>
             </div>
         )
