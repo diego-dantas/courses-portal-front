@@ -139,6 +139,7 @@ class Courses extends Component {
         this.setState({obejCourse: ''});
         this.setState({priceCourse: ''});
         this.setState({hoursCourse: ''});
+        this.setState({wayImage: ''});
         this.setState({cat: 0});
         this.setState({subCat: 0});
         this.setState({errorDescricao: ''});
@@ -234,7 +235,7 @@ class Courses extends Component {
             objective: this.objective.input.value,
             hours: this.hours.input.value,
             price: this.price.input.value,
-            wayImage: "src/img/img.jpg",
+            wayImage: this.state.wayImage,
             status: this.state.statusCourse,
             grid: {
                 _id: this.state.cat,
@@ -436,15 +437,17 @@ class Courses extends Component {
                             />
                         </div>
                     </div>
-                    <div className="row">
-                        <figure>
-                            <img 
-                                alt={this.state.description}
-                                src={'http://localhost:8080/api/upload/filesTeste?name='+this.state.wayImage} 
-                                style={{width: '50%', height: '50%', border: 'solid 2px', marginTop: '20px'}}
-                            />
-                        </figure>
-                    </div>
+                    {
+                        this.state.wayImage !== '' ?
+                            <figure>
+                                <img 
+                                    alt={this.state.description}
+                                    src={'http://localhost:8080/api/getFile?name='+this.state.wayImage} 
+                                    style={{width: '50%', height: '50%', border: 'solid 2px', marginTop: '20px'}}
+                                />
+                            </figure> :''
+                    }
+                    
                 </Dialog>
                 {
                     this.state.showDropzone ?

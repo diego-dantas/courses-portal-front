@@ -67,13 +67,18 @@ class Question extends Component {
 
     closeAll = (key, value) =>{
         this.setState({'showDropzone':false});
-        this.getCourses();
+        this.getQuestions();
     };
 
     openDialogImg = (id) => {
         this.setState({idQuestion: id});
         this.showModal('showDropzone')
     }
+
+    showModal = (type)=>{
+        let modal = {[type]:true};
+        this.setState(modal);
+    };
 
     openDialog = (source) => {
         this.setState({steps: JSON.parse(localStorage.getItem('steps'))});
@@ -98,6 +103,7 @@ class Question extends Component {
             this.setState({alterC:      ''});
             this.setState({alterD:      ''});
             this.setState({alterE:      ''});
+            this.setState({wayImage:    ''});
         }
 
         this.state.status ? this.setState({labelStatus: 'Ativo'}) : this.setState({labelStatus: 'Inativo'});
@@ -448,14 +454,17 @@ class Question extends Component {
                         defaultValue={this.state.alterE}
                         ref={(input) => {this.alterE = input;} }
                     />  
-                    
-                    <figure>
-                        <img 
-                            alt={this.state.description}
-                            src={'http://localhost:8080/api/upload/filesTeste?name='+this.state.wayImage} 
-                            style={{width: '50%', height: '50%', border: 'solid 2px', marginTop: '20px'}}
-                        />
-                    </figure>
+                    {
+                        this.state.wayImage !== '' ? 
+                            <figure>
+                                <img 
+                                    alt={this.state.description}
+                                    src={'http://localhost:8080/api/getFile?name='+this.state.wayImage} 
+                                    style={{width: '50%', height: '50%', border: 'solid 2px', marginTop: '20px'}}
+                                />
+                            </figure> : ''
+                    }
+                   
                     
                 </Dialog>
 

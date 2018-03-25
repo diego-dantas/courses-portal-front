@@ -50,10 +50,8 @@ class Material extends Component{
 
 
             //state error 
-            errorType: '',
             errorName: '',
             errorOrder: '',
-            errorUrl: '',
         }
 
     }
@@ -69,8 +67,6 @@ class Material extends Component{
         this.setState({open: true});
         this.setState({errorName: ''});
         this.setState({errorOrder: ''});
-        this.setState({errorType: ''});
-        this.setState({errorUrl: ''});
        
         if(source === 'update'){
             this.setState({enable: false});
@@ -83,8 +79,6 @@ class Material extends Component{
             this.setState({idSteps: 0});
             this.setState({order: ''});
             this.setState({name: ''});
-            this.setState({url: ''});
-            this.setState({type: ''});
             this.setState({statusMaterial: false});
             this.setState({labelMaterial: 'Inativo'});
             this.setState({statusDownload: false});
@@ -108,6 +102,7 @@ class Material extends Component{
         if(idSteps !== 0 && this.state.idCourse !== 0) this.setState({enable: false});
         if(idSteps === 0) this.setState({enable: true});
     }
+
     //Metodo para tratamento da mudança do status
     changeStatus(event, isInputChecked){
         this.setState({statusMaterial: isInputChecked})
@@ -137,8 +132,6 @@ class Material extends Component{
         this.setState({idMaterial: this.state.material[col]._id});
         this.setState({order: this.state.material[col].materialOrder});
         this.setState({name: this.state.material[col].name});
-        this.setState({type: this.state.material[col].type});
-        this.setState({url: this.state.material[col].url});
         this.setState({statusMaterial: this.state.material[col].status});
         this.state.material[col].status === true ? this.setState({labelMaterial: 'Ativo'}) : this.setState({labelMaterial: 'Inativo'});
         this.setState({statusDownload: this.state.material[col].download});
@@ -169,23 +162,11 @@ class Material extends Component{
             valid = false;    
         }
 
-        if(this.type.input.value === ''){
-            this.setState({errorType: 'O Tipo é Obrigatório'}); 
-            valid = false;    
-        }
-
-        if(this.url.input.value === ''){
-            this.setState({errorUrl: 'A url é Obrigatório'}); 
-            valid = false;    
-        }
-
         return valid;
     }
     changedField = () => {
         if(this.order.input.value !== '') this.setState({errorOrder: ''});
         if(this.name.input.value  !== '') this.setState({errorName: ''});
-        if(this.type.input.value  !== '') this.setState({errorType: ''});
-        if(this.url.input.value   !== '') this.setState({errorUrl: ''});
     }
     createUpdateMaterial = () =>{
         if(this.validateField()){
@@ -220,8 +201,8 @@ class Material extends Component{
             _id: this.state.idMaterial,
             materialOrder: this.order.input.value,
             name: this.name.input.value,
-            type: this.type.input.value,
-            url: this.url.input.value,
+            type: '',
+            url: '',
             download: this.state.statusDownload,
             status: this.state.statusMaterial,
             steps: {
@@ -412,34 +393,7 @@ class Material extends Component{
                             />  
                                
                         </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-md-6 col-sm-6">
-                            <TextField
-                                floatingLabelText="Tipo"
-                                type="text"
-                                disabled={this.state.enable}
-                                onChange={this.changedField}
-                                errorText={this.state.errorType}
-                                defaultValue={this.state.type}
-                                ref={(input) => {this.type = input;} }
-                                
-                            />  
-                               
-                        </div>         
-            
-                        <div className="col-md-6 col-sm-6">
-                            <TextField
-                                floatingLabelText="URL"
-                                type="text"
-                                disabled={this.state.enable}
-                                onChange={this.changedField}
-                                errorText={this.state.errorUrl}
-                                defaultValue={this.state.url}
-                                ref={(input) => {this.url = input;} }
-                            />  
-                        </div>
-                    </div>
+                    </div>                  
                 </ Dialog>
                      
             </div>

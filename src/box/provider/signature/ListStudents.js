@@ -60,6 +60,7 @@ class ListStudents extends Component {
             <TableRow key={student._id}>
                 <TableRowColumn>{student.name}</TableRowColumn>
                 <TableRowColumn>{student.email}</TableRowColumn>
+                <TableRowColumn>{student.status ? 'ATIVO' : 'INATIVO'}</TableRowColumn>
             </TableRow>
         );
 

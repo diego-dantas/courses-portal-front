@@ -9,7 +9,7 @@ class Signature extends Component {
 
     componentDidMount()
     {
-        PubSub.publish('header-label',"Matriculas")
+        PubSub.publish('header-label',"Assinaturas")
     };
 
     render(){

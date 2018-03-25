@@ -92,24 +92,24 @@ class Dropzone extends Component
         }
         let url = 'http://localhost:8080/api/upload/'+this.state.local;
         axios.post(url, fb)
-        .then(res => {
-            
-            let urlCourse = '/'+this.state.local;
-            let way = urlCourse + '/' + this.dropzone.files[0].name;
-
-            HttpService.make().post(urlCourse, this.returnWay(way, this.state.id))
-                              .then(success =>{
-                                  this.closeDialog();
-                                  
-                              })
-                              .catch(error =>{
-                                  console.log(error);
-                              })
-        })
-        .catch(error =>{
-            console.log(error)
-        })
+             .then(res => {
+                 
+                let urlUpdate = '/'+this.state.local;
+                let way = urlUpdate + '/' + this.dropzone.files[0].name;
+                HttpService.make().post(urlUpdate, this.returnWay(way, this.state.id))
+                                   .then(success =>{
+                                       this.closeDialog();
+                                       
+                                   })
+                                   .catch(error =>{
+                                       console.log(error);
+                                   })
+             })
+             .catch(error =>{
+                 console.log(error)
+             })
     };
+    
     closeDialog = () => {
         this.setState({open: false});
         PubSub.publish('close-home-model', false);

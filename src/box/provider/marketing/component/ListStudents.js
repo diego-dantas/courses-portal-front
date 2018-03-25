@@ -36,8 +36,8 @@ class ListStudents extends Component {
                    .then(success => {
                         console.log(success.data);
                         localStorage.setItem('students', JSON.stringify(success.data));
-                        //this.setState({signatures: this.makeTeste()});
-                        this.fncMakeRows(this.state.signatures);
+                        this.setState({students: JSON.parse(localStorage.getItem('students'))});
+                        this.fncMakeRows(this.state.students);
                    })
                    .catch(error => {
                        console.log('Erro ao buscar os alunos');
@@ -65,14 +65,15 @@ class ListStudents extends Component {
         this.fncMakeRows(result);
     };
 
-    fncMakeRows = (signatures) =>
+    fncMakeRows = (students) =>
     {
-        signatures = _.sortBy(signatures, ['name', 'email']);
-        let rows = signatures.map((student) =>
-            <TableRow key={student._id} selected={this.isSelectedRow(student.email)}>
+        students = _.sortBy(students, ['name', 'email']);
+
+        let rows = students.map((student) =>
+            <TableRow key={student._id}>
                 <TableRowColumn>{student.name}</TableRowColumn>
                 <TableRowColumn>{student.email}</TableRowColumn>
-                <TableRowColumn>{student.signature ? 'ativa' : 'desativa'}</TableRowColumn>
+                <TableRowColumn>{student.status ? 'ATIVO' : 'INATIVO'}</TableRowColumn>
             </TableRow>
         );
 

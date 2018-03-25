@@ -49,7 +49,9 @@ class CoursesPlan extends Component{
     }
 
     openDialog = (source) => {
-        this.setState({open: true});
+        this.setState({courses: JSON.parse(localStorage.getItem('course'))});
+        this.setState({plan:    JSON.parse(localStorage.getItem('plan'))});
+        
        
         if(source === 'update'){
             this.setState({enable: false});
@@ -63,6 +65,8 @@ class CoursesPlan extends Component{
             this.setState({valorPlano: ''});
             this.setState({valorCourse: ''})
         }
+
+        this.setState({open: true});
     }
 
     closeDialog = () => {
@@ -113,7 +117,6 @@ class CoursesPlan extends Component{
         
         HttpService.make().post('/createUpdateCoursePlan', this.makeForDataCoursePlan())
                           .then(success => {
-                              alert('Dados salvo com sucesso');
                               this.getCoursePlan();
                               this.closeDialog();
                           })
@@ -269,10 +272,12 @@ class CoursesPlan extends Component{
                             >  
                                 <MenuItem value={0} primaryText="Plano"/>
                                 {this.state.plan.map( (row, index) => (
+                                    row.status ?
                                         <MenuItem 
                                             key={index}
                                             value={row._id} primaryText={row.description}
                                         />
+                                    : ''
                                 ))}
                             </SelectField>
                         </div>

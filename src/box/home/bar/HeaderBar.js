@@ -120,7 +120,7 @@ class HeaderBar extends Component {
                         menuItems={[
                             <MenuItem 
                                 value = 'Teste'
-                                primaryText = {category.description}
+                                primaryText = {'Todos em ' + category.description}
                             />,
                             this.buildSubMenu(category._id)
                             

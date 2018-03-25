@@ -729,7 +729,6 @@ class Promotions extends Component {
                                 label={'TODOS OS CURSOS'}
                                 labelPosition="right"
                                 defaultToggled={this.state.statusCourse}
-        //                        onToggle={(event, isInputChecked) => this.validAllCourses(event, isInputChecked)}
                                 onToggle={this.updateCheck.bind(this)}
                             />
                             {
@@ -755,7 +754,7 @@ class Promotions extends Component {
                     open={this.state.openClear}
                     autoScrollBodyContent={true}
                 >   
-                    <h3>Deseja limpar todos os cursos e sair ?</h3>
+                    <h3>Esta ação excluirá o vínculo dessa promoção com todos os cursos relacionados. Deseja prosseguir?</h3>
                 </Dialog>
             </div>
         )

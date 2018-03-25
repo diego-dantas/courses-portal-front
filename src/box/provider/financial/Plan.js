@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PubSub from 'pubsub-js';
+import Dropzone from '../../../service/Dropzone';
 import {
     Table,
     TableBody,
@@ -11,15 +12,14 @@ import {
 
 import HttpService from '../../../service/http/HttpService';
 import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
 import NewIco from 'material-ui/svg-icons/content/add';
 import CancelIo from 'material-ui/svg-icons/content/block'
+import Delete from 'material-ui/svg-icons/action/delete';
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 import Toggle from 'material-ui/Toggle';
 
-import Dropzone from './../../../service/Dropzone';
-
-import axios from 'axios';
 
 class Plan extends Component {
 
@@ -27,13 +27,15 @@ class Plan extends Component {
         super();
         this.state = {
             tablePlan: JSON.parse(localStorage.getItem('plan')),
-            subCategoryTable: JSON.parse(localStorage.getItem('subCategory')),
             openCreate: false,
-            openUpdate: false,
             status: false,
+            checked:       false,            
             idPlan: '',
-            descPlan: '',
-            wayImg: '',
+            description: '',
+            wayImagen: '',
+            erroDescription: '',
+            enableDelete: true,
+
              //state da tabela
              fixedHeader: true,
              stripedRows: false,
@@ -45,108 +47,118 @@ class Plan extends Component {
              showCheckboxes: false,
 
              fileSelec: [],
+
+             showDropzone: false,
         }
     }
 
     componentDidMount() {
         this.getPlan();
+        PubSub.subscribe('close-home-model', this.closeAll);
     }
-    
 
-    handleOpenCreate = () => {
-        this.setState({openCreate: true});   
+    //Inicio do bloco de controle de imagem 
+    showModal = (type)=>{
+        let modal = {[type]:true};
+        this.setState(modal);
+    };
+
+    closeAll = (key, value) =>{
+        this.setState({'showDropzone':false});
+        this.getPlan();
+    };
+
+    openDialogImg = (id) => {
+        this.setState({idPlan: id});
+        this.showModal('showDropzone')
     }
-    handleOpenUpdate = () => {        
-        this.setState({openUpdate: true});       
+
+    closeDialogImg = () => {
+        this.setState({openImg: false});
+    }
+    //Fim do bloco de controle da imagem
+
+    handleOpenCreate = (source) => {
+
+        if(source === 'update'){
+            this.setState({enableDelete: false});
+        }else{
+            this.setState({idPlan:   ''});
+            this.setState({description: ''});
+            this.setState({wayImagen:   ''});
+            this.setState({status: false});
+            this.setState({erroDescription:''});
+            this.setState({enableDelete: true});
+        }
+        this.setState({openCreate: true});   
     }
 
     handleCloseCreate = () =>{
         this.setState({openCreate: false});        
     }
 
-    handleCloseUpdate = () =>{        
-        this.setState({openUpdate: false});   
-    }
-
-    setDateStart = (date) => {
-        this.setState({dateStart: date.target.value })
-    }
-
-    setDateFinished = (date) => {
-        this.setState({dateFinished: date.target.value })
-    }
-
     handleCellClick(col)
     {   
-        //converto o retorno da data do banco
-        let desc = this.state.tablePlan[col].description;
-             
         //populo os valores para os states
         this.setState({idPlan: this.state.tablePlan[col]._id});
-        this.setState({descPlan: desc});
-        this.setState({wayImg: ''});
+        this.setState({description: this.state.tablePlan[col].description});
+        this.setState({wayImagen: this.state.tablePlan[col].wayImage});
         this.setState({status: this.state.tablePlan[col].status});
 
-
-        this.handleOpenUpdate();          
+        this.handleOpenCreate('update');          
+    }
+    
+    updateCheck() {
+        this.setState((oldState) => {
+          return {
+            checked: !oldState.checked,
+          };
+        });
     }
 
-    handleToggle(event, isInputChecked){
-        this.setState({status: isInputChecked})
+    validField = () =>{
+        var valid = true;
+        if(this.description.input.value === ''){
+            this.setState({erroDescription: 'campo obrigatório'});
+            valid = false;
+        }
+        return valid;
     }
 
-    formateDate = (date) => {       
-        var dt = new Date(date);
-        var nextDate = dt.getDate();
-        dt.setDate(nextDate);
-        var newDate = dt.toLocaleString();
-        return  newDate;
+    changeField = () => {
+        if(this.description.input.value !== '')
+            this.setState({erroDescription: ''});
     }
+
     makeDataForPlan = () => {
         return{
             _id: this.state.idPlan,
             description: this.description.input.value,
-            wayImagen: 'wayImagen',
-            status: this.state.status
+            wayImage: this.state.wayImagen,
+            status: this.state.checked
         }
     }
 
-    createPlan = () => {     
-
-        console.log(JSON.stringify(this.makeDataForPlan()));
-         
-        HttpService.make().post('/createPlan', this.makeDataForPlan())
-                            .then(success => {
-                                alert('Plano incluido com sucesso');
-                                this.getPlan();
-                                this.handleCloseCreate();
-                            })
-                            .catch(error =>{
-                                console.log('Erro ao criar uma promoção');
-                            })
+    createPlan = () => {      
+        if(this.validField()){
+            HttpService.make().post('/createUpdatePlan', this.makeDataForPlan())
+                              .then(success => {
+                                  this.getPlan();
+                                  this.handleCloseCreate();
+                              })
+                              .catch(error =>{
+                                  console.log('Erro ao salvar plano');
+                              })
+        }        
+       
     }
 
-    updatePromotions = () => {     
-        
-       console.log(JSON.stringify(this.makeDataForPlan()));
-       HttpService.make().post('/updatePlan', this.makeDataForPlan())
-                           .then(success => {
-                               alert('Plano atualizado com sucesso');
-                               this.getPlan();
-                               this.handleCloseUpdate();
-                           })
-                           .catch(error =>{
-                               console.log('Erro ao alterar o plano');
-                           })
-   }
-
-   deletePromotions = () => {     
-       
+    deletePlan = () => {     
         HttpService.make().post('/deletePlan', this.makeDataForPlan())
                         .then(success => {
                             alert('Dados excluido com sucesso');
                             this.getPlan();
-                            this.handleCloseUpdate();
+                            this.handleCloseCreate();
                         })
                         .catch(error =>{
                             console.log('Erro ao exluir uma promoção');
@@ -163,35 +175,7 @@ class Plan extends Component {
                         console.log('Erro ao buscar as promoçoes');
                     })
     }
-
-    uploadFile = () =>
-    {
-        PubSub.publish('dropzone-make-upload');
-    };
-
-    fileSelected = event => {
-        this.setState({fileSelec: event.target.files});
-    }
-
-    bindFile = () => {        
     
-        const fb = new FormData();
-        for(var i = 0; i < this.state.fileSelec.length; i++){
-            console.log(this.state.fileSelec[i]);
-            fb.append('files', this.state.fileSelec[i], this.state.fileSelec[i].name) 
-        }
-        
-        axios.post('http://localhost:8080/api/upload', fb)
-        .then(res => {
-            console.log(res);
-        })
-        .catch(error =>{
-            console.log(error)
-        })
-    }
-
-    
-   
     render(){
         
         //Botões para o Modal
@@ -206,49 +190,43 @@ class Plan extends Component {
 
             />,
             <RaisedButton
-                label="cancelar"
+                label="Excluir"
                 backgroundColor="#DD2C00"
-                icon={<CancelIo color="#FFF"/>}
-                labelStyle={{color: 'white'}}
-                onClick={this.handleCloseCreate}
-            />
-        ]
-
-        const actionsUpdate = [
-            <RaisedButton
-                label="atualizar"
-                backgroundColor="#0ac752"
-                icon={<NewIco color="#FFF"/>}
+                icon={<Delete color="#FFF"/>}
                 labelStyle={{color: 'white'}}
                 style={{marginRight:'20px'}}
-                onClick={this.updatePromotions}
-
-            />,
-            <RaisedButton
-                label="excluir"
-                backgroundColor="#DD2C00"
-                icon={<CancelIo color="#FFF"/>}
-                labelStyle={{color: 'white'}}
-                style={{marginRight:'20px'}}
-                onClick={this.deletePromotions}
+                disabled={this.state.enableDelete}
+                onClick={this.deletePlan}
             />,
             <RaisedButton
                 label="cancelar"
                 backgroundColor="#FF9800"
                 icon={<CancelIo color="#FFF"/>}
                 labelStyle={{color: 'white'}}
-                onClick={this.handleCloseUpdate}
+                onClick={this.handleCloseCreate}
             />
         ]
-
-     
-
         const bodyTable = [
             this.state.tablePlan.map((row, i) =>(
                 <TableRow key={i}>
                     <TableRowColumn>{row._id}</TableRowColumn>
                     <TableRowColumn>{row.description}</TableRowColumn>
                     <TableRowColumn>{row.status === true ? 'ATIVO' : 'INATIVO'}</TableRowColumn>
+                    <TableRowColumn>
+                            <FlatButton
+                                label={'Alterar'}
+                                primary={true}
+                                onTouchTap={() => this.handleCellClick(i)}                
+                                
+                            />
+                        </TableRowColumn>
+                        <TableRowColumn>
+                            <FlatButton
+                                label={'Imagem'}
+                                primary={true}
+                                onClick={() => this.openDialogImg(row._id)}                
+                            />
+                        </TableRowColumn>
                 </TableRow>
             ))
            
@@ -273,8 +251,7 @@ class Plan extends Component {
                     fixedHeader={this.state.fixedHeader}
                     fixedFooter={this.state.fixedFooter}
                     selectable={this.state.selectable}
-                    multiSelectable={this.state.multiSelectable}
-                    onCellClick={(col) => this.handleCellClick(col)}                    
+                    multiSelectable={this.state.multiSelectable}                
                 >
                     <TableHeader
                         displaySelectAll={this.state.showCheckboxes}
@@ -285,6 +262,8 @@ class Plan extends Component {
                             <TableHeaderColumn tooltip="ID">ID</TableHeaderColumn>
                             <TableHeaderColumn tooltip="Descrição">Descrição</TableHeaderColumn>
                             <TableHeaderColumn tooltip="Status">Status</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="Status">Alterar</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="Status">Imagem</TableHeaderColumn>
                         </TableRow>
                     </TableHeader>
                     <TableBody
@@ -306,49 +285,42 @@ class Plan extends Component {
                     open={this.state.openCreate}
                     autoScrollBodyContent={true}
                 >   
-                    
                     <TextField 
                         floatingLabelText="Descrição"
                         fullWidth={true}
                         disabled={this.state.disableField}
+                        onChange={this.changeField}
+                        errorText={this.state.erroDescription}
+                        defaultValue={this.state.description}
                         ref={(input) => {this.description = input;} }
                     />
                     <Toggle
                         label="Status:"
                         defaultToggled={this.state.status}
                         style={{paddingLeft: '600px'}}
-                        onToggle={(event, isInputChecked) => this.handleToggle(event, isInputChecked)}
-                    />
-                    <Dropzone limitFile={true}/>
-                                        
+                        onToggle={this.updateCheck.bind(this)}
+                    />  
+                    {
+                        
+                        (this.state.wayImagen !== '') ?
+                            <figure>
+                                <img 
+                                    alt={this.state.description}
+                                    src={'http://localhost:8080/api/getFile?name='+this.state.wayImagen} 
+                                    style={{width: '50%', height: '50%', border: 'solid 2px', marginTop: '20px'}}
+                                />
+                            </figure> : ''
+                    }
+                     
                 </Dialog>
-
-                <Dialog
-                    title="Alterar ou Excluir Plano"
-                    actions={actionsUpdate}
-                    modal={true}
-                    open={this.state.openUpdate}
-                    autoScrollBodyContent={true}
-                >   
-                    
-                    <TextField 
-                        floatingLabelText="Descrição"
-                        fullWidth={true}
-                        disabled={this.state.disableField}
-                        defaultValue={this.state.descPlan}
-                        ref={(input) => {this.description = input;} }
-                    />
-                    <Toggle
-                    label="Status:"
-                    defaultToggled={this.state.status}
-                    style={{paddingLeft: '600px'}}
-                    onToggle={(event, isInputChecked) => this.handleToggle(event, isInputChecked)}
-                />
-
-         
-                <Dropzone limitFile={false}/>
-                </Dialog>
-
+                {
+                    this.state.showDropzone ?
+                        <Dropzone 
+                            limitFile={true}
+                            local={'plan'}
+                            id={this.state.idPlan}
+                        />: null
+                }
             </div>
         );
     }

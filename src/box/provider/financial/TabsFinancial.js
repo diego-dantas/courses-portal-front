@@ -7,7 +7,6 @@ import PubSub from 'pubsub-js';
 
 import Plan from '../financial/Plan';
 import CoursesPlan from '../financial/CoursePlan';
-import Steps from '../courses/Steps';
 
 class TabsFinancial extends Component {
     constructor(props){
@@ -44,7 +43,7 @@ class TabsFinancial extends Component {
 
     componentDidMount()
     {
-        PubSub.publish('header-label',"Cursos");
+        PubSub.publish('header-label',"Financeiro");
     }
 
     handleChange = (value) => this.setState({slideIndex: value});
@@ -60,14 +59,12 @@ class TabsFinancial extends Component {
                         value={this.state.slideIndex} >
                         <Tab style={this.styles.tab} label="Plano" value={0} />
                         <Tab style={this.styles.tab} label="Curso / Plano" value={1} />
-                        <Tab style={this.styles.tab} label="Steps" value={2} />
                     </Tabs>
                     <SwipeableViews
                         index={this.state.slideIndex}
                         onChangeIndex={this.handleChange} >
                         <Plan />
                         <CoursesPlan />
-                        <Steps />
                     </SwipeableViews>
                 </div>
             </div>
