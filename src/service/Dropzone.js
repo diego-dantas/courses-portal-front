@@ -93,17 +93,19 @@ class Dropzone extends Component
         let url = 'http://localhost:8080/api/upload/'+this.state.local;
         axios.post(url, fb)
              .then(res => {
-                 
-                let urlUpdate = '/'+this.state.local;
-                let way = urlUpdate + '/' + this.dropzone.files[0].name;
-                HttpService.make().post(urlUpdate, this.returnWay(way, this.state.id))
-                                   .then(success =>{
-                                       this.closeDialog();
-                                       
-                                   })
-                                   .catch(error =>{
-                                       console.log(error);
-                                   })
+                
+                if(this.state.local !== 'carousel'){
+                    let urlUpdate = '/'+this.state.local;
+                    let way = urlUpdate + '/' + this.dropzone.files[0].name;
+                    HttpService.make().post(urlUpdate, this.returnWay(way, this.state.id))
+                                       .then(success =>{
+                                           console.log('update with success');
+                                       })
+                                       .catch(error =>{
+                                           console.log(error);
+                                       })
+                }
+                this.closeDialog();
              })
              .catch(error =>{
                  console.log(error)
@@ -131,6 +133,7 @@ class Dropzone extends Component
                 <Dialog
                     open={this.state.open}
                     actions={<FlatButton label='Sair' primary={true} onTouchTap={this.closeDialog} fullWidth={true}/>}
+                    autoScrollBodyContent={true}
                 >
                     <DropzoneComponent
                         config={config}
