@@ -157,6 +157,7 @@ class Courses extends Component {
     //metodo de click da tabela
     handleCellClick(col)
     {         
+        this.getCourses();
         this.state.courses[col].status ? this.setState({labelStatus: 'Ativo'}) : this.setState({labelStatus: 'Inativo'});
         this.setState({idCourse: this.state.courses[col]._id});
         this.setState({statusCourse: this.state.courses[col].status});

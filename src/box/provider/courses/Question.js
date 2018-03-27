@@ -81,6 +81,7 @@ class Question extends Component {
     };
 
     openDialog = (source) => {
+        this.getQuestions();
         this.setState({steps: JSON.parse(localStorage.getItem('steps'))});
         this.setState({courses: JSON.parse(localStorage.getItem('course'))});
         if(source === 'update'){

@@ -33,12 +33,18 @@ class ConfigEmail extends Component {
         };
     };
 
+    componentDidMount() {
+        this.getConfigEmail();
+    }
+
     fncHandleOpen = () =>
     {   
-        this.setState({email    : this.state.configEmail.email});
-        this.setState({password : this.state.configEmail.password});
-        this.setState({port     : this.state.configEmail.port});
-        this.setState({hostName : this.state.configEmail.hostName});
+        if(this.state.configEmail !== null){
+            this.setState({email    : this.state.configEmail.email});
+            this.setState({password : this.state.configEmail.password});
+            this.setState({port     : this.state.configEmail.port});
+            this.setState({hostName : this.state.configEmail.hostName});
+        }
         this.setState({open: true});
     }
 
@@ -53,6 +59,7 @@ class ConfigEmail extends Component {
         if(this.port.input.value     !== '') this.setState({errorPort:     ''});
         if(this.hostName.input.value !== '') this.setState({errorHostName: ''});
     }
+
     validField = () => {
         
         let valid = true;
