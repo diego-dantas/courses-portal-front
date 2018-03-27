@@ -78,7 +78,18 @@ class Dropzone extends Component
             wayImage: way,
             _id: id
         }
-   }
+    }
+
+
+    returnWayMaterial = (way, id) => {
+        return{
+            _id: "",
+            imagePath: way,
+            material: {
+                _id: id
+            }
+        }
+    }
 
     handlePost = () =>
     {
@@ -97,13 +108,27 @@ class Dropzone extends Component
                 if(this.state.local !== 'carousel'){
                     let urlUpdate = '/'+this.state.local;
                     let way = urlUpdate + '/' + this.dropzone.files[0].name;
-                    HttpService.make().post(urlUpdate, this.returnWay(way, this.state.id))
-                                       .then(success =>{
-                                           console.log('update with success');
-                                       })
-                                       .catch(error =>{
-                                           console.log(error);
-                                       })
+
+                    if(this.state.local === 'material'){
+
+                        HttpService.make().post(urlUpdate, this.returnWayMaterial(way, this.state.id))
+                                          .then(success =>{
+                                              console.log('update with success');
+                                          })
+                                          .catch(error =>{
+                                              console.log(error);
+                                          })
+                    }else{
+
+                        HttpService.make().post(urlUpdate, this.returnWay(way, this.state.id))
+                                          .then(success =>{
+                                              console.log('update with success');
+                                          })
+                                          .catch(error =>{
+                                              console.log(error);
+                                          })
+                    }
+                    
                 }
                 this.closeDialog();
              })

@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import HttpService from '../../../service/http/HttpService';
-
+import PubSub               from 'pubsub-js';
+import Dropzone             from '../../../service/Dropzone';
 
 //componentes 
 import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField'
 import Dialog from 'material-ui/Dialog';
 import SelectField from 'material-ui/SelectField';
@@ -52,15 +54,40 @@ class Material extends Component{
             //state error 
             errorName: '',
             errorOrder: '',
+            listMaterial: [],
+            showDropzone: false,
         }
 
     }
     
     componentDidMount() {
         this.getMaterial();
+        this.getListMaterial();
+        PubSub.subscribe('close-home-model', this.closeAll);
+    }
+    //Inicio do bloco de controle de imagem 
+    showModal = (type)=>{
+        let modal = {[type]:true};
+        this.setState(modal);
+    };
+
+    closeAll = (key, value) =>{
+        this.setState({'showDropzone':false});
+        this.getListMaterial();
+    };
+
+    openDialogImg = (id) => {
+        this.setState({idMaterial: id});
+        this.showModal('showDropzone')
     }
 
+    closeDialogImg = () => {
+        this.setState({openImg: false});
+    }
+    //Fim do bloco de controle da imagem
+
     openDialog = (source) => {
+        this.getListMaterial();
         this.setState({steps: JSON.parse(localStorage.getItem('steps'))});
         this.setState({courses: JSON.parse(localStorage.getItem('course'))});
 
@@ -150,6 +177,17 @@ class Material extends Component{
                               console.log('Erro ao buscar os cursos/planos');
                           })
     }
+
+    getListMaterial = () => {
+        HttpService.make().get('/getMaterialPath')
+                          .then(success => {
+                            this.setState({listMaterial: success.data});
+                          })
+                          .catch(error =>{
+
+                          })
+    }
+
     validateField = () => {
         var valid = true;
         if(this.order.input.value === '') {
@@ -196,6 +234,25 @@ class Material extends Component{
                    })
     }
 
+    deleteFile = (path, id) => {
+        let url = '/deleteFile?name='+path;
+        HttpService.make().get(url)
+                          .then(res => {
+                            
+                            HttpService.make().post('/deleteMaterialPath', this.makeForDataMaterialPath(path, id))
+                                              .then(success => {
+                                                    this.getListMaterial();
+                                              })
+                                              .catch(error => {
+                                                  console.log(error);
+                                              })
+
+                          })
+                          .catch(error => {
+                             console.log(error);
+                          })
+    }
+
     makeForDataMaterial = () =>{
         return{
             _id: this.state.idMaterial,
@@ -210,6 +267,17 @@ class Material extends Component{
             }
         }
     }
+
+    makeForDataMaterialPath = (way, idPath) => {
+        return{
+            _id: idPath,
+            imagePath: way,
+            material: {
+                _id: this.state.idMaterial
+            }
+        }
+    }
+
     render(){
 
         const actions = [
@@ -250,6 +318,21 @@ class Material extends Component{
                         <TableRowColumn>{row.status === true ? 'ATIVO' : 'INATIVO'}</TableRowColumn>
                         <TableRowColumn>{row.download === true ? 'SIM' : 'Não'}</TableRowColumn>
                         <TableRowColumn>{row.steps.name}</TableRowColumn>
+                        <TableRowColumn>
+                            <FlatButton
+                                label={'Alterar'}
+                                primary={true}
+                                onTouchTap={() => this.handleCellClick(i)}                
+                                
+                            />
+                        </TableRowColumn>
+                        <TableRowColumn>
+                            <FlatButton
+                                label={'Material'}
+                                primary={true}
+                                onClick={() => this.openDialogImg(row._id)}                
+                            />
+                        </TableRowColumn>
                     </TableRow>
                 )) :''         
         ]
@@ -273,8 +356,7 @@ class Material extends Component{
                     height='300px'
                     fixedHeader={true}
                     selectable={true}
-                    multiSelectable={false}
-                    onCellClick={(col) => this.handleCellClick(col)}                    
+                    multiSelectable={false}                
                 >
                     <TableHeader
                         displaySelectAll={false}
@@ -287,6 +369,8 @@ class Material extends Component{
                             <TableHeaderColumn tooltip="Status">Status</TableHeaderColumn>
                             <TableHeaderColumn tooltip="Status">Download</TableHeaderColumn>
                             <TableHeaderColumn tooltip="Status">Steps</TableHeaderColumn>
+                            <TableHeaderColumn>Alterar</TableHeaderColumn>
+                            <TableHeaderColumn>Material</TableHeaderColumn>
                         </TableRow>
                     </TableHeader>
                     <TableBody
@@ -393,8 +477,40 @@ class Material extends Component{
                             />  
                                
                         </div>
-                    </div>                  
+                    </div>    
+
+                    <h3>Lista de Material</h3>
+                    {
+                        this.state.listMaterial !== null ?
+                            this.state.listMaterial.map((row, i) => (
+                                row.material._id === this.state.idMaterial ?
+                                    <div key={i}>
+                                        <div className="row">
+                                            <div className="col-md-6 col-sm-6">
+                                                <p>{row.imagePath}</p>
+                                            </div>
+                                            <div className="col-md-6 col-sm-6">
+                                                <FlatButton
+                                                    label={'Excluir'}
+                                                    primary={true}
+                                                    onClick={() => this.deleteFile(row.imagePath, row._id)}                
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                :''
+                            )) 
+                        : ''
+                    }              
                 </ Dialog>
+                {
+                    this.state.showDropzone ?
+                        <Dropzone 
+                            limitFile={true}
+                            local={'material'}
+                            id={this.state.idMaterial}
+                        />: null
+                }
                      
             </div>
         );

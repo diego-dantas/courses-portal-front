@@ -60,7 +60,7 @@ class Carousel extends Component {
 
     deleteFile = (row) => {
         
-        let url = '/deleteFile?name='+row;
+        let url = '/deleteFile?name=carousel/'+row;
         HttpService.make().get(url)
                           .then(res => {
                              this.getNameImage();
