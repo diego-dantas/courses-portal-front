@@ -58,7 +58,7 @@ class ListStudents extends Component {
     {
         let filter = this.search.input.value;
         filter = filter.toUpperCase();
-        let result = _.filter(this.state.signatures, (o) => {
+        let result = _.filter(this.state.students, (o) => {
             let name = o.name.toUpperCase();
             return name.includes(filter);
         });
@@ -86,7 +86,7 @@ class ListStudents extends Component {
         this.keyRowsSelected = [];
         if (item === 'all') {
             _.forEach(rows, (item) => {
-                let result = _.filter(this.state.signatures, (o) => {
+                let result = _.filter(this.state.students, (o) => {
                     return o._id === item.key
                 });
                 if (result.length > 0) {
@@ -99,7 +99,7 @@ class ListStudents extends Component {
         if (item !== 'all' && item !== 'none') {
             _.forEach(item, (value) => {
 
-                let result = _.filter(this.state.signatures, (o) => {
+                let result = _.filter(this.state.students, (o) => {
                     return o._id === rows[value].key
                 });
                 if (result.length > 0) {
@@ -111,7 +111,7 @@ class ListStudents extends Component {
 
         let remakeRow = [];
         _.forEach(rows, (item) => {
-            let result = _.filter(this.state.signatures, (o) => {
+            let result = _.filter(this.state.students, (o) => {
                 return o._id === item.key
             });
             if (result.length > 0 && result[0].name !== undefined) {
@@ -155,7 +155,7 @@ class ListStudents extends Component {
                     fixedHeader={true}
                     selectable={true}
                     multiSelectable={true}
-                    //onRowSelection={(item) => this.rowSelected(item)}
+                    onRowSelection={(item) => this.rowSelected(item)}
                 >
                     <TableHeader
                         style={this.styles.tableHeader}

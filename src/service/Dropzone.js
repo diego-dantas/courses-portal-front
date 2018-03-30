@@ -114,23 +114,27 @@ class Dropzone extends Component
                         HttpService.make().post(urlUpdate, this.returnWayMaterial(way, this.state.id))
                                           .then(success =>{
                                               console.log('update with success');
+                                              this.closeDialog();
                                           })
                                           .catch(error =>{
                                               console.log(error);
+                                              alert('Erro ao atualizar a imagem')
                                           })
                     }else{
 
                         HttpService.make().post(urlUpdate, this.returnWay(way, this.state.id))
                                           .then(success =>{
                                               console.log('update with success');
+                                              this.closeDialog();
                                           })
                                           .catch(error =>{
                                               console.log(error);
+                                              alert('Erro ao atualizar a imagem')
                                           })
                     }
                     
                 }
-                this.closeDialog();
+                
              })
              .catch(error =>{
                  console.log(error)

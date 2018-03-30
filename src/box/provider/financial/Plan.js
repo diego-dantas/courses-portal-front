@@ -28,12 +28,13 @@ class Plan extends Component {
         this.state = {
             tablePlan: JSON.parse(localStorage.getItem('plan')),
             openCreate: false,
-            status: false,
-            checked:       false,            
+            status: false,   
             idPlan: '',
             description: '',
             wayImagen: '',
             erroDescription: '',
+            img: [],
+            labelStatus: 'Inativo',
             enableDelete: true,
 
              //state da tabela
@@ -79,7 +80,7 @@ class Plan extends Component {
     //Fim do bloco de controle da imagem
 
     handleOpenCreate = (source) => {
-
+        this.getPlan();
         if(source === 'update'){
             this.setState({enableDelete: false});
         }else{
@@ -90,6 +91,7 @@ class Plan extends Component {
             this.setState({erroDescription:''});
             this.setState({enableDelete: true});
         }
+        this.state.status ? this.setState({labelStatus: 'Ativo'}) : this.setState({labelStatus: 'Inativo'});
         this.setState({openCreate: true});   
     }
 
@@ -103,17 +105,29 @@ class Plan extends Component {
         this.setState({idPlan: this.state.tablePlan[col]._id});
         this.setState({description: this.state.tablePlan[col].description});
         this.setState({wayImagen: this.state.tablePlan[col].wayImage});
-        this.setState({status: this.state.tablePlan[col].status});
-
-        this.handleOpenCreate('update');          
+        this.setState({status: this.state.tablePlan[col].status})   
+        console.log(this.state.tablePlan[col].wayImage);
+        let vam = <figure>
+                    <img 
+                        alt={this.state.description}
+                        src={'http://localhost:8080/api/getFile?name='+this.state.tablePlan[col].wayImage} 
+                        style={{width: '50%', height: '50%', border: 'solid 2px', marginTop: '20px'}}
+                    />
+                </figure>
+        this.setState({img: vam})   
+        this.handleOpenCreate('update');        
     }
     
-    updateCheck() {
-        this.setState((oldState) => {
-          return {
-            checked: !oldState.checked,
-          };
-        });
+    handleToggle(event, isInputChecked){
+        
+        this.setState({status: isInputChecked})
+        
+        if(!this.state.status){
+            this.setState({labelStatus: 'Ativo'})
+        }else{
+            this.setState({labelStatus: 'Inativo'})
+        }
+        
     }
 
     validField = () =>{
@@ -135,7 +149,7 @@ class Plan extends Component {
             _id: this.state.idPlan,
             description: this.description.input.value,
             wayImage: this.state.wayImagen,
-            status: this.state.checked
+            status: this.state.status
         }
     }
 
@@ -212,6 +226,7 @@ class Plan extends Component {
                     <TableRowColumn>{row._id}</TableRowColumn>
                     <TableRowColumn>{row.description}</TableRowColumn>
                     <TableRowColumn>{row.status === true ? 'ATIVO' : 'INATIVO'}</TableRowColumn>
+                    <TableRowColumn>{row.wayImage}</TableRowColumn>
                     <TableRowColumn>
                             <FlatButton
                                 label={'Alterar'}
@@ -262,6 +277,7 @@ class Plan extends Component {
                             <TableHeaderColumn tooltip="ID">ID</TableHeaderColumn>
                             <TableHeaderColumn tooltip="Descrição">Descrição</TableHeaderColumn>
                             <TableHeaderColumn tooltip="Status">Status</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="Status">Caminho</TableHeaderColumn>
                             <TableHeaderColumn tooltip="Status">Alterar</TableHeaderColumn>
                             <TableHeaderColumn tooltip="Status">Imagem</TableHeaderColumn>
                         </TableRow>
@@ -277,41 +293,35 @@ class Plan extends Component {
 
                     </TableBody>
                 </Table>
-
                 <Dialog
                     title="Adicionar Plano"
                     actions={actions}
                     modal={true}
-                    open={this.state.openCreate}
+                    open={this.state.openCreate}                
                     autoScrollBodyContent={true}
                 >   
-                    <TextField 
-                        floatingLabelText="Descrição"
-                        fullWidth={true}
-                        disabled={this.state.disableField}
-                        onChange={this.changeField}
-                        errorText={this.state.erroDescription}
-                        defaultValue={this.state.description}
-                        ref={(input) => {this.description = input;} }
-                    />
-                    <Toggle
-                        label="Status:"
-                        defaultToggled={this.state.status}
-                        style={{paddingLeft: '600px'}}
-                        onToggle={this.updateCheck.bind(this)}
-                    />  
-                    {
-                        
-                        (this.state.wayImagen !== '') ?
-                            <figure>
-                                <img 
-                                    alt={this.state.description}
-                                    src={'http://localhost:8080/api/getFile?name='+this.state.wayImagen} 
-                                    style={{width: '50%', height: '50%', border: 'solid 2px', marginTop: '20px'}}
-                                />
-                            </figure> : ''
-                    }
-                     
+                    <div className="row">
+                        <div className="col-md-12 col-sm-12">
+                            <TextField 
+                                floatingLabelText="Descrição"
+                                fullWidth={true}
+                                disabled={this.state.disableField}
+                                onChange={this.changeField}
+                                errorText={this.state.erroDescription}
+                                defaultValue={this.state.description}
+                                ref={(input) => {this.description = input;} }
+                            />
+                        </div>
+                        <div className="col-md-12 col-sm-12">
+                            <Toggle 
+                                label={'Status: ' + this.state.labelStatus}
+                                labelPosition="right"
+                                defaultToggled={this.state.status}
+                                onToggle={(event, isInputChecked) => this.handleToggle(event, isInputChecked)}
+                            />
+                        </div>
+                    </div>
+                    {this.state.img}                     
                 </Dialog>
                 {
                     this.state.showDropzone ?
