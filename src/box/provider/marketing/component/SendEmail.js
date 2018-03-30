@@ -8,6 +8,7 @@ import TextField from 'material-ui/TextField';
 import LinearProgress from 'material-ui/LinearProgress';
 import {Step, StepLabel, Stepper,} from 'material-ui/Stepper';
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn,} from 'material-ui/Table';
+
 //icons
 import SendIco from 'material-ui/svg-icons/content/send';
 import ArrowForwardIcon from 'material-ui/svg-icons/navigation/arrow-forward';
@@ -23,6 +24,7 @@ class SendEmail extends Component {
             open: false,
             stepIndex: 0,
             sending: false,
+            screenDisable: false,
             html: '',
             subject: '',
             text: '',
@@ -150,9 +152,20 @@ class SendEmail extends Component {
 
     rowSelected = (item) =>
     {
-        //this.setState({arrayStudents:item});
+        
         let rows = this.state.rows;
         this.keyRowsSelected = [];
+        if (item !== 'all' && item !== 'none') {
+            
+            _.forEach(item, (value) => {
+                console.log(rows[value].key);
+                
+                this.state.students.map((row, i) => (
+                    parseInt(rows[value].key, 0) === row._id ? this.keyRowsSelected.push(row.email) : '' 
+                ))
+            });
+        }       
+
         if (item === 'all') {
             _.forEach(rows, (item) => {
                 let result = _.filter(this.state.students, (o) => {
@@ -165,18 +178,18 @@ class SendEmail extends Component {
             });
         }
 
-        if (item !== 'all' && item !== 'none') {
-            _.forEach(item, (value) => {
+        // if (item !== 'all' && item !== 'none') {
+        //     _.forEach(item, (value) => {
 
-                let result = _.filter(this.state.students, (o) => {
-                    return o._id === rows[value].key
-                });
-                if (result.length > 0) {
-                    this.keyRowsSelected.push(result[0].email);
-                }
-            });
+        //         let result = _.filter(this.state.students, (o) => {
+        //             return o._id === rows[value].key
+        //         });
+        //         if (result.length > 0) {
+        //             this.keyRowsSelected.push(result[0].email);
+        //         }
+        //     });
 
-        }
+        // }
         
         let remakeRow = [];
         _.forEach(rows, (item) => {
@@ -272,12 +285,13 @@ class SendEmail extends Component {
                                 selectable={true}
                                 multiSelectable={true}
                                 onRowSelection={(item) => this.rowSelected(item)}
+                                disabled={this.state.screenDisable}
                             >
                                 <TableHeader
                                     style={this.styles.tableHeader}
                                     displaySelectAll={true}
                                     adjustForCheckbox={true}
-                                    enableSelectAll={true}>
+                                >
 
                                     <TableRow>
                                         <TableHeaderColumn>Nome do aluno</TableHeaderColumn>
@@ -288,6 +302,7 @@ class SendEmail extends Component {
                                 <TableBody displayRowCheckbox={true}
                                         showRowHover={true}
                                         deselectOnClickaway={false}
+                                        disabled={this.state.screenDisable}
                                         style={this.styles.tableBody}>
                                     {this.state.rows}
                                 </TableBody>
@@ -304,16 +319,34 @@ class SendEmail extends Component {
 
     fncValidAndSendEmail = () =>
     {
-        let email =
-        {
-            subject: this.state.subject,
-            html: this.state.html,
-            text: this.state.text,
-            recipients: this.state.arrayStudents
-        };
-        console.log(email);
-
+        let email = [];
+        this.keyRowsSelected.map((row, i) => (
+            email.push({
+                assunto: this.state.subject,
+                textoHtml: this.state.html,
+                textoSimples: this.state.text,
+                student: {
+                    email: row
+                }
+            })
+        ))        
+        return email;
     };
+
+    sendListEmail = () => {
+        this.setState({screenDisable: true});
+        this.setState({sending: true})
+        HttpService.make().post('/sendEmail', this.fncValidAndSendEmail())
+                          .then(success => {
+                                this.setState({screenDisable: false});
+                                this.setState({sending: false});
+                                this.closeDialog();
+                          })
+                          .catch(error =>{
+                              console.log(error)
+                          })
+    }
+
     render(){
         const {stepIndex} = this.state;
         const actions = [
@@ -322,14 +355,16 @@ class SendEmail extends Component {
                 primary={true}
                 onTouchTap={stepIndex === 0 ? this.closeDialog : this.fncHandlePrev}
                 style={{marginRight: '10px'}}
+                disabled={this.state.screenDisable}
             />,
 
             <RaisedButton
                 backgroundColor="#0ac752"
+                disabled={this.state.screenDisable}
                 labelStyle={{color: 'white'}}
                 label={stepIndex === 1 ? 'Enviar' : 'Proximo'}
                 primary={true}
-                onTouchTap={stepIndex === 1 ? this.fncValidAndSendEmail : this.fncHandleNext}
+                onTouchTap={stepIndex === 1 ? this.sendListEmail : this.fncHandleNext}
                 style={{float: 'right', marginRight: '10px'}}/>
             ,
         ]
@@ -355,7 +390,9 @@ class SendEmail extends Component {
                     contentStyle={{width: '80%', maxWidth: 'none',minHeight: '450px', maxHeight: '450px'}}
                     bodyStyle={{minHeight: '400px', maxHeight: '400px'}}
                 >
+                    <br/>
                     {this.state.sending ?<LinearProgress mode="indeterminate" />  : null}
+                    
                     <Stepper activeStep={stepIndex} connector={<ArrowForwardIcon/>}>
                         <Step>
                             <StepLabel>Informações básicas</StepLabel>
