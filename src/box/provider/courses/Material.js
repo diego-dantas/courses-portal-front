@@ -506,7 +506,7 @@ class Material extends Component{
                 {
                     this.state.showDropzone ?
                         <Dropzone 
-                            limitFile={true}
+                            limitFile={false}
                             local={'material'}
                             id={this.state.idMaterial}
                         />: null

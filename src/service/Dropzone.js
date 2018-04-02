@@ -81,14 +81,23 @@ class Dropzone extends Component
     }
 
 
-    returnWayMaterial = (way, id) => {
-        return{
-            _id: "",
-            imagePath: way,
-            material: {
-                _id: id
-            }
+    returnWayMaterial = (id) => {
+        let urlUpdate = '/'+this.state.local;
+        let way = '';
+        let ways = [];
+        for(var i = 0; i <  this.dropzone.files.length; i++){
+
+            way = urlUpdate + '/' + this.dropzone.files[i].name
+            ways.push({
+                _id: "",
+                imagePath: way,
+                material: {
+                    _id: id
+                }
+            })
         }
+        console.log(ways);
+        return ways;
     }
 
     handlePost = () =>
@@ -110,16 +119,18 @@ class Dropzone extends Component
                     let way = urlUpdate + '/' + this.dropzone.files[0].name;
 
                     if(this.state.local === 'material'){
-
-                        HttpService.make().post(urlUpdate, this.returnWayMaterial(way, this.state.id))
+                        
+                        HttpService.make().post(urlUpdate, this.returnWayMaterial(this.state.id))
                                           .then(success =>{
-                                              console.log('update with success');
+                                              console.log('update with success Material');
                                               this.closeDialog();
                                           })
                                           .catch(error =>{
                                               console.log(error);
                                               alert('Erro ao atualizar a imagem')
-                                          })
+                                          })   
+                    
+                        
                     }else{
 
                         HttpService.make().post(urlUpdate, this.returnWay(way, this.state.id))
