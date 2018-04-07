@@ -189,6 +189,19 @@ class Plan extends Component {
                         console.log('Erro ao buscar as promoçoes');
                     })
     }
+
+    deleteFile = (path, id) => {
+        let url = '/deleteFile?name='+path;
+        console.log(url);
+        HttpService.make().get(url)
+                          .then(res => {
+                                this.setState({wayImagen: ''});
+                                this.createPlan();
+                          })
+                          .catch(error => {
+                             console.log(error);
+                          })
+    }
     
     render(){
         
@@ -321,7 +334,31 @@ class Plan extends Component {
                             />
                         </div>
                     </div>
-                    {this.state.img}                     
+                    <div className="row">
+                        <div className="col-md-6 col-sm-6">
+                            { 
+                                this.state.wayImagen !== '' ?
+                                    <figure>
+                                        <img 
+                                            alt={this.state.description}
+                                            src={'http://localhost:8080/api/getFile?name='+this.state.wayImagen} 
+                                            style={{width: '50%', height: '50%', border: 'solid 2px', marginTop: '20px'}}
+                                        />
+                                    </figure> :''
+                            }
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                            { 
+                                this.state.wayImagen !== '' ?
+                                    <FlatButton
+                                        label={'Excluir'}
+                                        primary={true}
+                                        onClick={() => this.deleteFile(this.state.wayImagen, this.state.idCourse)}                
+                                    />
+                                : ''
+                            }
+                        </div>
+                     </div>                         
                 </Dialog>
                 {
                     this.state.showDropzone ?

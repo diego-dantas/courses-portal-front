@@ -194,6 +194,19 @@ class Question extends Component {
                           })
     }
 
+    deleteFile = (path, id) => {
+        let url = '/deleteFile?name='+path;
+        console.log(url);
+        HttpService.make().get(url)
+                          .then(res => {
+                                this.setState({wayImage: ''});
+                                this.createUpdateQuestion();
+                          })
+                          .catch(error => {
+                             console.log(error);
+                          })
+    }
+
     handleCellClick(col)
     {   
         //populo os valores para os states
@@ -455,18 +468,31 @@ class Question extends Component {
                         defaultValue={this.state.alterE}
                         ref={(input) => {this.alterE = input;} }
                     />  
-                    {
-                        this.state.wayImage !== '' ? 
-                            <figure>
-                                <img 
-                                    alt={this.state.description}
-                                    src={'http://localhost:8080/api/getFile?name='+this.state.wayImage} 
-                                    style={{width: '50%', height: '50%', border: 'solid 2px', marginTop: '20px'}}
-                                />
-                            </figure> : ''
-                    }
-                   
-                    
+                    <div className="row">
+                        <div className="col-md-6 col-sm-6">
+                            { 
+                                this.state.wayImage !== '' ?
+                                    <figure>
+                                        <img 
+                                            alt={this.state.description}
+                                            src={'http://localhost:8080/api/getFile?name='+this.state.wayImage} 
+                                            style={{width: '50%', height: '50%', border: 'solid 2px', marginTop: '20px'}}
+                                        />
+                                    </figure> :''
+                            }
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                            { 
+                                this.state.wayImage !== '' ?
+                                    <FlatButton
+                                        label={'Excluir'}
+                                        primary={true}
+                                        onClick={() => this.deleteFile(this.state.wayImage, this.state.idCourse)}                
+                                    />
+                                : ''
+                            }
+                        </div>
+                     </div>    
                 </Dialog>
 
                 {

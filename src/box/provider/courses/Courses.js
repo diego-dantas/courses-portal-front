@@ -228,6 +228,19 @@ class Courses extends Component {
                    })
     }
 
+    deleteFile = (path, id) => {
+        let url = '/deleteFile?name='+path;
+        console.log(url);
+        HttpService.make().get(url)
+                          .then(res => {
+                                this.setState({wayImage: ''});
+                                this.createCourse();
+                          })
+                          .catch(error => {
+                             console.log(error);
+                          })
+    }
+
     makeDataForCourses = () => {
         return {
             _id: this.state.idCourse,
@@ -346,7 +359,7 @@ class Courses extends Component {
                 </Table>
 
                 <Dialog
-                    label="Adicionar Curso"
+                    title="Curso"
                     actions={actions}
                     open={this.state.openCreate}
                     contentStyle={{width: '80%', height: '100%', maxWidth: 'none'}}
@@ -357,6 +370,7 @@ class Courses extends Component {
                         labelPosition="right"
                         defaultToggled={this.state.statusCourse}
                         onToggle={(event, isInputChecked) => this.handleToggle(event, isInputChecked)}
+                        style={{marginTop: '20px'}}
                     />
                     <div className="row">
                         <div className="col-md-6 col-sm-6">
@@ -438,16 +452,32 @@ class Courses extends Component {
                             />
                         </div>
                     </div>
-                    {
-                        this.state.wayImage !== '' ?
-                            <figure>
-                                <img 
-                                    alt={this.state.description}
-                                    src={'http://localhost:8080/api/getFile?name='+this.state.wayImage} 
-                                    style={{width: '50%', height: '50%', border: 'solid 2px', marginTop: '20px'}}
-                                />
-                            </figure> :''
-                    }
+                    <div className="row">
+                        <div className="col-md-6 col-sm-6">
+                            { 
+                                this.state.wayImage !== '' ?
+                                    <figure>
+                                        <img 
+                                            alt={this.state.description}
+                                            src={'http://localhost:8080/api/getFile?name='+this.state.wayImage} 
+                                            style={{width: '50%', height: '50%', border: 'solid 2px', marginTop: '20px'}}
+                                        />
+                                    </figure> :''
+                            }
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                            { 
+                                this.state.wayImage !== '' ?
+                                    <FlatButton
+                                        label={'Excluir'}
+                                        primary={true}
+                                        onClick={() => this.deleteFile(this.state.wayImage, this.state.idCourse)}                
+                                    />
+                                : ''
+                            }
+                        </div>
+                     </div>
+                
                     
                 </Dialog>
                 {

@@ -79,7 +79,6 @@ class SendEmail extends Component {
 
         if (stepIndex < 1 && status) {
             this.setState({subject: this.subject.input.value});
-            this.setState({text:    this.text.input.refs.input.value});
             this.setState({html:    this.html.input.refs.input.value});
             this.setState({stepIndex: stepIndex + 1});
         }
@@ -92,10 +91,6 @@ class SendEmail extends Component {
             this.setState({errorSubject: 'Campo Obrigatório'});
             valid = false;
         } 
-        if(this.text.input.refs.input.value === ''){
-            this.setState({errorText: 'Campo Obrigatório'});
-            valid = false;
-        } 
         if(this.html.input.refs.input.value === ''){
             this.setState({errorHtml: 'Campo Obrigatório'});
             valid = false;
@@ -105,7 +100,6 @@ class SendEmail extends Component {
 
     changeField = () => {
         if(this.subject.input.value         !== '') this.setState({errorSubject: ''});
-        if(this.text.input.refs.input.value !== '') this.setState({errorText:    ''});
         if(this.html.input.refs.input.value !== '') this.setState({errorHtml:    ''});
         
     }
@@ -233,27 +227,14 @@ class SendEmail extends Component {
                             defaultValue={this.state.subject}
                         />
                         <TextField
-                            hintText="Informe o corpo do email (caso o html não carregue)"
-                            floatingLabelText="Texto"
-                            type="text"
-                            disabled={this.state.makeSend}
-                            errorText={this.state.errorText}
-                            fullWidth={true}
-                            multiLine={true}
-                            rows={2}
-                            ref={(input) => this.text = input}
-                            onChange={this.changeField}
-                            defaultValue={this.state.text}
-                        />
-                        <TextField
-                            hintText="Informe o html do email"
-                            floatingLabelText="HTML"
+                            hintText="Informe o texto ou html do email"
+                            floatingLabelText="TEXTO"
                             type="text"
                             disabled={this.state.makeSend}
                             errorText={this.state.errorHtml}
                             fullWidth={true}
                             multiLine={true}
-                            rows={2}
+                            rows={6}
                             ref={(input) => this.html = input}
                             onChange={this.changeField}
                             defaultValue={this.state.html}
@@ -324,7 +305,6 @@ class SendEmail extends Component {
             email.push({
                 assunto: this.state.subject,
                 textoHtml: this.state.html,
-                textoSimples: this.state.text,
                 student: {
                     email: row
                 }
