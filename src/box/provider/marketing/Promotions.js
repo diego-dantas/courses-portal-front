@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
-import HttpService from '../../../service/http/HttpService';
+import HttpService  from '../../../service/http/HttpService';
 
 import RaisedButton from 'material-ui/RaisedButton';
-import FlatButton from 'material-ui/FlatButton';
-import TextField from 'material-ui/TextField';
-import Checkbox from 'material-ui/Checkbox';
-import Toggle from 'material-ui/Toggle';
-import Dialog from 'material-ui/Dialog';
-import DatePicker from 'material-ui/DatePicker';
+import FlatButton   from 'material-ui/FlatButton';
+import IconButton   from 'material-ui/IconButton';
+import TextField    from 'material-ui/TextField';
+import Checkbox     from 'material-ui/Checkbox';
+import SelectField  from 'material-ui/SelectField';
+import MenuItem     from 'material-ui/MenuItem';
+import Toggle       from 'material-ui/Toggle';
+import Dialog       from 'material-ui/Dialog';
+import DatePicker   from 'material-ui/DatePicker';
 
 import {
     Table,
@@ -19,9 +22,11 @@ import {
 } from 'material-ui/Table';
 
 //icons
-import NewIco from 'material-ui/svg-icons/content/add';
+import NewIco   from 'material-ui/svg-icons/content/add';
 import CancelIo from 'material-ui/svg-icons/content/block'
-import Delete from 'material-ui/svg-icons/action/delete';
+import Delete   from 'material-ui/svg-icons/action/delete';
+import Search   from 'material-ui/svg-icons/action/search';
+
 
 
 let DateTimeFormat = global.Intl.DateTimeFormat;
@@ -31,9 +36,11 @@ class Promotions extends Component {
     constructor(){
         super();
         this.state = {
-            promotions: JSON.parse(localStorage.getItem('promotion')),
-            courses: JSON.parse(localStorage.getItem('course')),
+            promotions:      JSON.parse(localStorage.getItem('promotion')),
+            courses:         JSON.parse(localStorage.getItem('course')),
             coursePromotion: JSON.parse(localStorage.getItem('coursePromotion')),
+            category:        JSON.parse(localStorage.getItem('category')),
+            subCategory:     JSON.parse(localStorage.getItem('subCategory')),
             open: false,
             openCourse: false,
             openClear: false,
@@ -53,13 +60,15 @@ class Promotions extends Component {
 
             disableDelete: true,
             disableToggle: false,
+            disableField:  true,
             allCourses:    false,
             checked:       false,
 
-            arrayCourses:    [],
-            arrayNewCourses: [],
-            arrayAllCourses: [],
-            arrayAllNewCourses: []
+            arrayCourses:       [],
+            arrayNewCourses:    [],
+            arrayAllCourses:    [],
+            arrayAllNewCourses: [],
+            listCourses:        []
             
         }
     }
@@ -439,6 +448,41 @@ class Promotions extends Component {
         alert("to aqui");
     }
 
+    //Metodos de tratamento de mudança de compo da categoria
+    categoryChange = (event, index, value) => {
+        this.setState({cat: value});
+        this.setState({subCat: 0});
+        if(value !== 0) this.setState({disableField: false})
+        if(value === 0) this.setState({disableField: true})
+    }
+
+    //Metodos de tratamento de mudança de compo da sub-categoria
+    subCategoryChange = (event, index, value) => {
+        this.setState({subCat: value});
+        if(value !== 0) this.setState({disableField: false})
+        if(value === 0) this.setState({disableField: true})
+       // this.setState({idCategory: value})
+    }
+
+    makeListCourses = () => {
+        if(this.state.courses !== null){
+           let list = this.state.courses.map((row, index)=> (
+                        <Toggle
+                            key={index}
+                            name={'Toggle' + row._id}
+                            label={row.name}
+                            labelPosition="right"
+                            onToggle={(event, toggled) => this.handleToggle(event, toggled, index)}
+                            defaultToggled={this.validStatus(row._id, index)}
+                        />
+                    ))
+            
+            //this.setState({'listCourses': list});
+        }
+
+        
+    }
+
     render(){
         const actions = [
             <RaisedButton
@@ -534,7 +578,7 @@ class Promotions extends Component {
                 ))
             : ''
         ]
-
+/*
         const listCourses = [
             this.state.courses !== null ?
                 this.state.courses.map((row, index)=> (
@@ -548,7 +592,7 @@ class Promotions extends Component {
                     />
                 ))
             : ''
-        ]
+        ]*/
 
         const listAllCourses = [
             this.state.courses !== null ?
@@ -575,7 +619,8 @@ class Promotions extends Component {
                     labelStyle={{color: 'white'}}
                     style={{float: 'right', marginTop:'20px'}}
                     onClick={this.openDialog}
-                /><br/><br/><br/>
+                />
+                <br/><br/><br/>
                 <Table
                     height='300px'
                     fixedHeader={this.state.fixedHeader}
@@ -721,7 +766,52 @@ class Promotions extends Component {
                             />
                         </div>
                     </div>
-
+                    <div className="row">
+                        <div className="col-md-6 col-sm-6">
+                            <SelectField
+                                floatingLabelText="Categoria"
+                                fullWidth={true}
+                                value={this.state.cat}
+                                onChange={this.categoryChange}
+                            >  
+                                <MenuItem value={0} primaryText="Categorias"/>
+                                    {this.state.category.map( (row, index) => (
+                                        <MenuItem 
+                                            key={index}
+                                            value={row._id} primaryText={row.description}
+                                        />
+                                    ))}
+                            
+                            </SelectField>
+                        </div>
+                        <div className="col-md-5 col-sm-5">
+                            <SelectField
+                                floatingLabelText="Sub-Categoria"
+                                fullWidth={true}
+                                value={this.state.subCat}
+                                onChange={this.subCategoryChange}
+                                
+                            >  
+                                <MenuItem value={0} primaryText="Sub-Categoria"/>
+                                    {this.state.subCategory.map( (row, index) => (
+                                        row.grid._id === this.state.cat ?
+                                            <MenuItem 
+                                                key={index}
+                                                value={row._id} primaryText={row.description}/>:''                           
+                                    ))}
+                            
+                            </SelectField>
+                        </div>
+                        <div className="col-md-1 col-sm-1">
+                        <IconButton
+                             style={{float:'right' , marginTop:'30px'}}
+                             onClick={this.makeListCourses()}
+                             disabled={this.state.disableField}
+                        >
+                            <Search />
+                        </IconButton>
+                        </div>
+                    </div>
                     <hr/>
                     <div className="row">
                         <div className="col-md-6">
@@ -732,9 +822,9 @@ class Promotions extends Component {
                                 onToggle={this.updateCheck.bind(this)}
                             />
                             {
-                                (this.state.checked) ?
+                                /*(this.state.checked) ?
                                     listAllCourses :                            
-                                    listCourses
+                                    this.state.listCourses*/
                             }
                         </div>
                         <div className="col-md-6">
