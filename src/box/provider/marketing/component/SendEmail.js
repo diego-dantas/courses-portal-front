@@ -105,10 +105,8 @@ class SendEmail extends Component {
     }
 
     getStudents = () => {
-        console.log('vamos la mano');
         HttpService.make().get('/getStudents')
                    .then(success => {
-                        console.log(success.data);
                         localStorage.setItem('students', JSON.stringify(success.data));
                         this.setState({students: JSON.parse(localStorage.getItem('students'))});
                         this.fncMakeRows(this.state.students);

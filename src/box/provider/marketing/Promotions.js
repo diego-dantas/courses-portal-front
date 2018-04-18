@@ -22,10 +22,11 @@ import {
 } from 'material-ui/Table';
 
 //icons
-import NewIco   from 'material-ui/svg-icons/content/add';
-import CancelIo from 'material-ui/svg-icons/content/block'
-import Delete   from 'material-ui/svg-icons/action/delete';
-import Search   from 'material-ui/svg-icons/action/search';
+import NewIco    from 'material-ui/svg-icons/content/add';
+import CancelIo  from 'material-ui/svg-icons/content/block'
+import Delete    from 'material-ui/svg-icons/action/delete';
+import Search    from 'material-ui/svg-icons/action/search';
+import LogoutIco from 'material-ui/svg-icons/navigation/arrow-forward';
 
 
 
@@ -68,7 +69,8 @@ class Promotions extends Component {
             arrayNewCourses:    [],
             arrayAllCourses:    [],
             arrayAllNewCourses: [],
-            listCourses:        []
+            listCourses:        [],
+            listAllCourses:     []
             
         }
     }
@@ -272,17 +274,23 @@ class Promotions extends Component {
 
     linkCourses = (col) => {
 
-        this.setState({arrayCourses : []});
-        this.setState({arrayNewCourses : []});
-        this.setState({arrayAllCourses : []});
-        this.setState({arrayAllNewCourses : []});
+        this.setState({arrayCourses:       []});
+        this.setState({arrayNewCourses:    []});
+        this.setState({arrayAllCourses:    []});
+        this.setState({arrayAllNewCourses: []});
+        this.setState({listCourses:        []});   
+        this.setState({listAllCourses:     []});   
+        this.setState({cat:    0});
+        this.setState({subCat: 0});
  
         this.setState({statusCourse: false});
-        this.setState({checked: false});
+        this.setState({checked:      false});
+        this.setState({openCourse:   true});
+        this.setState({disableField: true});
         this.setState({idPromotion: this.state.promotions[col]._id});
         this.setState({description: this.state.promotions[col].description});
-        this.setState({coupon: this.state.promotions[col].codigoCupom});
-        this.setState({openCourse: true});
+        this.setState({coupon:      this.state.promotions[col].codigoCupom});
+        
     }
 
     closeLinkCourse = () => {
@@ -290,7 +298,7 @@ class Promotions extends Component {
     }
 
     
-    handleToggle(event, toggled, col){
+    handleToggle(event, toggled, idCourse){
 
         this.setState({
             [event.target.name]: toggled,
@@ -299,17 +307,17 @@ class Promotions extends Component {
             
             var find = false;
             this.state.arrayNewCourses.map((row, index) =>(
-                row === this.state.courses[col]._id ? find = true : ''
+                row === idCourse ? find = true : ''
             ))
 
             if(!find)
-                this.state.arrayNewCourses.push(this.state.courses[col]._id);
+                this.state.arrayNewCourses.push(idCourse);
 
         }else{
 
             var i = -1;        
             this.state.arrayNewCourses.map((row, index) =>(
-                row === this.state.courses[col]._id ? 
+                row === idCourse ? 
                     i = index: ''
             ))
             if(i >= 0)
@@ -318,7 +326,7 @@ class Promotions extends Component {
         console.log(this.state.arrayNewCourses);
     }
 
-    handleAllToggle(event, toggled, col){
+    handleAllToggle(event, toggled, idCourse){
         
         this.setState({
             [event.target.name]: toggled,
@@ -327,17 +335,17 @@ class Promotions extends Component {
             
             var find = false;
             this.state.arrayAllNewCourses.map((row, index) =>(
-                row === this.state.courses[col]._id ? find = true : ''
+                row === idCourse ? find = true : ''
             ))
 
             if(!find)
-                this.state.arrayAllNewCourses.push(this.state.courses[col]._id);
+                this.state.arrayAllNewCourses.push(idCourse);
 
         }else{
 
             var i = -1;        
             this.state.arrayAllNewCourses.map((row, index) =>(
-                row === this.state.courses[col]._id ? 
+                row === idCourse ? 
                     i = index: ''
             ))
             if(i >= 0)
@@ -354,8 +362,7 @@ class Promotions extends Component {
         HttpService.make().post('/saveCoursePromotion', this.makeDataForCourses())
                           .then(success => {
                               this.getCoursePromotion();
-                              alert('Dados salvos com sucesso');
-                              this.closeLinkCourse();
+                              alert('Cursos gravados com sucesso');  
                           })
                           .catch(error => {
                               console.log('Erro ao salvar as informções');
@@ -458,30 +465,49 @@ class Promotions extends Component {
 
     //Metodos de tratamento de mudança de compo da sub-categoria
     subCategoryChange = (event, index, value) => {
-        this.setState({subCat: value});
-        if(value !== 0) this.setState({disableField: false})
-        if(value === 0) this.setState({disableField: true})
-       // this.setState({idCategory: value})
+        this.setState({subCat: value});        
     }
 
     makeListCourses = () => {
-        if(this.state.courses !== null){
-           let list = this.state.courses.map((row, index)=> (
-                        <Toggle
-                            key={index}
-                            name={'Toggle' + row._id}
-                            label={row.name}
-                            labelPosition="right"
-                            onToggle={(event, toggled) => this.handleToggle(event, toggled, index)}
-                            defaultToggled={this.validStatus(row._id, index)}
-                        />
-                    ))
-            
-            //this.setState({'listCourses': list});
+        let listCourses = [];
+        if(this.state.subCat === 0){
+            for(var i = 0; i < this.state.courses.length; i++){
+                if(this.state.courses[i].grid._id === this.state.cat)
+                    listCourses.push(this.state.courses[i]);
+            }
+        }else{
+            for(i = 0; i < this.state.courses.length; i++){
+                if(this.state.courses[i].grid._id === this.state.cat && this.state.courses[i].subGrid._id === this.state.subCat)
+                    listCourses.push(this.state.courses[i]);
+            }
         }
-
         
+        let list = listCourses.map((row, index) => (
+            <Toggle
+                key={row._id}
+                name={'Toggle' + row._id}
+                label={row.name}
+                labelPosition="right"
+                onToggle={(event, toggled) => this.handleToggle(event, toggled, row._id)}
+                defaultToggled={this.validStatus(row._id, index)}
+            />
+        ));
+
+        let allList = listCourses.map((row, index) => (
+            <Checkbox
+                key={index}
+                name={'Checkbox' + row._id}
+                label={row.name}
+                //defaultChecked={this.state.checked}
+                defaultChecked={this.validAllStatus(row._id, index)}
+                onCheck={(event, toggled) => this.handleAllToggle(event, toggled, row._id)}
+            />
+        ));
+        this.setState({'listCourses':    list});        
+        this.setState({'listAllCourses': allList});  
     }
+
+    
 
     render(){
         const actions = [
@@ -504,7 +530,7 @@ class Promotions extends Component {
                 disabled={this.state.disableDelete}
             />,
             <RaisedButton
-                label="cancelar"
+                label="Cancelar"
                 backgroundColor="#FF9800"
                 icon={<CancelIo color="#FFF"/>}
                 labelStyle={{color: 'white'}}
@@ -514,7 +540,7 @@ class Promotions extends Component {
 
         const actionsLink = [
             <RaisedButton
-                label="Salvar"
+                label="gravar"
                 backgroundColor="#0ac752"
                 icon={<NewIco color="#FFF"/>}
                 labelStyle={{color: 'white'}}
@@ -523,9 +549,9 @@ class Promotions extends Component {
     
             />,
             <RaisedButton
-                label="cancelar"
+                label="sair"
                 backgroundColor="#FF9800"
-                icon={<CancelIo color="#FFF"/>}
+                icon={<LogoutIco color="#FFF"/>}
                 labelStyle={{color: 'white'}}
                 onClick={this.closeLinkCourse}
             />
@@ -578,36 +604,7 @@ class Promotions extends Component {
                 ))
             : ''
         ]
-/*
-        const listCourses = [
-            this.state.courses !== null ?
-                this.state.courses.map((row, index)=> (
-                    <Toggle
-                        key={index}
-                        name={'Toggle' + row._id}
-                        label={row.name}
-                        labelPosition="right"
-                        onToggle={(event, toggled) => this.handleToggle(event, toggled, index)}
-                        defaultToggled={this.validStatus(row._id, index)}
-                    />
-                ))
-            : ''
-        ]*/
-
-        const listAllCourses = [
-            this.state.courses !== null ?
-                this.state.courses.map((row, index)=> (
-                    <Checkbox
-                        key={index}
-                        name={'Checkbox' + row._id}
-                        label={row.name}
-                        //defaultChecked={this.state.checked}
-                        defaultChecked={this.validAllStatus(row._id, index)}
-                        onCheck={(event, toggled) => this.handleAllToggle(event, toggled, index)}
-                  />
-                ))
-            : ''
-        ]
+    
 
         return(
             <div>
@@ -805,7 +802,7 @@ class Promotions extends Component {
                         <div className="col-md-1 col-sm-1">
                         <IconButton
                              style={{float:'right' , marginTop:'30px'}}
-                             onClick={this.makeListCourses()}
+                             onClick={() => this.makeListCourses()}
                              disabled={this.state.disableField}
                         >
                             <Search />
@@ -816,22 +813,25 @@ class Promotions extends Component {
                     <div className="row">
                         <div className="col-md-6">
                             <Toggle 
-                                label={'TODOS OS CURSOS'}
+                                label={'MARCAR TODOS'}
                                 labelPosition="right"
                                 defaultToggled={this.state.statusCourse}
                                 onToggle={this.updateCheck.bind(this)}
+                                disabled={this.state.disableField}
                             />
                             {
-                                /*(this.state.checked) ?
-                                    listAllCourses :                            
-                                    this.state.listCourses*/
+                                
+                                (this.state.checked) ?
+                                    this.state.listAllCourses :                            
+                                    this.state.listCourses
                             }
                         </div>
                         <div className="col-md-6">
                             <FlatButton 
                                 label={'LIMPAR TODOS'}
                                 primary={true}
-                                onClick={this.openClear}
+                                onClick={() => this.openClear()}
+                                disabled={this.state.disableField}
                             />
                         </div>
                     </div>
