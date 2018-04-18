@@ -5,6 +5,7 @@ import HttpService from '../../../service/http/HttpService';
 //componentes 
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField'
+import FlatButton   from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
@@ -22,6 +23,9 @@ import {
 import NewIco from 'material-ui/svg-icons/content/add';
 import CancelIo from 'material-ui/svg-icons/content/block'
 import Delete from 'material-ui/svg-icons/action/delete';
+import Search    from 'material-ui/svg-icons/action/search';
+import Exposure    from 'material-ui/svg-icons/image/exposure';
+
 
 
 class CoursesPlan extends Component{
@@ -29,9 +33,11 @@ class CoursesPlan extends Component{
     constructor(props) {
         super(props);
         this.state = {
-            courses: JSON.parse(localStorage.getItem('course')),
-            plan: JSON.parse(localStorage.getItem('plan')),
-            coursePlan: JSON.parse(localStorage.getItem('coursePlan')),
+            courses:     JSON.parse(localStorage.getItem('course')),
+            plan:        JSON.parse(localStorage.getItem('plan')),
+            coursePlan:  JSON.parse(localStorage.getItem('coursePlan')),
+            category:    JSON.parse(localStorage.getItem('category')),
+            subCategory: JSON.parse(localStorage.getItem('subCategory')),
             open: false,
             enable:true,
             enableDelete: true,
@@ -40,6 +46,9 @@ class CoursesPlan extends Component{
             valorCourse: 0,
             idPlan: 0,
             valorPlano: 0,
+            percentage: 0,
+            listCourses: [],
+            listValueCourses: [],
         }
 
     }
@@ -57,13 +66,16 @@ class CoursesPlan extends Component{
             this.setState({enable: false});
             this.setState({enableDelete: false});
         }else{
+            this.setState({listCourses: []});
             this.setState({enable: true});
             this.setState({enableDelete: true});
             this.setState({idCoursePlan: ''});
-            this.setState({idCourse: ''});
+            this.setState({idCourse: 0});
             this.setState({idPlan: ''});
             this.setState({valorPlano: ''});
-            this.setState({valorCourse: ''})
+            this.setState({valorCourse: ''});
+            this.setState({cat: 0});
+            this.setState({subCat: 0});
         }
 
         this.setState({open: true});
@@ -73,20 +85,9 @@ class CoursesPlan extends Component{
         this.setState({open: false});
     }
 
-    changeCourse = (event, index, idCourse) => {
-        this.setState({idCourse});
-        this.state.courses.map( (row, index) => (
-            
-            row._id === idCourse ? 
-                this.setState({valorCourse: row.price}) : null
-        ))
-        if(idCourse !== 0 && this.state.idPlan !== 0) this.setState({enable: false});
-        if(idCourse === 0) this.setState({enable: true});
-    }
-
     changePlan = (event, index, idPlan) => {
         this.setState({idPlan});
-        if(idPlan !== 0 && this.state.idCourse !== 0) this.setState({enable: false});
+        if(idPlan !== 0) this.setState({enable: false});
         if(idPlan === 0) this.setState({enable: true});
     }
 
@@ -115,6 +116,7 @@ class CoursesPlan extends Component{
 
     createUpdateCoursePlan = () =>{
         
+        console.log(this.makeForDataCoursePlan());
         HttpService.make().post('/createUpdateCoursePlan', this.makeForDataCoursePlan())
                           .then(success => {
                               this.getCoursePlan();
@@ -138,17 +140,122 @@ class CoursesPlan extends Component{
     }
 
     makeForDataCoursePlan = () =>{
-        return{
-            _id: this.state.idCoursePlan,
-            price: this.valorPlano.input.value,
-            plan: {
-                _id: this.state.idPlan
-            },
-            course: {
-                _id: this.state.idCourse
+
+        let returnValue = this.state.listValueCourses.map((row) => (
+            {
+                _id: this.state.idCoursePlan,
+                price: document.getElementById('curso'+row._id).value,
+                percentage: this.percentage.input.value,
+                plan: {
+                    _id: this.state.idPlan
+                },
+                course: {
+                    _id: row._id
+                }
+            }
+        ));
+        return returnValue;        
+    }
+
+
+    //Metodos de tratamento de mudança de compo da categoria
+    categoryChange = (event, index, value) => {
+        this.setState({cat: value});
+        this.setState({subCat: 0});
+        this.setState({idCourse: 0});   
+        if(value !== 0) this.setState({disableField: false})
+        if(value === 0) this.setState({disableField: true})
+    }
+
+    //Metodos de tratamento de mudança de compo da sub-categoria
+    subCategoryChange = (event, index, value) => {
+        this.setState({subCat: value});   
+        this.setState({idCourse: 0});     
+    }
+
+    changeCourse = (event, index, idCourse) => {
+        this.setState({idCourse});
+        this.state.courses.map( (row, index) => (
+            
+            row._id === idCourse ? 
+                this.setState({valorCourse: row.price}) : null
+        ))       
+    }
+
+
+    //fuction que recupera os filtros e lista na tela
+    makeFilter = () => {
+
+        let listCourses = [];
+        if(this.state.cat === 0 && this.state.subCat === 0 && this.state.idCourse === 0){
+            for(var i = 0; i < this.state.courses.length; i++){
+                    listCourses.push(this.state.courses[i]);
+            }
+        }else if(this.state.subCat === 0 && this.state.idCourse === 0){
+            for(i = 0; i < this.state.courses.length; i++){
+                if(this.state.courses[i].grid._id === this.state.cat)
+                    listCourses.push(this.state.courses[i]);
+            }
+        }else if(this.state.idCourse === 0){
+            for(i = 0; i < this.state.courses.length; i++){
+                if(this.state.courses[i].grid._id === this.state.cat && this.state.courses[i].subGrid._id === this.state.subCat)
+                    listCourses.push(this.state.courses[i]);
+            }
+        }else if(this.state.idCourse !== 0){
+            for(i = 0; i < this.state.courses.length; i++){
+                if(this.state.courses[i]._id === this.state.idCourse)
+                    listCourses.push(this.state.courses[i]);
             }
         }
+        this.setState({listValueCourses: listCourses});
+        let list = listCourses.map((row, index) => (
+            <div className="row" key={index}>
+                <div className="col-md-4 col-sm-4">
+                    <TextField
+                        floatingLabelText="Descrição do curso"
+                        type="text"
+                        value={row.name}
+                        fullWidth={true}
+                        disabled={true}
+                    />    
+                </div>  
+                <div className="col-md-4 col-sm-4">
+                    <TextField
+                        floatingLabelText="Valor do Curso"
+                        type="number"
+                        value={row.price}
+                        fullWidth={true}
+                        disabled={true}
+                    />    
+                </div>         
+                <div className="col-md-4 col-sm-4">
+                    <TextField
+                        id={'curso'+row._id}
+                        floatingLabelText="Valor do Plano"
+                        type="number"
+                        disabled={this.state.enable}
+                        defaultValue={row.price}
+                        fullWidth={true}
+                        ref={(input) => {this.valorPlano = input;} }
+                    />  
+                </div>
+            </div>
+        ));
+        this.setState({'listCourses':    list});            
     }
+
+    calculaValor = () => {
+        this.setState({percentage: this.percentage.input.value})
+        this.state.listValueCourses.map((row) => (
+            document.getElementById('curso'+row._id).value = (row.price - ((row.price / 100) * this.percentage.input.value))
+        ));       
+    }
+
+    returnValue = (price) => {
+        let valor = ((price / 100) * this.state.percentage);
+        return valor;
+    }
+    
     render(){
 
         const actions = [
@@ -188,6 +295,7 @@ class CoursesPlan extends Component{
                         <TableRowColumn>{row.course.name}</TableRowColumn>
                         <TableRowColumn>{row.plan.description}</TableRowColumn>
                         <TableRowColumn>{row.price}</TableRowColumn>
+                        <TableRowColumn>{row.percentage + '%'}</TableRowColumn>
                     </TableRow>
                 ))           
         ]
@@ -222,6 +330,7 @@ class CoursesPlan extends Component{
                             <TableHeaderColumn tooltip="Descrição">Curso</TableHeaderColumn>
                             <TableHeaderColumn tooltip="Status">Plano</TableHeaderColumn>
                             <TableHeaderColumn tooltip="Status">Valor</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="Status">Porcentagem</TableHeaderColumn>
                         </TableRow>
                     </TableHeader>
                     <TableBody
@@ -245,29 +354,10 @@ class CoursesPlan extends Component{
                     <div className="row">
                         <div className="col-md-6 col-sm-6">
                             <SelectField
-                                floatingLabelText="Cursos"
-                                value={this.state.idCourse}
-                                onChange={this.changeCourse}
-                            >  
-                                <MenuItem value={0} primaryText="Curso"/>
-                                {
-                                    this.state.courses !== null ?
-                                        this.state.courses.map( (row, index) => (
-                                            <MenuItem 
-                                                key={index}
-                                                value={row._id} primaryText={row.name}
-                                            />
-                                        )): ''
-                                }
-                        
-                            </SelectField>
-                        </div>         
-            
-                        <div className="col-md-6 col-sm-6">
-                            <SelectField
                                 floatingLabelText="Planos"
                                 value={this.state.idPlan}
                                 onChange={this.changePlan}
+                                fullWidth={true}
                                 
                             >  
                                 <MenuItem value={0} primaryText="Plano"/>
@@ -281,29 +371,112 @@ class CoursesPlan extends Component{
                                 ))}
                             </SelectField>
                         </div>
+                        
+                    </div>
+                    <div className="row">
+                        <div className="col-md-6 col-sm-6">
+                            <SelectField
+                                floatingLabelText="Categoria"
+                                fullWidth={true}
+                                value={this.state.cat}
+                                onChange={this.categoryChange}
+                            >  
+                                <MenuItem value={0} primaryText="Categorias"/>
+                                    {this.state.category.map( (row, index) => (
+                                        <MenuItem 
+                                            key={index}
+                                            value={row._id} primaryText={row.description}
+                                        />
+                                    ))}
+                            
+                            </SelectField>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                            <SelectField
+                                floatingLabelText="Sub-Categoria"
+                                fullWidth={true}
+                                value={this.state.subCat}
+                                onChange={this.subCategoryChange}
+                                
+                            >  
+                                <MenuItem value={0} primaryText="Sub-Categoria"/>
+                                    {this.state.subCategory.map( (row, index) => (
+                                        row.grid._id === this.state.cat ?
+                                            <MenuItem 
+                                                key={index}
+                                                value={row._id} primaryText={row.description}/>:''                           
+                                    ))}
+                            
+                            </SelectField>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-md-6 col-sm-6">
+                            <SelectField
+                                floatingLabelText="Cursos"
+                                value={this.state.idCourse}
+                                onChange={this.changeCourse}
+                                fullWidth={true}
+                            >  
+                                <MenuItem value={0} primaryText="Curso"/>
+                                {
+                                    this.state.courses !== null ?
+                                        
+                                        this.state.courses.map( (row, index) => (
+                                            this.state.subCat === 0 ? 
+                                                row.grid._id === this.state.cat ?
+                                                    <MenuItem 
+                                                        key={index}
+                                                        value={row._id} primaryText={row.name}
+                                                    /> : ''
+                                            :
+                                                (row.grid._id === this.state.cat && row.subGrid._id === this.state.subCat) ?
+                                                    <MenuItem 
+                                                        key={index}
+                                                        value={row._id} primaryText={row.name}
+                                                    /> : ''
+
+                                        )): ''
+                                }
+                        
+                            </SelectField>
+                        </div>    
+
+                         <div className="col-md-5 col-sm-5">
+                            <FlatButton
+                                label="Buscar"
+                                primary={true}                                
+                                fullWidth={true}
+                                icon={<Search/>}
+                                style={{margin:'20px'}}
+                                onClick={() => this.makeFilter()}
+                            />
+                        </div>     
                     </div>
                     <div className="row">
                         <div className="col-md-6 col-sm-6">
                             <TextField
-                                floatingLabelText="Valor do Curso"
+                                floatingLabelText="Percentual de desconto"
                                 type="number"
-                                value={this.state.valorCourse}
-                                disabled={true}
-                            />  
-                               
-                        </div>         
-            
-                        <div className="col-md-6 col-sm-6">
-                            <TextField
-                                floatingLabelText="Valor do Plano"
-                                type="number"
-                                disabled={this.state.enable}
-                                defaultValue={this.state.valorPlano}
-                                ref={(input) => {this.valorPlano = input;} }
-                            />  
-                               
-                        </div>
+                                fullWidth={true}
+                                //onChange={() => this.calculaValor()}
+                                ref={(input) => {this.percentage = input;} }
+                            />    
+                        </div>    
+
+                         <div className="col-md-5 col-sm-5">
+                            <FlatButton
+                                label="Calcular"
+                                primary={true}                                
+                                fullWidth={true}
+                                icon={<Exposure/>}
+                                style={{margin:'20px'}}
+                                onClick={() => this.calculaValor()}
+                            />
+                        </div>     
                     </div>
+                    <hr/>
+                    {this.state.listCourses}
                 </ Dialog>
                      
             </div>
