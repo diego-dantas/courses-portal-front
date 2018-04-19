@@ -379,7 +379,7 @@ class Evaluation extends Component {
         return (
             <div>
                  <RaisedButton
-                    label="adicinar Avaliação"
+                    label="adicionar Avaliação"
                     fullWidth={true}
                     backgroundColor="#0ac752"
                     icon={<NewIco color="#FFF"/>}

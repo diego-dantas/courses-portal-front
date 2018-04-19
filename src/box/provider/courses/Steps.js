@@ -216,7 +216,7 @@ class Steps extends Component {
         return(
             <div>
                  <RaisedButton
-                    label="Adcionar Steps"
+                    label="adicionar Steps"
                     backgroundColor="#0ac752"
                     fullWidth={true}
                     icon={<NewIco color="#FFF"/>}

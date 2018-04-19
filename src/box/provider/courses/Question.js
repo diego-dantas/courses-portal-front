@@ -289,7 +289,7 @@ class Question extends Component {
         return(
             <div>
                 <RaisedButton
-                    label="adicinar Questão"
+                    label="adicionar Questão"
                     fullWidth={true}
                     backgroundColor="#0ac752"
                     icon={<NewIco color="#FFF"/>}

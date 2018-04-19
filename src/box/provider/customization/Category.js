@@ -177,7 +177,7 @@ class Category extends Component {
         return(
             <div>
                 <RaisedButton
-                    label="adicinar categoria"
+                    label="adicionar categoria"
                     backgroundColor="#0ac752"
                     icon={<NewIco color="#FFF"/>}
                     labelStyle={{color: 'white'}}

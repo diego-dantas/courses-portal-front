@@ -265,7 +265,7 @@ class Plan extends Component {
         return(
             <div>
                 <RaisedButton
-                    label="adicinar Plano"
+                    label="adicionar Plano"
                     fullWidth={true}
                     backgroundColor="#0ac752"
                     icon={<NewIco color="#FFF"/>}

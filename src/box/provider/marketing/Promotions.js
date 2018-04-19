@@ -469,9 +469,17 @@ class Promotions extends Component {
     }
 
     makeListCourses = () => {
+        
+        if(this.state.disableField === true)
+            this.setState({disableField: false});
+
         let listCourses = [];
-        if(this.state.subCat === 0){
+        if(this.state.cat === 0 && this.state.subCat === 0){
             for(var i = 0; i < this.state.courses.length; i++){
+                listCourses.push(this.state.courses[i]);
+            }
+        }else if(this.state.subCat === 0){
+            for(i = 0; i < this.state.courses.length; i++){
                 if(this.state.courses[i].grid._id === this.state.cat)
                     listCourses.push(this.state.courses[i]);
             }
@@ -609,7 +617,7 @@ class Promotions extends Component {
         return(
             <div>
                 <RaisedButton
-                    label="adicinar Promoção"
+                    label="adicionar Promoção"
                     fullWidth={true}
                     backgroundColor="#0ac752"
                     icon={<NewIco color="#FFF"/>}
@@ -803,7 +811,6 @@ class Promotions extends Component {
                         <IconButton
                              style={{float:'right' , marginTop:'30px'}}
                              onClick={() => this.makeListCourses()}
-                             disabled={this.state.disableField}
                         >
                             <Search />
                         </IconButton>

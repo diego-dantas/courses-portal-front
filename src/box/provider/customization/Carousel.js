@@ -74,7 +74,7 @@ class Carousel extends Component {
         return(
             <div>
                  <RaisedButton
-                    label="adicinar Imagem"
+                    label="adicionar Imagem"
                     fullWidth={true}
                     backgroundColor="#0ac752"
                     icon={<NewIco color="#FFF"/>}

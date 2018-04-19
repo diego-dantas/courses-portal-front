@@ -215,7 +215,7 @@ class SubCategory extends Component {
         return(
             <div>
                 <RaisedButton
-                    label="adicinar sub categoria"
+                    label="adicionar sub categoria"
                     backgroundColor="#0ac752"
                     icon={<NewIco color="#FFF"/>}
                     labelStyle={{color: 'white'}}

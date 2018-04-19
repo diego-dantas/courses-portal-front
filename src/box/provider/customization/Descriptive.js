@@ -168,7 +168,7 @@ class Descriptive extends Component {
         return(
             <div>
                 <RaisedButton
-                    label="adicinar Descrição"
+                    label="adicionar Descrição"
                     backgroundColor="#0ac752"
                     icon={<NewIco color="#FFF"/>}
                     labelStyle={{color: 'white'}}

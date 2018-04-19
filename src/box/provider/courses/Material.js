@@ -341,7 +341,7 @@ class Material extends Component{
         return(
             <div>
                 <RaisedButton
-                    label="Adcionar Material"
+                    label="adicionar Material"
                     backgroundColor="#0ac752"
                     fullWidth={true}
                     icon={<NewIco color="#FFF"/>}
