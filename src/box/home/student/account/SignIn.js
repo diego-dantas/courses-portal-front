@@ -139,6 +139,15 @@ class SignIn extends  Component {
                         ref={(input) => this.password = input}
                         onChange={this.changeField}
                     />
+                    <TextField 
+                        hintText="Telefone"
+                        floatingLabelText="Telefone"
+                        type="number"
+                        fullWidth={true}
+                        ref={(input) => this.fone = input}
+                        onChange={this.changeField}
+                    />
+                    
                 </Dialog>
 
             </div>

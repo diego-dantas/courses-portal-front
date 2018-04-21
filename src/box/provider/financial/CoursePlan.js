@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import HttpService from '../../../service/http/HttpService';
+import _ from 'lodash';
 
 
 //componentes 
@@ -39,6 +40,7 @@ class CoursesPlan extends Component{
             category:    JSON.parse(localStorage.getItem('category')),
             subCategory: JSON.parse(localStorage.getItem('subCategory')),
             open: false,
+            openClear: false,
             enable:true,
             enableDelete: true,
             idCourse: 0,
@@ -49,6 +51,7 @@ class CoursesPlan extends Component{
             percentage: 0,
             listCourses: [],
             listValueCourses: [],
+            bodyTable: []
         }
 
     }
@@ -58,25 +61,29 @@ class CoursesPlan extends Component{
     }
 
     openDialog = (source) => {
-        this.setState({courses: JSON.parse(localStorage.getItem('course'))});
-        this.setState({plan:    JSON.parse(localStorage.getItem('plan'))});
-        
+        this.setState({courses:     JSON.parse(localStorage.getItem('course'))});
+        this.setState({plan:        JSON.parse(localStorage.getItem('plan'))});
+        this.setState({category:    JSON.parse(localStorage.getItem('category'))});
+        this.setState({subCategory: JSON.parse(localStorage.getItem('subCategory'))});
        
-        if(source === 'update'){
-            this.setState({enable: false});
-            this.setState({enableDelete: false});
-        }else{
+        // if(source === 'update'){
+        //     this.setState({enable: false});
+        //     this.setState({enableDelete: false});
+        //     this.setState({idCourse: 0});
+        //     this.setState({cat: 0});
+        //     this.setState({subCat: 0});
+        // }else{
             this.setState({listCourses: []});
             this.setState({enable: true});
             this.setState({enableDelete: true});
-            this.setState({idCoursePlan: ''});
+            this.setState({idCoursePlan: 0});
             this.setState({idCourse: 0});
-            this.setState({idPlan: ''});
+            this.setState({idPlan: 0});
             this.setState({valorPlano: ''});
             this.setState({valorCourse: ''});
             this.setState({cat: 0});
             this.setState({subCat: 0});
-        }
+       // }
 
         this.setState({open: true});
     }
@@ -84,6 +91,15 @@ class CoursesPlan extends Component{
     closeDialog = () => {
         this.setState({open: false});
     }
+    openClear = () => {
+        this.setState({openClear: true});
+        this.makeFilter();
+    }
+
+    closeClear = () => {
+        this.setState({openClear: false});
+    }
+
 
     changePlan = (event, index, idPlan) => {
         this.setState({idPlan});
@@ -107,7 +123,8 @@ class CoursesPlan extends Component{
         HttpService.make().get('/getCoursesPlans')
                           .then(success => {
                               localStorage.setItem('coursePlan', JSON.stringify(success.data));
-                              this.setState({coursePlan: JSON.parse(localStorage.getItem('coursePlan'))});
+                              this.setState({coursePlan: _.sortBy(JSON.parse(localStorage.getItem('coursePlan')), ['course.name', 'plan.description'])});
+                              //this.setState({coursePlan: _.sortBy(JSON.parse(localStorage.getItem('coursePlan')), ['course.name', 'plan.description'])});
                           })
                           .catch(Error =>{
                               console.log('Erro ao buscar os cursos/planos');
@@ -115,8 +132,6 @@ class CoursesPlan extends Component{
     }
 
     createUpdateCoursePlan = () =>{
-        
-        console.log(this.makeForDataCoursePlan());
         HttpService.make().post('/createUpdateCoursePlan', this.makeForDataCoursePlan())
                           .then(success => {
                               this.getCoursePlan();
@@ -137,6 +152,19 @@ class CoursesPlan extends Component{
                    .catch(error => {
                         console.log('Erro ao excluir o curso/plano');
                    })
+    }
+
+    deleteLinkCoursesPlan = () => {
+        HttpService.make().post('/deleteCoursePlan', this.makeForDataCoursePlan())
+                          .then(success => {
+                              this.getCoursePlan();
+                              this.closeClear();
+                              this.closeDialog();
+                          })
+                          .catch(error => {
+                              console.log('Erro ao salvar as informções');
+                          })
+
     }
 
     makeForDataCoursePlan = () =>{
@@ -207,6 +235,7 @@ class CoursesPlan extends Component{
                     listCourses.push(this.state.courses[i]);
             }
         }
+
         this.setState({listValueCourses: listCourses});
         let list = listCourses.map((row, index) => (
             <div className="row" key={index}>
@@ -234,14 +263,14 @@ class CoursesPlan extends Component{
                         floatingLabelText="Valor do Plano"
                         type="number"
                         disabled={this.state.enable}
-                        defaultValue={row.price}
+                        defaultValue={this.returnValue(row._id) !== 0 ?  this.returnValue(row._id) : row.price}
                         fullWidth={true}
                         ref={(input) => {this.valorPlano = input;} }
                     />  
                 </div>
             </div>
         ));
-        this.setState({'listCourses':    list});            
+        this.setState({'listCourses': list});            
     }
 
     calculaValor = () => {
@@ -251,10 +280,35 @@ class CoursesPlan extends Component{
         ));       
     }
 
-    returnValue = (price) => {
-        let valor = ((price / 100) * this.state.percentage);
+    returnValue = (id) => {
+        
+        var valor = 0;
+        for(var i = 0; i < this.state.coursePlan.length; i++){
+            if((this.state.coursePlan[i].course._id === id))
+                valor = this.state.coursePlan[i].price;
+        }
+        console.log(valor)
         return valor;
     }
+
+    // getList = () => {   
+        
+    //     if(this.state.coursePlan !== null){
+    //         this.setState({coursePlan: JSON.parse(localStorage.getItem('coursePlan'))})
+    //         let coursesPlan = _.sortBy(this.state.coursePlan, ['course.name', 'plan.description']);
+    //         let bodyTable = coursesPlan.map((row, i) =>(          
+    //                 <TableRow key={i}>
+    //                     <TableRowColumn style={{width: '30px'}}>{row._id}</TableRowColumn>
+    //                     <TableRowColumn>{row.course.name}</TableRowColumn>
+    //                     <TableRowColumn style={{textAlign: 'center'}}>{row.plan.description}</TableRowColumn>
+    //                     <TableRowColumn style={{width: '10%', textAlign: 'center'}}>{row.course.price}</TableRowColumn>
+    //                     <TableRowColumn style={{width: '10%', textAlign: 'center'}}>{row.price}</TableRowColumn>
+    //                     <TableRowColumn style={{textAlign: 'center'}}>{row.percentage + '%'}</TableRowColumn>
+    //                 </TableRow>
+    //             ))  
+    //         this.setState({'bodyTable': bodyTable});
+    //     }
+    // }
     
     render(){
 
@@ -287,17 +341,38 @@ class CoursesPlan extends Component{
             />
         ]
 
+        const actionsClear = [
+            <RaisedButton
+                label="SIM"
+                backgroundColor="#0ac752"
+                icon={<NewIco color="#FFF"/>}
+                labelStyle={{color: 'white'}}
+                style={{marginRight:'20px'}}
+                onClick={this.deleteLinkCoursesPlan}
+    
+            />,
+            <RaisedButton
+                label="NÃO"
+                backgroundColor="#FF9800"
+                icon={<CancelIo color="#FFF"/>}
+                labelStyle={{color: 'white'}}
+                onClick={this.closeClear}
+            />
+        ] 
+        
         const bodyTable = [
-            this.state.coursePlan === null ? '' :
+            this.state.coursePlan !== null ? 
                 this.state.coursePlan.map((row, i) =>(          
                     <TableRow key={i}>
-                        <TableRowColumn>{row._id}</TableRowColumn>
+                        <TableRowColumn style={{width: '30px'}}>{row._id}</TableRowColumn>
                         <TableRowColumn>{row.course.name}</TableRowColumn>
-                        <TableRowColumn>{row.plan.description}</TableRowColumn>
-                        <TableRowColumn>{row.price}</TableRowColumn>
-                        <TableRowColumn>{row.percentage + '%'}</TableRowColumn>
+                        <TableRowColumn style={{textAlign: 'center'}}>{row.plan.description}</TableRowColumn>
+                        <TableRowColumn style={{width: '10%', textAlign: 'center'}}>{row.course.price}</TableRowColumn>
+                        <TableRowColumn style={{width: '10%', textAlign: 'center'}}>{row.price}</TableRowColumn>
+                        <TableRowColumn style={{textAlign: 'center'}}>{row.percentage + '%'}</TableRowColumn>
                     </TableRow>
-                ))           
+                ))  
+            :''
         ]
         return(
             <div>
@@ -318,7 +393,8 @@ class CoursesPlan extends Component{
                     fixedHeader={true}
                     selectable={true}
                     multiSelectable={false}
-                    onCellClick={(col) => this.handleCellClick(col)}                    
+                    autoScrollBodyContent={true}
+                    //onCellClick={(col) => this.handleCellClick(col)}                    
                 >
                     <TableHeader
                         displaySelectAll={false}
@@ -326,11 +402,12 @@ class CoursesPlan extends Component{
                         enableSelectAll={false}
                     >
                         <TableRow>
-                            <TableHeaderColumn tooltip="ID">ID</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="Descrição">Curso</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="Status">Plano</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="Status">Valor</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="Status">Porcentagem</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="ID" style={{width: '30px'}}>ID</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="Descrição" style={{textAlign: 'center'}}>Curso</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="Status" style={{textAlign: 'center'}}>Plano</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="Status" style={{width: '10%', textAlign: 'center'}}>Valor do curso</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="Status" style={{width: '10%', textAlign: 'center'}}>Valor do plano</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="Status" style={{textAlign: 'center'}}>Porcentagem</TableHeaderColumn>
                         </TableRow>
                     </TableHeader>
                     <TableBody
@@ -370,6 +447,15 @@ class CoursesPlan extends Component{
                                     : ''
                                 ))}
                             </SelectField>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                            <FlatButton 
+                                label={'LIMPAR TODOS'}
+                                primary={true}
+                                onClick={() => this.openClear()}
+                                disabled={this.state.enable}
+                                style={{margin:'20px'}}
+                            />
                         </div>
                         
                     </div>
@@ -478,6 +564,15 @@ class CoursesPlan extends Component{
                     <hr/>
                     {this.state.listCourses}
                 </ Dialog>
+                <Dialog
+                    title="Vincular Curso"
+                    actions={actionsClear}
+                    modal={true}
+                    open={this.state.openClear}
+                    autoScrollBodyContent={true}
+                >   
+                    <h3>Esta ação excluirá o vínculo desse plano com todos os cursos relacionados. Deseja prosseguir?</h3>
+                </Dialog>
                      
             </div>
         );
