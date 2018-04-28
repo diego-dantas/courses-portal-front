@@ -4,7 +4,6 @@ import SwipeableViews from 'react-swipeable-views'
 
 import PubSub from 'pubsub-js';
 
-import NavigationBar from '../dash/NavegationBar';
 import SubCategory from '../customization/SubCategory';
 import Category from '../customization/Category';
 import Descriptive from '../customization/Descriptive';
@@ -57,7 +56,6 @@ class Customization extends Component {
     render(){
         return (
             <div >
-                <NavigationBar />
                 <br/>
                 <div style={this.styles.paddingAbout}>
                     <Tabs

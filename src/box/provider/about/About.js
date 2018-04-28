@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
-import NavigationBar from '../dash/NavegationBar';
 import HttpService from '../../../service/http/HttpService';
 
 import PubSub from 'pubsub-js';
@@ -92,7 +91,6 @@ class About extends Component
     {
         return (
             <div>       
-                <NavigationBar />
                 <div style={this.style.paddingAbout}>
                     <TextField
                         id="email"

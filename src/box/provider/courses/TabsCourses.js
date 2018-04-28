@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 
-import NavigationBar from '../dash/NavegationBar';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import SwipeableViews from 'react-swipeable-views'
 
@@ -57,7 +56,6 @@ class TabsCourses extends Component {
     render(){
         return(
             <div>
-                <NavigationBar />
                 <br/>
                 <div style={this.styles.paddingAbout}>
                     <Tabs

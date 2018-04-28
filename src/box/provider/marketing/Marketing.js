@@ -4,10 +4,9 @@ import SwipeableViews from 'react-swipeable-views'
 
 import PubSub from 'pubsub-js';
 
-import NavigationBar from '../dash/NavegationBar';
-
 import Promotions from '../marketing/Promotions';
 import Email from '../marketing/Email';
+import Newsletter from '../marketing/Newsletter';
 
 class Marketing extends Component {
 
@@ -56,7 +55,6 @@ class Marketing extends Component {
     render(){
         return(
             <div>
-                <NavigationBar />
                 <br/>
                 <div style={this.styles.paddingAbout}>
                     <Tabs
@@ -65,12 +63,14 @@ class Marketing extends Component {
                         value={this.state.slideIndex} >
                         <Tab style={this.styles.tab} label="Promoções" value={0} />
                         <Tab style={this.styles.tab} label="E-mail" value={1} />
+                        <Tab style={this.styles.tab} label="Newsletter" value={2} />
                     </Tabs>
                     <SwipeableViews
                         index={this.state.slideIndex}
                         onChangeIndex={this.handleChange} >                    
                         <Promotions />
                         <Email />
+                        <Newsletter/>
                     </SwipeableViews>
                 </div>
             </div>

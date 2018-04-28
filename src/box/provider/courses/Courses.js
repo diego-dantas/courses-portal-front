@@ -78,6 +78,7 @@ class Courses extends Component {
     };
 
     componentDidMount() {
+        PubSub.publish('header-label',"Cursos");
         this.getCourses();
         PubSub.subscribe('close-home-model', this.closeAll);
     }
@@ -199,10 +200,7 @@ class Courses extends Component {
     }
     //Metodos de crud de dados 
     createCourse = () => {
-        console.log('to aqui mano');
         if(this.validateField() === true) {
-            console.log(this.makeDataForCourses());
-
             HttpService.make()
                        .post('/createUpdateCourse', this.makeDataForCourses())
                        .then(success => {
