@@ -10,7 +10,7 @@ import App from './App';
 
 //import of home
 //import Courses from './box/home/course/Courses';
-import ListCourses from './box/home/course/ListCourses';
+import ListCourses from './box/front/course/ListCourses';
 
 //import of dash
 import Dash from './box/provider/dash/Dash';
@@ -37,7 +37,7 @@ const Main = () => (
             <Router history={history}>
                 <div>
                     <Route exact path='/' component={App} />
-                    <Route exact path='/course/:cat/:subCat' component={ListCourses} />
+                    <Route exact path='/courses/:cat/:subCat' component={ListCourses} />
                     <PrivateRoute path='/provider/:way' component={Dash} />
                     {/* <Route exact path='/provider/about' component={About} />
                     <Route exact path='/provider/customization' component={Customization} />

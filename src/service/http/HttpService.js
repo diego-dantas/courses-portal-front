@@ -1,6 +1,6 @@
 const API_URL = "http://localhost:8080/api";
 //const API_URL = "https://courses-portal-api.herokuapp.com/api";    
-
+//const API_URL = "http://35.196.127.159:8080/api";
 
 /**
  * Abstraction of the ~GenericHttpRequest~ for each existing url

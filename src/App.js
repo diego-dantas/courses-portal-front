@@ -2,7 +2,9 @@
 import React, { Component } from 'react';
 
 //import of component
-import HeaderBar from './box/home/bar/HeaderBar';
+import HeaderBar from './box/front/bar/HeaderBar';
+import CarouselHome from './box/front/home/CarouselHome';
+import NavBar from './box/front/bar/NavBar';
 
 //import of css
 import  './static/style/css/global.css';
@@ -42,7 +44,8 @@ class App extends Component {
     render(){
         return(
             <div>
-                <HeaderBar />        
+                <NavBar />
+                <CarouselHome />
             </div>
         );
     } 

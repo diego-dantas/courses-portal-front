@@ -21,6 +21,10 @@ import ActionDashboard from 'material-ui/svg-icons/action/dashboard';
 
 import SignIn from '../student/account/SignIn';
 
+import './../../../static/css/bootstrap.min.css'
+import './../../../static/css/animate.min.css';
+import './../../../static/css/bootstrap-dropdownhover.min.css';
+
 
   
 class HeaderBar extends Component {
@@ -106,26 +110,47 @@ class HeaderBar extends Component {
 
     buildCourseMenu = () =>{
 
+        // let categories = JSON.parse(localStorage.getItem('category'));
+        
+        // if(categories !== undefined && categories !== null){
+            
+        //     let menu =  categories.map((category, index) =>
+        //         (this.validateSubMenu(category._id) === true) ?
+        //             <MenuItem key={index}
+        //                 rightIcon={<ArrowDropRight />}
+        //                 value = {category.description}
+        //                 primaryText = {category.description}
+                        
+        //                 menuItems={[
+        //                     <MenuItem 
+        //                         value = 'Teste'
+        //                         primaryText = {'Todos em ' + category.description}
+        //                     />,
+        //                     this.buildSubMenu(category._id)
+                            
+        //                 ]}
+        //             />   
+        //         : ''          
+        //     ); 
+        //     this.setState({'menu': menu});
+            
+        // }        
+        
         let categories = JSON.parse(localStorage.getItem('category'));
         
         if(categories !== undefined && categories !== null){
             
             let menu =  categories.map((category, index) =>
                 (this.validateSubMenu(category._id) === true) ?
-                    <MenuItem key={index}
-                        rightIcon={<ArrowDropRight />}
-                        value = {category.description}
-                        primaryText = {category.description}
-                        
-                        menuItems={[
-                            <MenuItem 
-                                value = 'Teste'
-                                primaryText = {'Todos em ' + category.description}
-                            />,
-                            this.buildSubMenu(category._id)
-                            
-                        ]}
-                    />   
+                    <li className="dropdown" key={index}>
+                        <a href={category.labelUrl}>{category.description}</a>
+                        <ul className="dropdown-menu">
+                            <li>
+                                <a href={category.labelUrl}>{"Todos em " + category.description}</a>
+                            </li>
+                            {this.buildSubMenu(category._id)}
+                        </ul>
+                    </li>
                 : ''          
             ); 
             this.setState({'menu': menu});
@@ -158,18 +183,23 @@ class HeaderBar extends Component {
                : 0            
         );
         
-        let subMenu = arraySub.map((sub, index) =>                    
-            <Link to={'/course/'+sub.grid.labelUrl+'/'+sub.labelUrl} className={"link-routes"}>
-                <MenuItem 
-                    key={index}
-                    value = {sub.description}
-                    primaryText = {sub.description}
-                    open={false}
-                    //onTouchTap={() => {console.log('/course/'+sub.grid.labelUrl+'/'+sub.labelUrl)}}
-                    onTouchTap={() => {PubSub.publish('idCat', sub.grid._id)}}
-                />    
-            </Link>
+        // let subMenu = arraySub.map((sub, index) =>                    
+        //     <Link to={'/course/'+sub.grid.labelUrl+'/'+sub.labelUrl} className={"link-routes"}>
+        //         <MenuItem 
+        //             key={index}
+        //             value = {sub.description}
+        //             primaryText = {sub.description}
+        //             open={false}
+        //             //onTouchTap={() => {console.log('/course/'+sub.grid.labelUrl+'/'+sub.labelUrl)}}
+        //             onTouchTap={() => {PubSub.publish('idCat', sub.grid._id)}}
+        //         />    
+        //     </Link>
               
+        // );
+        let subMenu = arraySub.map((sub, index) =>                               
+            <li key={index}>
+                <a href={'/courses/'+sub.grid.labelUrl+'/'+sub.labelUrl}>{sub.description}</a>
+            </li>              
         );
         
         return subMenu;
@@ -195,30 +225,27 @@ class HeaderBar extends Component {
     };
     groupMenu = () => {
         return (  
-            <div style={this.style.marginNav}>
-                
-                <FlatButton label="COURSES"
-                    style={{color: "#fff"}}
-                />    
-                <FlatButton label="Categorias"
-                    onMouseEnter={this.handleClick}
-                    onClick={this.handleClick}
-                    style={{color: "#fff"}}
-                    icon={<ActionDashboard/>}
-                />
-                <Popover
-                    open={this.state.open}
-                    anchorEl={this.state.anchorEl}
-                    anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-                    targetOrigin={{horizontal: 'left', vertical: 'top'}}
-                    onRequestClose={this.handleRequestClose}>
-                    <Menu 
-                        
-                    > 
+            <div className="row">
+                <div style={this.style.marginNav}>
+                    <FlatButton label="COURSES"
+                        style={{color: "#fff"}}
+                    />    
+                </div>      
+                <div className="dropdown">
+                    <FlatButton 
+                        label="Categorias"
+                        style={{color: "#fff"}}
+                        icon={<ActionDashboard/>}
+                        className="btn btn-default dropdown-toggle" 
+                        type="button" 
+                        data-toggle="dropdown" 
+                        data-hover="dropdown"
+                    />
+                    <ul className="dropdown-menu">
                         {this.state.menu}
-                    </Menu>
-                </Popover>
-            </div>      
+                    </ul>
+                </div>
+            </div>
         )
       };
 
@@ -233,8 +260,9 @@ class HeaderBar extends Component {
                     iconElementLeft={this.groupMenu()}
                     iconElementRight={this.groupButton()}
                     titleStyle={{display: 'none'}}
+                    style={{position: 'fixed'}}
                 />   
-                {(this.state.showModalSignIn) ? <SignIn/> : null}         
+                {(this.state.showModalSignIn) ? <SignIn/> : null}    
             </div>
         );
     }
