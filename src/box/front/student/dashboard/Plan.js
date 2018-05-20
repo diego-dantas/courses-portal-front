@@ -10,11 +10,10 @@ export default class Plan extends Component {
         }
         return(
             <div>
-                <div className="row">
-                    <div className="col-lg-12 text-center">
-                        <h3 style={style.fontStyle}>Plano</h3>  
-                    </div>   
-                </div>
+                <div className="col-lg-12 text-center">
+                    <h3 style={style.fontStyle}>Plano</h3>  
+                </div>   
+                <hr/>
                 
             </div>
         );

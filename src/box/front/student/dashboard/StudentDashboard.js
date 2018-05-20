@@ -24,7 +24,7 @@ const StudentDashboard = (props) => {
                     <div className="col-sm-12 col-md-3 col-lg-3 border border-secondary">
                         <NavDashboard />
                     </div>
-                    <div className="col-sm-12 col-md-9 col-lg-9 border border-secondary">
+                    <div className="col-sm-12 col-md-9 col-lg-9 border border-secondary" style={{paddingTop: '20px'}}>
                         <dash.item />
                     </div>
                 </div>
