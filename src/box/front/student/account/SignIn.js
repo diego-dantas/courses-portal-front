@@ -139,15 +139,23 @@ class SignIn extends  Component {
                         ref={(input) => this.password = input}
                         onChange={this.changeField}
                     />
-                    <TextField 
-                        hintText="Telefone"
-                        floatingLabelText="Telefone"
-                        type="number"
-                        fullWidth={true}
-                        ref={(input) => this.fone = input}
-                        onChange={this.changeField}
-                    />
-                    
+                    <div style={{textAlign:'center'}}>
+                        <h4 className="title">ou</h4>
+                        <FlatButton
+                            label="Facebook"
+                            labelPosition="after"
+                            primary={true}
+                            style={{fontSize: '18px',marginRight:'5%',color:"#4267b2"}}
+                            icon={<i className="fa fa-facebook"/>}
+                        />
+                        <FlatButton
+                            label="Google"
+                            labelPosition="after"
+                            primary={true}
+                            style={{fontSize: '18px', color:"#ea4335"}}
+                            icon={<i className="fa fa-google"/>}
+                        />
+                    </div>
                 </Dialog>
 
             </div>

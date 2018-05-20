@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import HttpService from './../../../service/http/HttpService';
 
-import { Carousel } from 'react-bootstrap';
-
 
 class CarouselHome extends Component {
 
@@ -11,6 +9,7 @@ class CarouselHome extends Component {
         super(props);
         this.state = {
             imgs: [],
+            imgsSlide: []
         }
 
     }
@@ -23,10 +22,49 @@ class CarouselHome extends Component {
         HttpService.make().get('/getImgCarousel')
                           .then(success => {
                               this.setState({imgs: success});
+                              this.buildCarousel();
+                              console.log(this.state.imgs);
                           })
                           .catch(error => {
                               console.log(error);
                           })
+    }
+
+    buildCarousel = () => {
+
+        let imgs = [];
+        let imgsSlide = [];
+        if(this.state.imgs !== null) {
+            imgsSlide = this.state.imgs.map((row, i) =>(
+                i === 0 ? 
+                    <li data-target="#carouselExampleIndicators" data-slide-to={i} className="active"></li>
+                : 
+                    <li data-target="#carouselExampleIndicators" data-slide-to={i}></li>
+            ));
+
+            imgs = this.state.imgs.map((row, i) =>(
+                    i === 0 ? 
+                        <div className="carousel-item active" key={i}>
+                            <img 
+                                className="d-block w-100" 
+                                src={'http://localhost:8080/api/getFile?name=carousel/' + row} 
+                                alt={row} 
+                                style={{width: '100%', height: '500px'}}
+                            />
+                        </div>
+                    : 
+                        <div className="carousel-item" key={i}>
+                            <img 
+                                className="d-block w-100" 
+                                src={'http://localhost:8080/api/getFile?name=carousel/' + row} 
+                                alt={row} 
+                                style={{width: '100%', height: '500px'}}
+                            />
+                        </div>
+                ));
+        }
+        this.setState({'imgsSlide': imgsSlide});
+        this.setState({'imgs'     : imgs});
     }
 
     
@@ -34,23 +72,10 @@ class CarouselHome extends Component {
         return(
             <div id="carouselExampleIndicators" className="carousel slide" data-ride="carousel">
                 <ol className="carousel-indicators">
-                    <li data-target="#carouselExampleIndicators" data-slide-to="0" className="active"></li>
-                    <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-                    <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+                   {this.state.imgsSlide}
                 </ol>
                 <div className="carousel-inner">
-                {
-                            this.state.imgs !== null ?
-                                this.state.imgs.map((row, i) => (
-                                    <div className="carousel-item active" key={i}>
-                                        <img 
-                                            alt={row}
-                                            src={'http://localhost:8080/api/getFile?name=carousel/'+row} 
-                                            style={{width: '100%', height: '450px'}}
-                                        />
-                                    </div>                                
-                            )): ''
-                        }
+                    {this.state.imgs}
                 </div>
                 <a className="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
                     <span className="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -60,7 +85,7 @@ class CarouselHome extends Component {
                     <span className="carousel-control-next-icon" aria-hidden="true"></span>
                     <span className="sr-only">Next</span>
                 </a>
-            </div>
+          </div>
 
         );
     }

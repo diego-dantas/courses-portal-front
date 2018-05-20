@@ -2,7 +2,6 @@
 import React, { Component } from 'react';
 
 //import of component
-import HeaderBar from './box/front/bar/HeaderBar';
 import CarouselHome from './box/front/home/CarouselHome';
 import NavBar from './box/front/bar/NavBar';
 

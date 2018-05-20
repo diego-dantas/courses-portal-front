@@ -3,11 +3,9 @@ import PubSub from 'pubsub-js'
 
 //import mateiral-ui
 import FlatButton from 'material-ui/FlatButton';
-import RaisedButton from 'material-ui/RaisedButton';
 
 //Incones
 import ActionDashboard from 'material-ui/svg-icons/action/dashboard';
-import Search from 'material-ui/svg-icons/action/search';
 
 
 import SignIn from '../student/account/SignIn';
@@ -28,8 +26,8 @@ class NavBar extends Component {
     }
 
     componentDidMount(){
-        PubSub.subscribe('close-home-model', this.closeAll);
         this.buildCourseMenu();
+        PubSub.subscribe('close-home-model', this.closeAll);
     }
 
     buildCourseMenu = () =>{
@@ -113,7 +111,7 @@ class NavBar extends Component {
                     className="navbar navbar-expand-md navbar-light bg-light btco-hover-menu fixed-top"
                     style={{boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'}}
                 >
-                    <a className="navbar-brand" href="#">E Odonto Digital</a>
+                    <a className="navbar-brand" href="/">E Odonto Digital</a>
                     <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>
                     </button>

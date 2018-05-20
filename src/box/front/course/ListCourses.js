@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import '../../../static/css/listCourses.css';
 
-import HeaderBar from '../bar/HeaderBar';
+import NavBar from '../bar/NavBar';
 
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton';
@@ -15,7 +15,7 @@ class ListCourses extends Component {
     render(){
         return(
             <div>
-                <HeaderBar/>                    
+                <NavBar/>                    
                 <TextField
                     hintText="O que você está procurando ?"
                     floatingLabelText="Buscar cursos"

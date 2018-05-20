@@ -3,7 +3,8 @@ import ReactDOM from 'react-dom';
 
 //import HttpService from './service/http/HttpService';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import { BrowserRouter, Router, Route, Redirect } from 'react-router-dom'
+import { BrowserRouter, Router, Route } from 'react-router-dom'
+// import { BrowserRouter, Router, Route, Redirect } from 'react-router-dom'
 
 //import of components
 import App from './App';
@@ -12,9 +13,11 @@ import App from './App';
 //import Courses from './box/home/course/Courses';
 import ListCourses from './box/front/course/ListCourses';
 
-//import of dash
+//import of dash provider
 import Dash from './box/provider/dash/Dash';
 
+//import of student profile
+import StudentDashboard from './box/front/student/dashboard/StudentDashboard'
 
 import history from './service/router/history'
 
@@ -39,6 +42,7 @@ const Main = () => (
                     <Route exact path='/' component={App} />
                     <Route exact path='/courses/:cat/:subCat' component={ListCourses} />
                     <PrivateRoute path='/provider/:way' component={Dash} />
+                    <PrivateRoute path='/student/:way' component={StudentDashboard}/>
                     {/* <Route exact path='/provider/about' component={About} />
                     <Route exact path='/provider/customization' component={Customization} />
                     <Route exact path='/provider/login' component={Login}/>
