@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import axios                from 'axios';
 
 import TextField    from 'material-ui/TextField';
 import SelectField  from 'material-ui/SelectField';
@@ -20,19 +21,61 @@ export default class Profile extends Component{
         super(props);
         this.state ={
             open: true,
-            sexo:      0,
-            noticia:   0, 
-            perfil:    0,
             stepIndex: 2,
-            name:     '',
-            email:    '',
-            password: '',
-
-
-            errorName:     '',
-            errorEmail:    '',
-            errorPassword: '',
+            dadosPessoais:{
+                name:     '',
+                email:    '',
+                password: '',
+                fone:     '',
+                celular:  '',
+                cpf:      '',
+                rg:       '',
+                outro:    '',
+                sexo:     0,
+                noticia:  0, 
+                perfil:   0,
+            },
+            cep:    '',
+            rua:    '',
+            numero: '',
+            bairro: '',
+            comple: '',
+            estado: 0,
+            cidade: 0,
+            errorMsg:{
+                errorName:     '',
+                errorEmail:    '',
+                errorPassword: '',
+            }
         }
+    }
+
+    componentDidMount(){
+
+    }
+
+    getCepAPI = () => {
+        axios.get('https://viacep.com.br/ws/'+this.cep.input.value+'/json')
+            .then(res => {
+                console.log(res.data);
+                if(res.data.erro === true){
+                    this.setState({'bairro':   ''});
+                    this.setState({'rua': ''});
+                }else{
+                    this.setState({'rua':    res.data.logradouro});
+                    this.setState({'bairro': res.data.bairro});
+                }               
+                
+            })
+            .catch(error => {
+                alert('CEP não encontrado, por favor preencher os campos');
+                this.setState({'bairro':   ''});
+                this.setState({'rua': ''});
+            })
+    }
+
+    bluindEndereco = (endereco) => {
+        this.setState({'endereco': endereco});
     }
     
     handleChangeSexo    = (event, index, sexo)    => this.setState({sexo});
@@ -57,7 +100,7 @@ export default class Profile extends Component{
         let grpBtns = [];
         if(step === 0){
             grpBtns = [
-                <div style={{margin: '12px 0'}}>
+                <div key={0} style={{margin: '12px 0'}}>
                     <RaisedButton
                         label="Próximo"
                         disableTouchRipple={true}
@@ -69,7 +112,7 @@ export default class Profile extends Component{
             ]
         }else if(step === 2){
             grpBtns = [
-                <div style={{margin: '12px 0'}}>
+                <div key={0} style={{margin: '12px 0'}}>
                     <FlatButton
                         label="Voltar"
                         disableTouchRipple={true}
@@ -80,7 +123,7 @@ export default class Profile extends Component{
             ]
         }else {
             grpBtns = [
-                <div style={{margin: '12px 0'}}>
+                <div key={0} style={{margin: '12px 0'}}>
                     <FlatButton
                         label="Voltar"
                         disableTouchRipple={true}
@@ -134,7 +177,8 @@ export default class Profile extends Component{
                                     hintText="Nome"
                                     floatingLabelText="Nome"
                                     type="text"
-                                    errorText={this.state.errorName}
+                                    defaultValue={this.state.dadosPessoais.name}
+                                    errorText={this.state.errorMsg.errorName}
                                     fullWidth={true}
                                     ref={(input) => this.name = input}
                                     onChange={this.changeField}
@@ -143,7 +187,8 @@ export default class Profile extends Component{
                                     hintText="Email"
                                     floatingLabelText="Email"
                                     type="text"
-                                    errorText={this.state.errorEmail}
+                                    defaultValue={this.state.dadosPessoais.email}
+                                    errorText={this.state.errorMsg.errorEmail}
                                     fullWidth={true}
                                     ref={(input) => this.email = input}
                                     onChange={this.changeField}
@@ -152,7 +197,8 @@ export default class Profile extends Component{
                                     hintText="Senha"
                                     floatingLabelText="Senha"
                                     type="password"
-                                    errorText={this.state.errorPassword}
+                                    defaultValue={this.state.dadosPessoais.password}
+                                    errorText={this.state.errorMsg.errorPassword}
                                     fullWidth={true}
                                     ref={(input) => this.password = input}
                                     onChange={this.changeField}
@@ -163,7 +209,7 @@ export default class Profile extends Component{
                                             hintText="Ex 1833334444"
                                             floatingLabelText="Fone"
                                             type="number"
-                                            errorText={this.state.errorPassword}
+                                            defaultValue={this.state.dadosPessoais.fone}
                                             fullWidth={true}
                                             ref={(input) => this.fone = input}
                                             onChange={this.changeField}
@@ -174,7 +220,7 @@ export default class Profile extends Component{
                                             hintText="Ex 18999998888"
                                             floatingLabelText="Celular"
                                             type="number"
-                                            errorText={this.state.errorPassword}
+                                            defaultValue={this.state.dadosPessoais.celular}
                                             fullWidth={true}
                                             ref={(input) => this.celular = input}
                                             onChange={this.changeField}
@@ -185,7 +231,7 @@ export default class Profile extends Component{
                                     <div className="col-md-12 col-lg-6">
                                         <SelectField
                                             floatingLabelText="Sexo"
-                                            value={this.state.sexo}
+                                            value={this.state.dadosPessoais.sexo}
                                             onChange={this.handleChangeSexo}
                                             fullWidth={true}
                                         >
@@ -197,7 +243,7 @@ export default class Profile extends Component{
                                     <div className="col-md-12 col-lg-6">
                                         <SelectField
                                             floatingLabelText="Deseja receber notícia ?"
-                                            value={this.state.noticia}
+                                            value={this.state.dadosPessoais.noticia}
                                             onChange={this.handleChangeNoticia}
                                             fullWidth={true}
                                         >
@@ -213,6 +259,7 @@ export default class Profile extends Component{
                                             hintText="CPF"
                                             floatingLabelText="CPF"
                                             type="text"
+                                            defaultValue={this.state.dadosPessoais.cpf}
                                             fullWidth={true}
                                             ref={(input) => this.cpf = input}
                                             onChange={this.changeField}
@@ -223,6 +270,7 @@ export default class Profile extends Component{
                                             hintText="RG"
                                             floatingLabelText="RG"
                                             type="text"
+                                            defaultValue={this.state.dadosPessoais.rg}
                                             fullWidth={true}
                                             ref={(input) => this.rg = input}
                                             onChange={this.changeField}
@@ -233,7 +281,7 @@ export default class Profile extends Component{
                                     <div className="col-md-12 col-lg-6">
                                         <SelectField
                                             floatingLabelText="Perfil"
-                                            value={this.state.perfil}
+                                            value={this.state.dadosPessoais.perfil}
                                             onChange={this.handleChangePerfil}
                                             fullWidth={true}
                                         >
@@ -249,6 +297,7 @@ export default class Profile extends Component{
                                             hintText="Outro"
                                             floatingLabelText="Outro"
                                             type="text"
+                                            defaultValue={this.state.dadosPessoais.outro}
                                             fullWidth={true}
                                             ref={(input) => this.outro = input}
                                             onChange={this.changeField}
@@ -269,6 +318,7 @@ export default class Profile extends Component{
                                             hintText="Ex 16050660"
                                             floatingLabelText="CEP"
                                             type="number"
+                                            defaultValue={'16050660'}
                                             fullWidth={true}
                                             ref={(input) => this.cep = input}
                                             onChange={this.changeField}
@@ -281,6 +331,7 @@ export default class Profile extends Component{
                                             secondary={true}
                                             icon={<Search />}
                                             style={{marginTop: '5%'}}
+                                            onClick={() => this.getCepAPI()}
                                         />
                                     </div>
                                 </div>
@@ -316,9 +367,10 @@ export default class Profile extends Component{
                                             hintText="Rua"
                                             floatingLabelText="Rua"
                                             type="text"
+                                            value={this.state.rua}
                                             fullWidth={true}
                                             ref={(input) => this.rua = input}
-                                            onChange={this.changeField}
+                                            onChange={(e, value) => this.setState({ rua: value})}
                                         />
                                     </div>
                                 </div>
@@ -328,6 +380,7 @@ export default class Profile extends Component{
                                             hintText="Número"
                                             floatingLabelText="Número"
                                             type="text"
+                                            defaultValue={this.state.numero}
                                             fullWidth={true}
                                             ref={(input) => this.numero = input}
                                             onChange={this.changeField}
@@ -339,8 +392,9 @@ export default class Profile extends Component{
                                             floatingLabelText="Bairro"
                                             type="text"
                                             fullWidth={true}
+                                            value={this.state.bairro}
                                             ref={(input) => this.bairro = input}
-                                            onChange={this.changeField}
+                                            onChange={(e, value) => this.setState({bairro: value})}
                                         />
                                     </div>
                                 </div>
@@ -350,8 +404,9 @@ export default class Profile extends Component{
                                             hintText="Complemento"
                                             floatingLabelText="Complemento"
                                             type="text"
+                                            defaultValue={this.state.comple}
                                             fullWidth={true}
-                                            ref={(input) => this.numero = input}
+                                            ref={(input) => this.comple = input}
                                             onChange={this.changeField}
                                         />
                                     </div>
@@ -379,12 +434,6 @@ export default class Profile extends Component{
                         </Step>
                     </Stepper>
                 </div>
-                <div style={style.formStyle}>
-                   
-                    
-                </div>
-               
-            
             </div>
         );
     }
