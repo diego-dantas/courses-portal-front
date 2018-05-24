@@ -23,7 +23,6 @@ class CarouselHome extends Component {
                           .then(success => {
                               this.setState({imgs: success});
                               this.buildCarousel();
-                              console.log(this.state.imgs);
                           })
                           .catch(error => {
                               console.log(error);
@@ -37,9 +36,9 @@ class CarouselHome extends Component {
         if(this.state.imgs !== null) {
             imgsSlide = this.state.imgs.map((row, i) =>(
                 i === 0 ? 
-                    <li data-target="#carouselExampleIndicators" data-slide-to={i} className="active"></li>
+                    <li key={i} data-target="#carouselExampleIndicators" data-slide-to={i} className="active"></li>
                 : 
-                    <li data-target="#carouselExampleIndicators" data-slide-to={i}></li>
+                    <li key={i} data-target="#carouselExampleIndicators" data-slide-to={i}></li>
             ));
 
             imgs = this.state.imgs.map((row, i) =>(

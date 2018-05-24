@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import HttpService from '../../../../service/http/HttpService';
+import history from  './../../../../service/router/history'
 
-import Dialog from 'material-ui/Dialog';
-import TextField from 'material-ui/TextField';
-import FlatButton from 'material-ui/FlatButton';
-import RaisedButton from 'material-ui/RaisedButton';
+
+import Dialog         from 'material-ui/Dialog';
+import TextField      from 'material-ui/TextField';
+import FlatButton     from 'material-ui/FlatButton';
+import RaisedButton   from 'material-ui/RaisedButton';
+import LinearProgress from 'material-ui/LinearProgress';
 
 
 import PubSub from 'pubsub-js';
@@ -25,7 +28,10 @@ class SignIn extends  Component {
             errorName: '',
             errorEmail: '',
             errorPassword: '',
+            enable: false
         }
+    }
+    componentDidMount() {
     }
 
     openDialog = () =>{
@@ -64,10 +70,14 @@ class SignIn extends  Component {
 
     createStudent = () => {
         if(this.validField()){
+            this.setState({enable: true});
             HttpService.make().post('/createUpdateStudent', this.makeDataForStudent())
                               .then(success => {
-                                    alert('usuario criado com sucesso');
+                                    localStorage.setItem('student', JSON.stringify(success.data));
+                                    history.push('/student/profile', success);
                                     this.closeDialog();
+                                    this.setState({enable: false});
+
                               })
                               .catch(error => {
                                   console.log('Erro ao criar o usuario');
@@ -91,6 +101,7 @@ class SignIn extends  Component {
                 primary={true}
                 onTouchTap={this.closeDialog}
                 style={{marginRight: '10px'}}
+                disabled={this.state.enable}
             />,
             <RaisedButton
                 backgroundColor="#0ac752"
@@ -98,7 +109,9 @@ class SignIn extends  Component {
                 label={'Criar Conta'}
                 primary={true}
                 onTouchTap={this.createStudent}
-                style={{float: 'right', marginRight: '10px'}}/>
+                style={{float: 'right', marginRight: '10px'}}
+                disabled={this.state.enable}    
+            />
             ,
         ];
 
@@ -112,12 +125,14 @@ class SignIn extends  Component {
                     onRequestClose={this.closeDialog}
                     style={{textAlign: 'center'}}
                 >
+                    { this.state.enable ? <LinearProgress mode="indeterminate" style={{marginTop: '15px'}} /> : ''}   
                     <TextField 
                         hintText="Nome"
                         floatingLabelText="Nome"
                         type="text"
                         errorText={this.state.errorName}
                         fullWidth={true}
+                        disabled={this.state.enable}
                         ref={(input) => this.name = input}
                         onChange={this.changeField}
                     />
@@ -127,6 +142,7 @@ class SignIn extends  Component {
                         type="text"
                         errorText={this.state.errorEmail}
                         fullWidth={true}
+                        disabled={this.state.enable}
                         ref={(input) => this.email = input}
                         onChange={this.changeField}
                     />
@@ -136,6 +152,7 @@ class SignIn extends  Component {
                         type="password"
                         errorText={this.state.errorPassword}
                         fullWidth={true}
+                        disabled={this.state.enable}
                         ref={(input) => this.password = input}
                         onChange={this.changeField}
                     />
@@ -145,6 +162,7 @@ class SignIn extends  Component {
                             label="Facebook"
                             labelPosition="after"
                             primary={true}
+                            disabled={this.state.enable}
                             style={{fontSize: '18px',marginRight:'5%',color:"#4267b2"}}
                             icon={<i className="fa fa-facebook"/>}
                         />
@@ -154,10 +172,10 @@ class SignIn extends  Component {
                             primary={true}
                             style={{fontSize: '18px', color:"#ea4335"}}
                             icon={<i className="fa fa-google"/>}
+                            disabled={this.state.enable}
                         />
                     </div>
                 </Dialog>
-
             </div>
         )
     }

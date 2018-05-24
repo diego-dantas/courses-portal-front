@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
+//import HttpServe            from './../../../../service/http/HttpService';
 import axios                from 'axios';
+import CustomLoad from './../../../component/CustomLoad';
 
 import TextField    from 'material-ui/TextField';
 import SelectField  from 'material-ui/SelectField';
@@ -20,33 +22,37 @@ export default class Profile extends Component{
     constructor(props){
         super(props);
         this.state ={
+            student: JSON.parse(localStorage.getItem('student')),
             open: true,
             stepIndex: 2,
-            dadosPessoais:{
-                name:     '',
-                email:    '',
-                password: '',
-                fone:     '',
-                celular:  '',
-                cpf:      '',
-                rg:       '',
-                outro:    '',
-                sexo:     0,
-                noticia:  0, 
-                perfil:   0,
-            },
+            //dados pessoais 
+            _id:      '',
+            name:     '',
+            email:    '',
+            password: '',
+            fone:     '',
+            celular:  '',
+            cpf:      '',
+            rg:       '',
+            outro:    '',
+            sexo:     0,
+            noticia:  0, 
+            perfil:   0,
+            //endereço
             cep:    '',
             rua:    '',
             numero: '',
             bairro: '',
             comple: '',
-            estado: 0,
-            cidade: 0,
-            errorMsg:{
-                errorName:     '',
-                errorEmail:    '',
-                errorPassword: '',
-            }
+            estado: '',
+            cidade: '',
+            
+            //mgs error
+            errorName:     '',
+            errorEmail:    '',
+            errorPassword: '',
+            
+            progress: false
         }
     }
 
@@ -54,33 +60,87 @@ export default class Profile extends Component{
 
     }
 
+    //busca o cep via api do viacep
     getCepAPI = () => {
         axios.get('https://viacep.com.br/ws/'+this.cep.input.value+'/json')
             .then(res => {
                 console.log(res.data);
                 if(res.data.erro === true){
-                    this.setState({'bairro':   ''});
-                    this.setState({'rua': ''});
+                    alert('CEP não encontrado, por favor preencher os campos');
+                    this.setState({'estado': ''});
+                    this.setState({'cidade': ''});
+                    this.setState({'rua':    ''});
+                    this.setState({'bairro': ''});
                 }else{
+                    this.setState({'estado': res.data.uf});
+                    this.setState({'cidade': res.data.localidade});
                     this.setState({'rua':    res.data.logradouro});
                     this.setState({'bairro': res.data.bairro});
+                    
                 }               
                 
             })
             .catch(error => {
                 alert('CEP não encontrado, por favor preencher os campos');
-                this.setState({'bairro':   ''});
-                this.setState({'rua': ''});
+                this.setState({'estado': ''});
+                this.setState({'cidade': ''});
+                this.setState({'rua':    ''});
+                this.setState({'bairro': ''});
             })
     }
 
-    bluindEndereco = (endereco) => {
-        this.setState({'endereco': endereco});
+    saveStudentsProfile = () => {
+        this.setState({progress: true});
+        console.log(this.makeDataForStudentProfile());
+    }
+
+    makeDataForStudentProfile = () => {
+        return{
+            _id:      this.state.student._id,
+            name:     this.state.name,
+            email:    this.state.email,
+            password: this.state.password,
+            phone:     this.state.fone,
+            cellPhone:  this.state.celular,
+            sexo:     this.state.sexo,
+            noticia:  this.state.noticia,
+            rg:       this.state.rg,
+            cpf:      this.state.cpf,
+            perfil:   this.state.perfil,
+            outro:    this.state.outro,
+            zipCode:  this.state.cep,
+            street:      this.state.rua,
+            number:   this.state.numero,
+            neighborhood:   this.state.bairro,
+            comple:   this.state.comple,
+            estado:   this.state.estado,
+            cidade:   this.state.cidade 
+        }
+    }
+
+    validField = () => {
+        
+        let valid = true;
+        if(this.email.input.value === ''){
+            this.setState({errorEmail: 'Campo Obrigatório'});
+            valid = false;
+        } 
+        if(this.password.input.value === ''){
+            this.setState({errorPassword: 'Campo Obrigatório'});
+            valid = false;
+        } 
+        if(this.name.input.value === ''){
+            this.setState({errorName: 'Campo Obrigatório'});
+            valid = false;
+        }
+       
+        return valid;
     }
     
     handleChangeSexo    = (event, index, sexo)    => this.setState({sexo});
     handleChangeNoticia = (event, index, noticia) => this.setState({noticia});
     handleChangePerfil  = (event, index, perfil)  => this.setState({perfil});
+
 
     handleNext = () => {
         const {stepIndex} = this.state;
@@ -158,6 +218,7 @@ export default class Profile extends Component{
         }
         return(
             <div>
+                { this.state.progress ? <CustomLoad /> : '' }
                 <div className="col-lg-12 text-center">
                     <h3 style={style.fontStyle}>Perfil</h3>  
                 </div>
@@ -177,31 +238,31 @@ export default class Profile extends Component{
                                     hintText="Nome"
                                     floatingLabelText="Nome"
                                     type="text"
-                                    defaultValue={this.state.dadosPessoais.name}
-                                    errorText={this.state.errorMsg.errorName}
+                                    value={this.state.student.name}
+                                    errorText={this.state.errorName}
                                     fullWidth={true}
                                     ref={(input) => this.name = input}
-                                    onChange={this.changeField}
+                                    onChange={(e, value) => this.setState({name: value})}
                                 />
                                 <TextField 
                                     hintText="Email"
                                     floatingLabelText="Email"
                                     type="text"
-                                    defaultValue={this.state.dadosPessoais.email}
-                                    errorText={this.state.errorMsg.errorEmail}
+                                    value={this.state.student.email}
+                                    errorText={this.state.errorEmail}
                                     fullWidth={true}
                                     ref={(input) => this.email = input}
-                                    onChange={this.changeField}
+                                    onChange={(e, value) => this.setState({email: value})}
                                 />
                                 <TextField 
                                     hintText="Senha"
                                     floatingLabelText="Senha"
                                     type="password"
-                                    defaultValue={this.state.dadosPessoais.password}
-                                    errorText={this.state.errorMsg.errorPassword}
+                                    value={this.state.student.password}
+                                    errorText={this.state.errorPassword}
                                     fullWidth={true}
                                     ref={(input) => this.password = input}
-                                    onChange={this.changeField}
+                                    onChange={(e, value) => this.setState({password: value})}
                                 />
                                 <div className="row">
                                     <div className="col-md-12 col-lg-6">
@@ -209,10 +270,10 @@ export default class Profile extends Component{
                                             hintText="Ex 1833334444"
                                             floatingLabelText="Fone"
                                             type="number"
-                                            defaultValue={this.state.dadosPessoais.fone}
+                                            value={this.state.fone}
                                             fullWidth={true}
                                             ref={(input) => this.fone = input}
-                                            onChange={this.changeField}
+                                            onChange={(e, value) => this.setState({fone: value})}
                                         />
                                     </div>
                                     <div className="col-md-12 col-lg-6">
@@ -220,10 +281,10 @@ export default class Profile extends Component{
                                             hintText="Ex 18999998888"
                                             floatingLabelText="Celular"
                                             type="number"
-                                            defaultValue={this.state.dadosPessoais.celular}
+                                            value={this.state.celular}
                                             fullWidth={true}
                                             ref={(input) => this.celular = input}
-                                            onChange={this.changeField}
+                                            onChange={(e, value) => this.setState({celular: value})}
                                         />
                                     </div>
                                 </div>
@@ -231,7 +292,7 @@ export default class Profile extends Component{
                                     <div className="col-md-12 col-lg-6">
                                         <SelectField
                                             floatingLabelText="Sexo"
-                                            value={this.state.dadosPessoais.sexo}
+                                            value={this.state.sexo}
                                             onChange={this.handleChangeSexo}
                                             fullWidth={true}
                                         >
@@ -243,7 +304,7 @@ export default class Profile extends Component{
                                     <div className="col-md-12 col-lg-6">
                                         <SelectField
                                             floatingLabelText="Deseja receber notícia ?"
-                                            value={this.state.dadosPessoais.noticia}
+                                            value={this.state.noticia}
                                             onChange={this.handleChangeNoticia}
                                             fullWidth={true}
                                         >
@@ -259,10 +320,10 @@ export default class Profile extends Component{
                                             hintText="CPF"
                                             floatingLabelText="CPF"
                                             type="text"
-                                            defaultValue={this.state.dadosPessoais.cpf}
+                                            value={this.state.cpf}
                                             fullWidth={true}
                                             ref={(input) => this.cpf = input}
-                                            onChange={this.changeField}
+                                            onChange={(e, value) => this.setState({cpf: value})}
                                         />
                                     </div>
                                     <div className="col-md-12 col-lg-6">
@@ -270,10 +331,10 @@ export default class Profile extends Component{
                                             hintText="RG"
                                             floatingLabelText="RG"
                                             type="text"
-                                            defaultValue={this.state.dadosPessoais.rg}
+                                            value={this.state.rg}
                                             fullWidth={true}
                                             ref={(input) => this.rg = input}
-                                            onChange={this.changeField}
+                                            onChange={(e, value) => this.setState({rg: value})}
                                         />
                                     </div>
                                 </div>
@@ -281,7 +342,7 @@ export default class Profile extends Component{
                                     <div className="col-md-12 col-lg-6">
                                         <SelectField
                                             floatingLabelText="Perfil"
-                                            value={this.state.dadosPessoais.perfil}
+                                            value={this.state.perfil}
                                             onChange={this.handleChangePerfil}
                                             fullWidth={true}
                                         >
@@ -297,10 +358,10 @@ export default class Profile extends Component{
                                             hintText="Outro"
                                             floatingLabelText="Outro"
                                             type="text"
-                                            defaultValue={this.state.dadosPessoais.outro}
+                                            value={this.state.outro}
                                             fullWidth={true}
                                             ref={(input) => this.outro = input}
-                                            onChange={this.changeField}
+                                            onChange={(e, value) => this.setState({outro: value})}
                                         />
                                     </div>
                                 </div>
@@ -318,10 +379,10 @@ export default class Profile extends Component{
                                             hintText="Ex 16050660"
                                             floatingLabelText="CEP"
                                             type="number"
-                                            defaultValue={'16050660'}
+                                            value={'16050660'}
                                             fullWidth={true}
                                             ref={(input) => this.cep = input}
-                                            onChange={this.changeField}
+                                            onChange={(e, value) => this.setState({cep: value})}
                                         />
                                     </div>
                                     <div className="col-md-12 col-lg-6">
@@ -337,28 +398,26 @@ export default class Profile extends Component{
                                 </div>
                                 <div className="row">
                                     <div className="col-md-12 col-lg-6">
-                                        <SelectField
+                                        <TextField 
+                                            hintText="Estado"
                                             floatingLabelText="Estado"
+                                            type="text"
                                             value={this.state.estado}
-                                            onChange={this.handleChangeEstado}
                                             fullWidth={true}
-                                        >
-                                            <MenuItem value={0} primaryText="Estado" />
-                                            <MenuItem value={1} primaryText="Masculino" />
-                                            <MenuItem value={2} primaryText="Feminino" />
-                                        </SelectField>
+                                            ref={(input) => this.estado = input}
+                                            onChange={(e, value) => this.setState({estado: value})}
+                                        />
                                     </div>
                                     <div className="col-md-12 col-lg-6">
-                                        <SelectField
+                                        <TextField 
+                                            hintText="Cidade"
                                             floatingLabelText="Cidade"
+                                            type="text"
                                             value={this.state.cidade}
-                                            onChange={this.handleChangeCidade}
                                             fullWidth={true}
-                                        >
-                                            <MenuItem value={0} primaryText="Cidade" />
-                                            <MenuItem value={1} primaryText="SIM" />
-                                            <MenuItem value={2} primaryText="NÃO" />
-                                        </SelectField>
+                                            ref={(input) => this.cidade = input}
+                                            onChange={(e, value) => this.setState({cidade: value})}
+                                        />
                                     </div>
                                 </div>
                                 <div className="row">
@@ -380,10 +439,10 @@ export default class Profile extends Component{
                                             hintText="Número"
                                             floatingLabelText="Número"
                                             type="text"
-                                            defaultValue={this.state.numero}
+                                            value={this.state.numero}
                                             fullWidth={true}
                                             ref={(input) => this.numero = input}
-                                            onChange={this.changeField}
+                                            onChange={(e, value) => this.setState({numero: value})}
                                         />
                                     </div>
                                     <div className="col-md-12 col-lg-6">
@@ -404,10 +463,10 @@ export default class Profile extends Component{
                                             hintText="Complemento"
                                             floatingLabelText="Complemento"
                                             type="text"
-                                            defaultValue={this.state.comple}
+                                            value={this.state.comple}
                                             fullWidth={true}
                                             ref={(input) => this.comple = input}
-                                            onChange={this.changeField}
+                                            onChange={(e, value) => this.setState({comple: value})}
                                         />
                                     </div>
                                 </div>
@@ -427,8 +486,10 @@ export default class Profile extends Component{
                                             primary={true} 
                                             fullWidth={true}
                                             style={{marginTop: '5%', marginBottom: '10%'}}
+                                            onClick={() => this.saveStudentsProfile()}
                                         />
                                     </div>
+                                    
                                 </div>
                             </StepContent>
                         </Step>

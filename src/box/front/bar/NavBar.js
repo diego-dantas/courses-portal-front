@@ -153,7 +153,7 @@ class NavBar extends Component {
                                     type="button" 
                                     className="btn btn-outline-primary"
                                     onClick={ () => this.showModal('showModalSignIn')}
-                                    style={{marginLeft: '10px'}}
+                                    style={{marginLeft: '10px', marginRight: '10px'}}
                                 >
                                     Cadastre-se
                                 </button>
