@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-//import HttpServe            from './../../../../service/http/HttpService';
+import HttpService          from './../../../../service/http/HttpService';
 import axios                from 'axios';
 import CustomLoad from './../../../component/CustomLoad';
 
@@ -23,8 +23,9 @@ export default class Profile extends Component{
         super(props);
         this.state ={
             student: JSON.parse(localStorage.getItem('student')),
+            profileAccount: JSON.parse(localStorage.getItem('profileAccount')),
             open: true,
-            stepIndex: 2,
+            stepIndex: 0,
             //dados pessoais 
             _id:      '',
             name:     '',
@@ -37,7 +38,7 @@ export default class Profile extends Component{
             outro:    '',
             sexo:     0,
             noticia:  0, 
-            perfil:   0,
+            perfil:   1,
             //endereço
             cep:    '',
             rua:    '',
@@ -57,14 +58,30 @@ export default class Profile extends Component{
     }
 
     componentDidMount(){
-
+        this.getProfileStudents();
+        this.setState({name: this.state.student.name})
+        this.setState({email: this.state.student.email})
+        this.setState({password: this.state.student.password})
     }
 
+    getProfileStudents = () => {
+        HttpService.make()
+                   .get('/getProfile')    
+                   .then(success => {
+                      localStorage.setItem('profileAccount', JSON.stringify(success.data));
+                      this.setState({profileAccount: JSON.parse(localStorage.getItem('profileAccount'))});
+                   })
+                   .catch(error => {
+                       console.log('Erro ao buscar na consulta de perfil ' + error);
+                   })
+
+    }
+    
     //busca o cep via api do viacep
     getCepAPI = () => {
+        this.setState({progress: true});
         axios.get('https://viacep.com.br/ws/'+this.cep.input.value+'/json')
             .then(res => {
-                console.log(res.data);
                 if(res.data.erro === true){
                     alert('CEP não encontrado, por favor preencher os campos');
                     this.setState({'estado': ''});
@@ -76,9 +93,8 @@ export default class Profile extends Component{
                     this.setState({'cidade': res.data.localidade});
                     this.setState({'rua':    res.data.logradouro});
                     this.setState({'bairro': res.data.bairro});
-                    
-                }               
-                
+                } 
+                this.setState({progress: false});              
             })
             .catch(error => {
                 alert('CEP não encontrado, por favor preencher os campos');
@@ -86,12 +102,27 @@ export default class Profile extends Component{
                 this.setState({'cidade': ''});
                 this.setState({'rua':    ''});
                 this.setState({'bairro': ''});
+                this.setState({progress: false});              
             })
     }
 
     saveStudentsProfile = () => {
-        this.setState({progress: true});
-        console.log(this.makeDataForStudentProfile());
+        if(this.validField()){
+            this.setState({progress: true});
+            HttpService.make()
+                       .post('/updateStudent', this.makeDataForStudentProfile())
+                       .then(success =>{
+                            localStorage.setItem('student', JSON.stringify(success.data));
+                            this.setState({student: JSON.parse(localStorage.getItem('student'))});
+                            this.setState({progress: false});
+                       })
+                       .catch(error => {
+                           console.log('Erro ao atualizar o cadastro do aluno ' + error);
+                           this.setState({progress: false});
+                       })
+        }
+        
+        
     }
 
     makeDataForStudentProfile = () => {
@@ -103,33 +134,35 @@ export default class Profile extends Component{
             phone:     this.state.fone,
             cellPhone:  this.state.celular,
             sexo:     this.state.sexo,
-            noticia:  this.state.noticia,
+            news:     this.state.noticia,
             rg:       this.state.rg,
-            cpf:      this.state.cpf,
-            perfil:   this.state.perfil,
+            cpf:      this.state.cpf,            
             outro:    this.state.outro,
             zipCode:  this.state.cep,
             street:      this.state.rua,
             number:   this.state.numero,
             neighborhood:   this.state.bairro,
             comple:   this.state.comple,
-            estado:   this.state.estado,
-            cidade:   this.state.cidade 
+            state:   this.state.estado,
+            city:   this.state.cidade,
+            status: true,
+            profile:   {
+                _id: this.state.perfil
+            }
         }
     }
 
     validField = () => {
-        
         let valid = true;
-        if(this.email.input.value === ''){
+        if(this.state.email === ''){
             this.setState({errorEmail: 'Campo Obrigatório'});
             valid = false;
         } 
-        if(this.password.input.value === ''){
+        if(this.state.password === ''){
             this.setState({errorPassword: 'Campo Obrigatório'});
             valid = false;
         } 
-        if(this.name.input.value === ''){
+        if(this.state.name === ''){
             this.setState({errorName: 'Campo Obrigatório'});
             valid = false;
         }
@@ -238,7 +271,7 @@ export default class Profile extends Component{
                                     hintText="Nome"
                                     floatingLabelText="Nome"
                                     type="text"
-                                    value={this.state.student.name}
+                                    defaultValue={this.state.student.name}
                                     errorText={this.state.errorName}
                                     fullWidth={true}
                                     ref={(input) => this.name = input}
@@ -248,7 +281,7 @@ export default class Profile extends Component{
                                     hintText="Email"
                                     floatingLabelText="Email"
                                     type="text"
-                                    value={this.state.student.email}
+                                    defaultValue={this.state.student.email}
                                     errorText={this.state.errorEmail}
                                     fullWidth={true}
                                     ref={(input) => this.email = input}
@@ -258,7 +291,7 @@ export default class Profile extends Component{
                                     hintText="Senha"
                                     floatingLabelText="Senha"
                                     type="password"
-                                    value={this.state.student.password}
+                                    defaultValue={this.state.student.password}
                                     errorText={this.state.errorPassword}
                                     fullWidth={true}
                                     ref={(input) => this.password = input}
@@ -297,8 +330,8 @@ export default class Profile extends Component{
                                             fullWidth={true}
                                         >
                                             <MenuItem value={0} primaryText="Sexo" />
-                                            <MenuItem value={1} primaryText="Masculino" />
-                                            <MenuItem value={2} primaryText="Feminino" />
+                                            <MenuItem value={'M'} primaryText="Masculino" />
+                                            <MenuItem value={'F'} primaryText="Feminino" />
                                         </SelectField>
                                     </div>
                                     <div className="col-md-12 col-lg-6">
@@ -309,8 +342,8 @@ export default class Profile extends Component{
                                             fullWidth={true}
                                         >
                                             <MenuItem value={0} primaryText="Deseja receber notícia ?" />
-                                            <MenuItem value={1} primaryText="SIM" />
-                                            <MenuItem value={2} primaryText="NÃO" />
+                                            <MenuItem value={'S'} primaryText="SIM" />
+                                            <MenuItem value={'N'} primaryText="NÃO" />
                                         </SelectField>
                                     </div>
                                 </div>
@@ -346,11 +379,16 @@ export default class Profile extends Component{
                                             onChange={this.handleChangePerfil}
                                             fullWidth={true}
                                         >
-                                            <MenuItem value={0} primaryText="Perfil" />
-                                            <MenuItem value={1} primaryText="Estudante" />
-                                            <MenuItem value={2} primaryText="Profissional Clínica" />
-                                            <MenuItem value={3} primaryText="Profissional Acadêmico" />
-                                            <MenuItem value={4} primaryText="Outro(especificar)" />
+                                            {
+                                                this.state.profileAccount !== null ?
+                                                    this.state.profileAccount.map((row, i) =>(
+                                                        <MenuItem 
+                                                            key={i} 
+                                                            value={row._id} 
+                                                            primaryText={row.description} 
+                                                        />
+                                                    )):''
+                                            }
                                         </SelectField>
                                     </div>
                                     <div className="col-md-12 col-lg-6">
@@ -379,7 +417,7 @@ export default class Profile extends Component{
                                             hintText="Ex 16050660"
                                             floatingLabelText="CEP"
                                             type="number"
-                                            value={'16050660'}
+                                            value={this.state.cep}
                                             fullWidth={true}
                                             ref={(input) => this.cep = input}
                                             onChange={(e, value) => this.setState({cep: value})}

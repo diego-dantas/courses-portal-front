@@ -39,8 +39,8 @@ class SignIn extends  Component {
     }
 
     closeDialog = () => {
-        this.setState({open: false});
         PubSub.publish('close-home-model', false);
+        this.setState({open: false});
     }
 
     changeField = () => {
@@ -71,13 +71,12 @@ class SignIn extends  Component {
     createStudent = () => {
         if(this.validField()){
             this.setState({enable: true});
-            HttpService.make().post('/createUpdateStudent', this.makeDataForStudent())
+            HttpService.make().post('/createStudent', this.makeDataForStudent())
                               .then(success => {
+                                    this.setState({enable: false});    
                                     localStorage.setItem('student', JSON.stringify(success.data));
                                     history.push('/student/profile', success);
                                     this.closeDialog();
-                                    this.setState({enable: false});
-
                               })
                               .catch(error => {
                                   console.log('Erro ao criar o usuario');
@@ -90,6 +89,7 @@ class SignIn extends  Component {
             name: this.name.input.value,
             email: this.email.input.value,
             password: this.password.input.value,
+            status: false,
         }
     }
 

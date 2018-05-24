@@ -173,7 +173,7 @@ class ConfigEmail extends Component {
                     <TextField
                         hintText="Informe a senha do email"
                         floatingLabelText="Senha"
-                        type="text"
+                        type="password"
                         fullWidth={true}
                         onChange={this.changeField}
                         defaultValue={this.state.password}
