@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import HttpService from '../../../../service/http/HttpService';
 import history from  './../../../../service/router/history'
+import FacebookLogin from 'react-facebook-login';
+import GoogleLogin from 'react-google-login';
 
 
 import Dialog         from 'material-ui/Dialog';
@@ -23,7 +25,8 @@ class SignIn extends  Component {
             name: '',
             email: '',
             password: '',
-
+            imagePath: 'getFile?name=students/profile/sf.jpeg',
+            source: 'site',
 
             errorName: '',
             errorEmail: '',
@@ -43,57 +46,106 @@ class SignIn extends  Component {
         this.setState({open: false});
     }
 
-    changeField = () => {
-        if(this.email.input.value    !== '') this.setState({errorEmail:    ''});
-        if(this.password.input.value !== '') this.setState({errorPassword: ''});
-        if(this.name.input.value     !== '') this.setState({errorName:     ''});
+    changeField = (value, type) => {
+
+        if(type === 'name'){
+            this.setState({name: value});
+            this.setState({errorName: ''});
+        }
+
+        if(type === 'email'){
+            this.setState({email: value});
+            this.setState({errorEmail: ''});
+        }
+
+        if(type === 'password'){
+            this.setState({password: value});
+            this.setState({errorPassword: ''});
+        }
+
     }
 
     validField = () => {
         
         let valid = true;
-        if(this.email.input.value === ''){
+        if(this.state.email === ''){
             this.setState({errorEmail: 'Campo Obrigatório'});
             valid = false;
         } 
-        if(this.password.input.value === ''){
+        if(this.state.password === ''){
             this.setState({errorPassword: 'Campo Obrigatório'});
             valid = false;
         } 
-        if(this.name.input.value === ''){
+        if(this.state.name === ''){
             this.setState({errorName: 'Campo Obrigatório'});
             valid = false;
         }
-       
+        
         return valid;
     }
 
-    createStudent = () => {
-        if(this.validField()){
-            this.setState({enable: true});
-            HttpService.make().post('/createStudent', this.makeDataForStudent())
-                              .then(success => {
-                                    this.setState({enable: false});    
-                                    localStorage.setItem('student', JSON.stringify(success.data));
-                                    history.push('/student/profile', success);
-                                    this.closeDialog();
-                              })
-                              .catch(error => {
-                                  console.log('Erro ao criar o usuario');
-                              })
-        }
+    createStudent = (source) => {
+        if(source === 'site'){
+            if(this.validField()) {
+                this.sendStudentData();
+            }
+        }else{
+            this.sendStudentData();
+        }   
+    }
+
+    sendStudentData = () => {
+        this.setState({enable: true});
+            HttpService.make()
+                       .post('/createStudent', this.makeDataForStudent())
+                       .then(success => {
+                             this.setState({enable: false});
+                             console.log(success.data);
+                             localStorage.setItem('student', JSON.stringify(success.data));
+                             history.push('/student/profile', success);
+                             this.closeDialog();
+                       })
+                       .catch(error => {
+                           console.log('Erro ao criar o usuario');
+                       })
     }
 
     makeDataForStudent = () => {
         return{
-            name: this.name.input.value,
-            email: this.email.input.value,
-            password: this.password.input.value,
+            name:      this.state.name,
+            email:     this.state.email,
+            password:  this.state.password,
+            source:    this.state.source,
+            imagePath: this.state.imagePath,
             status: false,
         }
     }
 
     render(){
+
+        const responseFacebook = (response) => {
+            console.log(response);
+            this.setState({name:      response.name});
+            this.setState({email:     response.email});
+            this.setState({password:  response.id});
+            this.setState({imagePath: response.picture.data.url});
+            this.setState({source:    'facebook'});
+            this.createStudent('');
+        }
+
+        const responseGoogle = (response) => {
+            console.log(response);
+            this.setState({name:      response.profileObj.name});
+            this.setState({email:     response.profileObj.email});
+            this.setState({password:  response.profileObj.googleId});
+            this.setState({imagePath: response.profileObj.imageUrl});
+            this.setState({source:    'google'});
+            this.createStudent('');
+        }
+
+        const responseGoogleFail = (response) => {
+            console.log(response);
+        }
 
         const actions = [
             <FlatButton
@@ -108,7 +160,7 @@ class SignIn extends  Component {
                 labelStyle={{color: 'white'}}
                 label={'Criar Conta'}
                 primary={true}
-                onTouchTap={this.createStudent}
+                onTouchTap={() => this.createStudent('site')}
                 style={{float: 'right', marginRight: '10px'}}
                 disabled={this.state.enable}    
             />
@@ -133,8 +185,7 @@ class SignIn extends  Component {
                         errorText={this.state.errorName}
                         fullWidth={true}
                         disabled={this.state.enable}
-                        ref={(input) => this.name = input}
-                        onChange={this.changeField}
+                        onChange={(e, value) => this.changeField(value, 'name')}
                     />
                     <TextField 
                         hintText="Email"
@@ -143,8 +194,7 @@ class SignIn extends  Component {
                         errorText={this.state.errorEmail}
                         fullWidth={true}
                         disabled={this.state.enable}
-                        ref={(input) => this.email = input}
-                        onChange={this.changeField}
+                        onChange={(e, value) => this.changeField(value, 'email')}
                     />
                     <TextField 
                         hintText="Senha"
@@ -153,27 +203,31 @@ class SignIn extends  Component {
                         errorText={this.state.errorPassword}
                         fullWidth={true}
                         disabled={this.state.enable}
-                        ref={(input) => this.password = input}
-                        onChange={this.changeField}
+                        onChange={(e, value) => this.changeField(value, 'password')}
                     />
                     <div style={{textAlign:'center'}}>
                         <h4 className="title">ou</h4>
-                        <FlatButton
-                            label="Facebook"
-                            labelPosition="after"
-                            primary={true}
-                            disabled={this.state.enable}
-                            style={{fontSize: '18px',marginRight:'5%',color:"#4267b2"}}
-                            icon={<i className="fa fa-facebook"/>}
+                        <FacebookLogin
+                            appId="1697885623632235"
+                            autoLoad={true}
+                            textButton=" Facebook"
+                            fields="name,email,picture"
+                            callback={responseFacebook}
+                            cssClass="btn btn-outline-primary"
+                            icon="fa-facebook"
                         />
-                        <FlatButton
-                            label="Google"
-                            labelPosition="after"
-                            primary={true}
-                            style={{fontSize: '18px', color:"#ea4335"}}
-                            icon={<i className="fa fa-google"/>}
-                            disabled={this.state.enable}
-                        />
+                        <GoogleLogin
+                            //4m9AAG4U0kVtTOOzbq3cgxDR chave secreta do cliente
+                            clientId="353901230787-qh2fruapucrpt9tabnqnkpc894vqrf9l.apps.googleusercontent.com"
+                            onSuccess={responseGoogle}
+                            onFailure={responseGoogleFail}
+                            className="btn btn-outline-danger"
+                            style={{marginLeft: '10px'}}
+                        >
+                            <i className="fa fa-google"/>
+                            <span> Google</span>
+                        </GoogleLogin>
+                        
                     </div>
                 </Dialog>
             </div>

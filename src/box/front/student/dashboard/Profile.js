@@ -128,6 +128,8 @@ export default class Profile extends Component{
     makeDataForStudentProfile = () => {
         return{
             _id:      this.state.student._id,
+            source:   this.state.student.source,
+            imagePath: this.state.student.imagePath,
             name:     this.state.name,
             email:    this.state.email,
             password: this.state.password,

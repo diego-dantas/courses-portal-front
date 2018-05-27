@@ -13,6 +13,7 @@ export default class NavDashboard extends Component {
         super(props);
         this.state = {
             student: JSON.parse(localStorage.getItem('student')),
+            path: 'http://localhost:8080/api/'
         }
     }
 
@@ -36,7 +37,12 @@ export default class NavDashboard extends Component {
             <div>
                 <div className="text-center" style={{marginTop: '20px'}}>
                     <img 
-                        src={'http://localhost:8080/api/getFile?name=carousel/caneca.png'} 
+                        //src={'http://localhost:8080/api/getFile?name=carousel/caneca.png'} 
+                        src={
+                                this.state.student.source === 'site' ?  
+                                    this.state.path+''+this.state.student.imagePath :
+                                    this.state.student.imagePath
+                            }
                         alt="..." 
                         style={style.sizeImg}
                         className="rounded-circle" />
