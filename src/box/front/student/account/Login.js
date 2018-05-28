@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
+import HttpService from './../../../../service/http/HttpService';
 import PubSub from 'pubsub-js';
+import history from  './../../../../service/router/history'
 import FacebookLogin from 'react-facebook-login';
 import GoogleLogin from 'react-google-login';
 
@@ -7,13 +9,15 @@ import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
+import LinearProgress from 'material-ui/LinearProgress';
 
 
 export default class Login extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            open: true
+            open: true,
+            enable: false
         };
         
     }
@@ -23,13 +27,38 @@ export default class Login extends Component {
         PubSub.publish('close-home-model', value);
     };
 
+
+    LoginStudent = () => {
+        this.setState({enable: true});
+        HttpService.make()
+                   .post('/loginStudent', this.makeStudentData())
+                   .then(success => {
+                        this.setState({enable: false});
+                        console.log(success.data);
+                        localStorage.setItem('student', JSON.stringify(success.data));
+                        PubSub.publish('logged');
+                        this.handleClose(false);
+                        history.push('/');
+                   })
+                   .catch(error => {
+                       console.log('Erro ao realizar login ' + error);
+                   })
+    }
+
+    makeStudentData = () => {
+        return {
+            email: this.state.email,
+            password: this.state.password
+        }
+    }
+
     render(){
         const responseFacebook = (response) => {
             console.log(response);
             this.setState({email:     response.email});
             this.setState({password:  response.id});
             this.setState({source:    'facebook'});
-            //this.createStudent('');
+            this.LoginStudent();
         }
 
         const responseGoogle = (response) => {
@@ -37,7 +66,7 @@ export default class Login extends Component {
             this.setState({email:     response.profileObj.email});
             this.setState({password:  response.profileObj.googleId});
             this.setState({source:    'google'});
-            //this.createStudent('');
+            this.LoginStudent();
         }
 
         const responseGoogleFail = (response) => {
@@ -61,7 +90,7 @@ export default class Login extends Component {
             <RaisedButton 
                 label="Fazer login"
                 primary={true}
-            //    onClick={this.makeLogin.bind(this)}
+                onClick={() => this.LoginStudent()}
             />,
         ];
 
@@ -76,6 +105,8 @@ export default class Login extends Component {
                     autoScrollBodyContent={false}
                     open={this.state.open}
                     onRequestClose={() => this.handleClose(false)}>
+                    
+                    { this.state.enable ? <LinearProgress mode="indeterminate" size={20} style={{marginTop: '15px'}} /> : ''}   
 
                     <TextField
                         hintText="Email"
@@ -83,6 +114,7 @@ export default class Login extends Component {
                         type="email"
                         fullWidth={true}
                         ref={(input) => { this.email = input; }}
+                        onChange={(e, value) => this.setState({email: value})}
                     />
                     <TextField
                         hintText="Senha"
@@ -90,6 +122,7 @@ export default class Login extends Component {
                         type="password"
                         fullWidth={true}
                         ref={(input) => { this.password = input; }}
+                        onChange={(e, value) => this.setState({password: value})}
                     />
                     <br/>
                     <br/>

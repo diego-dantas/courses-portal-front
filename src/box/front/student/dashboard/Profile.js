@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import HttpService          from './../../../../service/http/HttpService';
 import axios                from 'axios';
 import CustomLoad from './../../../component/CustomLoad';
+import Alerts from './../../../component/Alerts';
 
 import TextField    from 'material-ui/TextField';
 import SelectField  from 'material-ui/SelectField';
@@ -53,15 +54,42 @@ export default class Profile extends Component{
             errorEmail:    '',
             errorPassword: '',
             
-            progress: false
+            progress: false,
+            alert: false,
+            msgAlert: '',
+            typeAlert: '',
         }
     }
 
     componentDidMount(){
         this.getProfileStudents();
+        this.buildProfile();
+    }
+
+    buildProfile = () => {
+        this.setState({progress: true});
+        this.setState({_id: this.state.student._id})
         this.setState({name: this.state.student.name})
         this.setState({email: this.state.student.email})
         this.setState({password: this.state.student.password})
+        if(this.state.student.status){
+            this.setState({fone: this.state.student.phone})
+            this.setState({celular: this.state.student.cellPhone})
+            this.setState({sexo: this.state.student.sexo})
+            this.setState({noticia: this.state.student.news})
+            this.setState({rg: this.state.student.rg})
+            this.setState({cpf: this.state.student.cpf})
+            this.setState({outro: this.state.student.outro})
+            this.setState({cep: this.state.student.zipCode})
+            this.setState({rua: this.state.student.street})
+            this.setState({numero: this.state.student.number})
+            this.setState({bairro: this.state.student.neighborhood})
+            this.setState({comple: this.state.student.comple})
+            this.setState({estado: this.state.student.state})
+            this.setState({cidade: this.state.student.city})
+            this.setState({perfil: this.state.student.profile._id})
+        }
+        this.setState({progress: false});
     }
 
     getProfileStudents = () => {
@@ -115,14 +143,22 @@ export default class Profile extends Component{
                             localStorage.setItem('student', JSON.stringify(success.data));
                             this.setState({student: JSON.parse(localStorage.getItem('student'))});
                             this.setState({progress: false});
+                            this.setState({
+                                alert: true,
+                                msgAlert: 'Dados salvos com Sucesso !',
+                                typeAlert: 'success'
+                            });
                        })
                        .catch(error => {
                            console.log('Erro ao atualizar o cadastro do aluno ' + error);
                            this.setState({progress: false});
+                           this.setState({
+                            alert: true,
+                            msgAlert: 'Erro ao salvar dos dados !',
+                            typeAlert: 'error'
+                        });
                        })
         }
-        
-        
     }
 
     makeDataForStudentProfile = () => {
@@ -256,6 +292,9 @@ export default class Profile extends Component{
                 { this.state.progress ? <CustomLoad /> : '' }
                 <div className="col-lg-12 text-center">
                     <h3 style={style.fontStyle}>Perfil</h3>  
+                </div>
+                <div className="col-lg-12 text-center">
+                    { this.state.alert ? <Alerts msg={this.state.msgAlert} type={this.state.typeAlert}/> : ''}
                 </div>
                 <hr />
                 <div>

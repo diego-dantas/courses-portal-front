@@ -30,6 +30,7 @@ class NavBar extends Component {
             display: 'none',
             showModalSignIn: false,
             showModalLogin:false, 
+            path: 'http://localhost:8080/api/'
         }
     }
 
@@ -147,7 +148,13 @@ class NavBar extends Component {
                     labelPosition="before"
                     style={{color:"#000"}}
                     label={'Olá, ' + this.state.student.name}
-                    icon={<Avatar src={this.state.student.imagePath} size={40}/>}
+                    icon={<Avatar 
+                            src={   
+                                    this.state.student.source === 'site' ?
+                                        this.state.path + '' + this.state.student.imagePath:
+                                        this.state.student.imagePath
+                                } 
+                            size={40}/>}
                 />
             }
             anchorOrigin={{horizontal: 'right', vertical: 'top'}}

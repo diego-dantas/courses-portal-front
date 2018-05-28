@@ -2,8 +2,9 @@
 import React, { Component } from 'react';
 
 //import of component
-import CarouselHome from './box/front/home/CarouselHome';
 import NavBar from './box/front/bar/NavBar';
+import CarouselHome from './box/front/home/CarouselHome';
+import VideoSection from './box/front/home/VideoSection';
 
 //import of css
 import  './static/style/css/global.css';
@@ -45,6 +46,7 @@ class App extends Component {
             <div>
                 <NavBar />
                 <CarouselHome />
+                <VideoSection />
             </div>
         );
     } 
