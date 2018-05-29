@@ -102,7 +102,7 @@ export default class Login extends Component {
                     actions={actions}
                     bodyStyle={{minHeight: '180px'}}
                     modal={true}
-                    autoScrollBodyContent={false}
+                    autoScrollBodyContent={true}
                     open={this.state.open}
                     onRequestClose={() => this.handleClose(false)}>
                     

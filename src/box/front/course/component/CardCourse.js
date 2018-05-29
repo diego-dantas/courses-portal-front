@@ -35,7 +35,7 @@ class CardCourse extends Component {
             
         listCourses = this.state.courses.map((row, i) =>(
                 row.subGrid._id === idSub ?
-                    <Card id={'descrição'+i} key={i} style={{width: '250px', height: '300px', marginRight: '2%', boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'}}>
+                    <Card id={'descrição'+i} key={i} style={{width: '250px', height: '325px', marginRight: '2%', boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'}}>
                         <a href={"/course/"+row.labelUrl+'/'+row._id}>
                         <CardMedia>
                             { 
@@ -50,7 +50,7 @@ class CardCourse extends Component {
                             {row.description}
                         </CardText>
                         <Divider />
-                        <CardActions style={{textAlign:'right', paddingRight: '0'}}>
+                        <CardActions style={{textAlign:'right', paddingRight: '0', marginTop: '5%'}}>
                             <h4>R$: {row.price}</h4>
                         </CardActions>
                         </a>
@@ -66,7 +66,7 @@ class CardCourse extends Component {
         return(
             <div>
                 <div key={1}>
-                    <h2 className='title-box'>Cursos em {'Java'} ...</h2>
+                    <h2 className='title-box'>Cursos em {this.state.catUrl.toUpperCase()} ...</h2>
                     <div className='component-category'>
                         <IconButton
                             style={{background: 'transparent', width: 64, height: 64, padding: 8, float: 'left'}}

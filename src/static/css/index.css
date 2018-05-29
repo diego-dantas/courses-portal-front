@@ -4,3 +4,24 @@
     background-repeat: no-repeat;
     height:300px;
 }
+
+.busca {
+    background: url("./../img/search.png") no-repeat center right;
+    margin-left: 10px;
+    border: none;    
+    width: 20px;
+}
+
+.busca:focus{
+    width: 100%;
+    border-bottom: solid 1px #ddd;
+    outline: none;
+}
+
+.pagraf {
+    margin-left: 3%;
+}
+
+.headerInfoCurse {
+    margin-top: 2%;
+}

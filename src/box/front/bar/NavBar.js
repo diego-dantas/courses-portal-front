@@ -1,15 +1,16 @@
+import './../../../static/css/index.css';
 import React, { Component } from 'react';
 import PubSub from 'pubsub-js'
 import history from  './../../../service/router/history'
 
 //import mateiral-ui
 import FlatButton from 'material-ui/FlatButton';
-import IconMenu from 'material-ui/IconMenu';
-import MenuItem from 'material-ui/MenuItem';
 import Avatar from 'material-ui/Avatar';
 
 //Incones
 import ActionDashboard from 'material-ui/svg-icons/action/dashboard';
+import ExitToApp from 'material-ui/svg-icons/action/exit-to-app';
+import ViewCompact from 'material-ui/svg-icons/image/view-compact'
 
 //import modals
 import SignIn from '../student/account/SignIn';
@@ -30,8 +31,10 @@ class NavBar extends Component {
             display: 'none',
             showModalSignIn: false,
             showModalLogin:false, 
-            path: 'http://localhost:8080/api/'
+            path: 'http://localhost:8080/api/',
+            
         }
+        this.buildCourseMenu();
     }
 
     componentDidMount(){
@@ -139,40 +142,48 @@ class NavBar extends Component {
             </button>
         </div>
     )
-
     logged = () => (
-        <IconMenu
-            iconButtonElement=
-            {
+        <ul className="navbar-nav mr-auto">
+            <li className="nav-item dropdown">
                 <FlatButton
                     labelPosition="before"
                     style={{color:"#000"}}
                     label={'Olá, ' + this.state.student.name}
                     icon={<Avatar 
                             src={   
-                                    this.state.student.source === 'site' ?
-                                        this.state.path + '' + this.state.student.imagePath:
-                                        this.state.student.imagePath
-                                } 
-                            size={40}/>}
+                                this.state.student.source === 'site' ?
+                                this.state.path + '' + this.state.student.imagePath:
+                                this.state.student.imagePath
+                            } 
+                            size={35}/>}
                 />
-            }
-            anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-            targetOrigin={{horizontal: 'right', vertical: 'top'}}
-            style={{marginRight: '5px'}}>
-            <MenuItem
-                style={{width:'160px'}}
-                primaryText="Dashbord"
-                onClick={()=> {history.push('/student/profile');}}
-
-            />
-            <MenuItem
-                style={{width:'160px'}}
-                primaryText="Sair"
-                 onTouchTap={() => this.logoff()}
-            />
-        </IconMenu>
+                <ul className="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    <li>                      
+                        <FlatButton
+                            className="dropdown-item text-left"
+                            label="Painel"
+                            labelPosition="after"
+                            icon={<ViewCompact />}
+                            onClick={()=> {history.push('/student/profile');}}
+                            fullWidth={true}
+                        />   
+                    </li> 
+                    <li>  
+                        <FlatButton
+                            className="dropdown-item text-left"
+                            label="Sair"
+                            labelPosition="after"
+                            icon={<ExitToApp />}
+                            onTouchTap={() => this.logoff()}
+                            fullWidth={true}
+                            
+                        />                    
+                    </li> 
+                </ul>
+            </li>
+        </ul>
     )
+
     logoff = () =>
     {
         localStorage.removeItem('student');
@@ -187,7 +198,8 @@ class NavBar extends Component {
                     className="navbar navbar-expand-md navbar-light bg-light btco-hover-menu fixed-top"
                     style={{boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'}}
                 >
-                    <a className="navbar-brand" href="/">E Odonto Digital</a>
+                    <a className="navbar-brand" href="/">
+                        E Odonto Digital</a>
                     <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>
                     </button>
@@ -210,26 +222,14 @@ class NavBar extends Component {
                             </li>
                         </ul>
                         <form className="form-inline my-2 my-lg-0">
-                            <div className="input-group mr-md-3">
-                                <input type="text" className="form-control" placeholder="Seach..." aria-label="Recipient's username" aria-describedby="basic-addon2" />
-                                <div className="input-group-append">
-                                    <button className="btn btn-outline-secondary" type="button">
-                                        Buscar..
-                                    </button>
-                                </div>
-                            </div>
-                            <div className=" my-3 my-lg-3">
-
-                                {
-                                    (this.state.student === null) ?
-                                        (this.notLogged()) : 
-                                        (this.logged())
-                                }
-                            </div>
+                            {
+                                (this.state.student === null) ?
+                                    (this.notLogged()) : 
+                                    (this.logged())
+                            }
                         </form>
                     </div>
-                </nav>           
-
+                </nav>                                
                 {/*show do modal para cadastro de aluno*/}
                 {(this.state.showModalSignIn) ? <SignIn /> : null}
                 {(this.state.showModalLogin)  ? <Login />  : null}

@@ -19,9 +19,7 @@ const ListCourses = (props) => {
         <div>
             <NavBar/>  
             <br/>
-            <br/>
-            <br/>                  
-            <br/>                  
+            <br/>                
             <TextField
                 hintText="O que você está procurando ?"
                 floatingLabelText="Buscar cursos"
