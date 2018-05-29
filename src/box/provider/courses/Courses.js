@@ -37,6 +37,7 @@ class Courses extends Component {
             obejCourse: '',
             priceCourse: '',
             hoursCourse: '',
+            labelUrl: '',
             cat: 0,
             subCat: 0,
             labelStatus: 'Inativo',
@@ -45,6 +46,7 @@ class Courses extends Component {
             //state da validação de compo
             errorName: '',
             errorDescricao: '',
+            erroLabel: '',
 
             disableField: true,
 
@@ -131,6 +133,12 @@ class Courses extends Component {
             this.setState({errorDescricao: ''});
     }
 
+    //valida o campo descrição na mudança
+    labelChange = () => {
+        if(this.state.erroLabel !== '')
+            this.setState({erroLabel: ''});
+    }
+
     //metodo para abrir o modal
     handleOpenCreate = () => {
         this.setState({idCourse: ''});
@@ -141,10 +149,12 @@ class Courses extends Component {
         this.setState({priceCourse: ''});
         this.setState({hoursCourse: ''});
         this.setState({wayImage: ''});
+        this.setState({labelUrl: ''});
         this.setState({cat: 0});
         this.setState({subCat: 0});
         this.setState({errorDescricao: ''});
         this.setState({errorName: ''});
+        this.setState({erroLabel: ''});
         this.setState({disableField: true})
         this.setState({openCreate: true})
     }
@@ -170,6 +180,7 @@ class Courses extends Component {
         this.setState({wayImage: this.state.courses[col].wayImage});
         this.setState({cat: this.state.courses[col].grid._id});
         this.setState({subCat: this.state.courses[col].subGrid._id});
+        this.setState({labelUrl: this.state.courses[col].labelUrl});
 
         this.setState({disableField: false}) 
         this.setState({openCreate: true});     
@@ -193,6 +204,11 @@ class Courses extends Component {
             
         if(this.description.input.value === '') {
             this.setState({errorDescricao: 'A Descrição do curso é Obrigatória'}); 
+            valid = false;    
+        }
+
+        if(this.labelUrl.input.value === '') {
+            this.setState({erroLabel: 'A label da url é Obrigatória'}); 
             valid = false;    
         }
 
@@ -249,6 +265,7 @@ class Courses extends Component {
             price: this.price.input.value,
             wayImage: this.state.wayImage,
             status: this.state.statusCourse,
+            labelUrl: this.labelUrl.input.value,
             grid: {
                 _id: this.state.cat,
             },
@@ -371,11 +388,12 @@ class Courses extends Component {
                         style={{marginTop: '20px'}}
                     />
                     <div className="row">
-                        <div className="col-md-6 col-sm-6">
+                        <div className="col-md-4 col-sm-4">
                             <SelectField
                                 floatingLabelText="Categoria"
                                 value={this.state.cat}
                                 onChange={this.categoryChange}
+                                fullWidth={true}
                             >  
                                 <MenuItem value={0} primaryText="Categorias"/>
                                 {this.state.category.map( (row, index) => (
@@ -387,11 +405,12 @@ class Courses extends Component {
                             
                             </SelectField>
                         </div>
-                        <div className="col-md-6 col-sm-6">
+                        <div className="col-md-4 col-sm-4">
                             <SelectField
                                 floatingLabelText="Sub-Categoria"
                                 value={this.state.subCat}
                                 onChange={this.subCategoryChange}
+                                fullWidth={true}                            
                                 
                             >  
                                 <MenuItem value={0} primaryText="Sub-Categoria"/>
@@ -403,6 +422,16 @@ class Courses extends Component {
                                 ))}
                             
                             </SelectField>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                            <TextField 
+                                floatingLabelText="Label url"
+                                fullWidth={true}
+                                defaultValue={this.state.labelUrl}
+                                ref={(input) => {this.labelUrl = input;} }
+                                errorText={this.state.erroLabel}
+                                onChange={this.labelChange}
+                            />
                         </div>
                     </div>
                     <TextField 

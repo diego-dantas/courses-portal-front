@@ -13,15 +13,19 @@ export default class NavDashboard extends Component {
         super(props);
         this.state = {
             student: JSON.parse(localStorage.getItem('student')),
-            path: 'http://localhost:8080/api/'
+            path: 'http://localhost:8080/api/',
         }
+    }
+
+    componentDidMount(){
+        
     }
 
     render(){
 
         const style = {
             fontStyle:{
-                fontFamily: 'Roboto sans-serif', textAlign: 'center'
+                fontFamily: 'Roboto sans-serif', textAlign: 'center', marginTop: '20px'
             },
 
             navStyle:{
@@ -29,24 +33,25 @@ export default class NavDashboard extends Component {
             },
 
             sizeImg:{
-                width: '150px', height: '150px', marginBottom: '30px'        
+                width: '150px', height: '150px'       
             }
         }
 
         return(
             <div>
                 <div className="text-center" style={{marginTop: '20px'}}>
-                    <img 
-                        //src={'http://localhost:8080/api/getFile?name=carousel/caneca.png'} 
-                        src={
-                                this.state.student.source === 'site' ?  
-                                    this.state.path+''+this.state.student.imagePath :
-                                    this.state.student.imagePath
-                            }
-                        alt="..." 
-                        style={style.sizeImg}
-                        className="rounded-circle" />
-                    <h5 style={style.fontStyle}>{this.state.student.name}</h5>
+                    <div>
+                        <img 
+                            src={
+                                    this.state.student.source === 'site' ?  
+                                        this.state.path+''+this.state.student.imagePath :
+                                        this.state.student.imagePath
+                                }
+                            alt="Alterar foto" 
+                            style={style.sizeImg}
+                            className="rounded-circle"/> 
+                    </div>
+                    <h5 style={style.fontStyle}>{this.state.student.name.toUpperCase()}</h5>
                 </div>
                 <Divider />
                 <Link to={'/student/profile'} className={"link-routes"} >

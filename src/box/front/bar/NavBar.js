@@ -225,20 +225,6 @@ class NavBar extends Component {
                                         (this.notLogged()) : 
                                         (this.logged())
                                 }
-                                {/* <button 
-                                    type="button" 
-                                    className="btn btn-outline-secondary" 
-                                >
-                                    Fazer Login
-                                </button>
-                                <button 
-                                    type="button" 
-                                    className="btn btn-outline-primary"
-                                    onClick={ () => this.showModal('showModalSignIn')}
-                                    style={{marginLeft: '10px', marginRight: '10px'}}
-                                >
-                                    Cadastre-se
-                                </button> */}
                             </div>
                         </form>
                     </div>
