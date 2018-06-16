@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import history from '../../../../service/router/history';
 import {Card, CardActions, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
 import IconButton from 'material-ui/IconButton';
@@ -23,43 +24,102 @@ class CardCourse extends Component {
     componentDidMount(){
         this.buildGrid();
     }
-    
 
     buildGrid = () => {
         let idSub = 0;
-        let listCourses = [];
+        var listCourses = [];
         this.state.subCategory.map((row, i) => (
             row.labelUrl === this.state.subCateg ?
                 idSub = row._id : ''
         ))        
             
-        listCourses = this.state.courses.map((row, i) =>(
-                row.subGrid._id === idSub ?
-                    <Card id={'descrição'+i} key={i} style={{width: '250px', height: '325px', marginRight: '2%', boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'}}>
-                        <a href={"/course/"+row.labelUrl+'/'+row._id}>
-                        <CardMedia>
-                            { 
-                                <img 
-                                    alt={row.name}
-                                    src={'http://localhost:8080/api/getFile?name='+row.wayImage} 
-                                    style={{width: '200px', height: '150px'}}/>
-                            }
-                        </CardMedia>
-                        <CardTitle style={{paddingBottom: '0%'}} titleStyle={{fontSize: '20px', fontWeight: '300'}} title={row.name}/>
-                        <CardText>
-                            {row.description}
-                        </CardText>
-                        <Divider />
-                        <CardActions style={{textAlign:'right', paddingRight: '0', marginTop: '5%'}}>
-                            <h4>R$: {row.price}</h4>
-                        </CardActions>
-                        </a>
-                    </Card> : ''
+        listCourses = this.state.courses.map((row, i) => (
+            row.subGrid._id === idSub ? row : undefined
         ))
-        
+        Array.prototype.remByVal = function(val) {
+            for (var i = 0; i < this.length; i++) {
+                if (this[i] === val) {
+                    this.splice(i, 1);
+                    i--;
+                }
+            }
+            return this;
+        }
+        listCourses = listCourses.remByVal(undefined)
+
+        listCourses = listCourses.map((row, i) => (
+            <Card id={this.state.subCateg+''+i} key={i} style={{width: '200px', height: '300px', marginRight: '2%', boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'}}>
+                <a href={"/course/"+row.labelUrl+'/'+i}>
+                    <CardMedia>
+                        { 
+                            <img 
+                                alt={row.name}
+                                src={'http://localhost:8080/api/getFile?name='+row.wayImage} 
+                                style={{width: '200px', height: '125px'}}/>
+                        }
+                    </CardMedia>
+                    <CardTitle style={{paddingBottom: '0%'}} titleStyle={{fontSize: '15px', fontWeight: '250'}} title={row.name}/>
+                    <CardText  style={{paddingBottom: '0%', width: '200px', height: '75px'}}>
+                        {row.description}
+                    </CardText>
+                    <Divider />
+                    <CardActions style={{textAlign:'right', width: '200px', height: '50px'}}>
+                        <h4>R$: {parseFloat(row.price).toFixed(2)}</h4>
+                    </CardActions>
+                </a>
+            </Card>
+        ))
         this.setState({'listCourses': listCourses});
     }
 
+    actionMove = (event, action) =>
+    {
+        event.preventDefault();
+        let qtd = this.state.listCourses.length;
+        console.log(this.state.subCateg+ '' + (qtd - 1));
+        
+        //history.push('/courses/desenvolvimento/dev-web');
+        // const id = '#' + grade.description;
+        // let box = this.state.componentMove;
+        // let move = this.state.componentMove[grade.description];
+        // const step = 4;
+
+        if(action === 'go')
+        {
+            // if(grade.courses.length < move.lastItem + step)
+            // {
+            //     move.firstItem = grade.courses.length - step;
+            //     move.lastItem = grade.courses.length - 1;
+            // }
+            // else
+            // {
+            //     move.firstItem += step;
+            //     move.lastItem += step;
+            // }
+            window.location = '#'+this.state.subCateg+ '' + (qtd - 1);
+        }
+        else
+        {
+            // if(move.firstItem - step < 0)
+            // {
+            //     move.firstItem = 0;
+            //     move.lastItem = 3;
+            // }
+            // else
+            // {
+            //     move.firstItem -= step;
+            //     move.lastItem -= step;
+            // }
+
+            window.location = '#'+this.state.subCateg+ '' + 0;
+        }
+
+        history.push('/courses/'+this.state.catUrl+'/'+this.state.subCateg);
+
+        // box[move] = move;
+        // history.push('/courses');
+
+    };
     render(){
 
 
@@ -72,7 +132,7 @@ class CardCourse extends Component {
                             style={{background: 'transparent', width: 64, height: 64, padding: 8, float: 'left'}}
                             iconStyle={{width: 48, height: 48}}
                             tooltip='Voltar'
-                            //onClick={(event, object, action) => this.actionMove(event, grade, 'back')}
+                            onClick={(event, object, action) => this.actionMove(event, 'back')}
                             >
                             <ArrowLeft color='#00bcd4'/>
                         </IconButton>
@@ -83,7 +143,7 @@ class CardCourse extends Component {
                             style={{background: 'transparent', width: 64, height: 64, padding: 8, float: 'left'}}
                             iconStyle={{width: 48, height: 48}}
                             tooltip='Ir'
-                            //onClick={(event, object, action) => this.actionMove(event, grade, 'go')}
+                            onClick={(event, object, action) => this.actionMove(event, 'go')}
                             >
                             <ArrowRight color='#00bcd4'/>
                         </IconButton>
