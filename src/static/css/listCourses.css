@@ -12,21 +12,21 @@
 
 .component-category
 {
-    display: flex;
+    display: -webkit-inline-flex;
     flex-direction: row;
-    justify-content: center;
     align-items: center;
+
 }
 
 .horizontal-scroll
 {
     display: -webkit-box;
     overflow-x: auto;
-    float: left;
-    width: 80%;
+    float: center;
+    width: 100%;
     overflow-y: hidden;
     padding-bottom: 2px;
-    padding-left: 2px
+    justify-content: center;
 }
 
 .group-components

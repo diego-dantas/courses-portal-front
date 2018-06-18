@@ -5,6 +5,8 @@ import React, { Component } from 'react';
 import NavBar from './box/front/bar/NavBar';
 import CarouselHome from './box/front/home/CarouselHome';
 import VideoSection from './box/front/home/VideoSection';
+import Footer from './box/front/bar/Footer';
+import CardCourse from './box/front/course/component/CardCourse';
 
 //import of css
 import  './static/style/css/global.css';
@@ -41,12 +43,26 @@ class App extends Component {
                    })
     }
 
+    getCoursePlan = () =>{
+        HttpService.make().get('/getCoursesPlans')
+                   .then(success => {
+                        localStorage.setItem('coursePlan', JSON.stringify(success.data));
+                   })
+                   .catch(error => {
+                       console.log('Erro ao carregar os dados');
+                   })
+    }
+
     render(){
         return(
             <div>
                 <NavBar />
                 <CarouselHome />
+                <CardCourse category={'development'} subCateg={'web-developer'} />
+                <CardCourse category={'development'} subCateg={'web-developer'} />
+                <CardCourse category={'development'} subCateg={'web-developer'} />
                 <VideoSection />
+                <Footer/>
             </div>
         );
     } 

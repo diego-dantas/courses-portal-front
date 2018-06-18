@@ -11,6 +11,8 @@ export default class InformationCourse extends Component {
         super(props);
         this.state ={
             courses:    JSON.parse(localStorage.getItem('course')),
+            coursePlan:  JSON.parse(localStorage.getItem('coursePlan')),
+            student:     JSON.parse(localStorage.getItem('student')),
             course: [],
             stepsCouse: [],
             stepIndex: 0,
@@ -21,6 +23,15 @@ export default class InformationCourse extends Component {
 
     componentDidMount(){
         this.buildInformation();
+    }
+    getValuePlan = (idCourse) => {
+        var value = 0;
+
+        this.state.coursePlan.map((row, i) => (
+            row.plan._id === this.state.student.plan._id && row.course._id === idCourse ?
+                value = row.price : ''
+        ));
+        return parseFloat(value).toFixed(2);
     }
 
     buildInformation = () => {
@@ -92,7 +103,11 @@ export default class InformationCourse extends Component {
                                     <div>
                                         <h4 className="headerInfoCurse">Valor do Curso</h4>
                                         <div className="pagraf">
-                                            {'R$ ' + this.state.course.price}
+                                            R$ {
+                                                this.state.student === null ?
+                                                    parseFloat(this.state.course.price).toFixed(2) :
+                                                    this.getValuePlan(this.state.course._id)
+                                            }
                                         </div>                                      
                                     </div>
                                     {/*STEPS*/}

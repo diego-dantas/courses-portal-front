@@ -6,9 +6,13 @@ import history from  './../../../service/router/history'
 //import mateiral-ui
 import FlatButton from 'material-ui/FlatButton';
 import Avatar from 'material-ui/Avatar';
+import Drawer from 'material-ui/Drawer';
+import AutoComplete from 'material-ui/AutoComplete';
+import Dialog from 'material-ui/Dialog';
 
 //Incones
 import ActionDashboard from 'material-ui/svg-icons/action/dashboard';
+import Search from 'material-ui/svg-icons/action/search';
 import ExitToApp from 'material-ui/svg-icons/action/exit-to-app';
 import ViewCompact from 'material-ui/svg-icons/image/view-compact'
 
@@ -24,14 +28,18 @@ class NavBar extends Component {
             category: JSON.parse(localStorage.getItem('category')),
             subCategory: JSON.parse(localStorage.getItem('subCategory')),
             student: JSON.parse(localStorage.getItem('student')),
+            courses: JSON.parse(localStorage.getItem('course')),
             menu:null,
             menuCurso:false,
-            open: false,
-            dataSource: ['nome', 'casa', 'nossa'],
+            open: false,            
             display: 'none',
             showModalSignIn: false,
             showModalLogin:false, 
             path: 'http://localhost:8080/api/',
+            openSearch: false,
+            openDialog: false,
+            searchData: [],
+            textSearh: '',
             
         }
         this.buildCourseMenu();
@@ -41,7 +49,29 @@ class NavBar extends Component {
         PubSub.subscribe('close-home-model', this.closeAll);
         PubSub.subscribe('logged', this.loadStudent);
         this.buildCourseMenu();
+        this.buildSearch();
     }
+
+    buildSearch = () => {
+        var searchData = [];
+        searchData = this.state.courses.map((row, i) => (
+            row.name
+        ))
+        this.setState({'searchData': searchData})
+    }
+    handleToggle = () => this.setState({openSearch: !this.state.openSearch});
+
+    handleClose = () => this.setState({openSearch: false});
+
+    handleUpdateInput = (searchText) => {
+        this.setState({
+          searchText: searchText,
+        });
+    };
+
+    handleNewRequest = () => {
+        console.log(this.state.searchText)
+    };
 
     loadStudent = () =>
     {
@@ -144,6 +174,13 @@ class NavBar extends Component {
     )
     logged = () => (
         <ul className="navbar-nav mr-auto">
+            <FlatButton
+                    labelPosition="before"
+                    style={{color:"#000"}}
+                    label={'Buscar '}
+                    icon={<Search />}
+                    onClick={this.handleOpen}
+            />
             <li className="nav-item dropdown">
                 <FlatButton
                     labelPosition="before"
@@ -190,16 +227,33 @@ class NavBar extends Component {
         this.setState({'student': null});
         history.push('/');
     };
+    handleOpen = () => {
+        this.setState({openDialog: true});
+    };
+    
+    handleClose = () => {
+        this.setState({openDialog: false});
+    };
 
     render(){
+        const actions = [
+            <FlatButton
+              label="Sair"
+              primary={true}
+              onClick={this.handleClose}
+            />
+        ];
         return(
             <div >
                 <nav 
                     className="navbar navbar-expand-md navbar-light bg-light btco-hover-menu fixed-top"
                     style={{boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'}}
                 >
-                    <a className="navbar-brand" href="/">
-                        E Odonto Digital</a>
+                    <a className="navbar-brand" href="/" style={{marginLeft: '5%'}} >
+                        <img src="/img/eodontodigital.jpg" alt="E Odonto Digital"
+                            style={{width: '40px'}}
+                        />
+                    </a>
                     <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>
                     </button>
@@ -233,6 +287,29 @@ class NavBar extends Component {
                 {/*show do modal para cadastro de aluno*/}
                 {(this.state.showModalSignIn) ? <SignIn /> : null}
                 {(this.state.showModalLogin)  ? <Login />  : null}
+               
+                <Dialog
+                    title="O QUE PODEMOS LHE AJUDAR"
+                    actions={actions}
+                    modal={false}
+                    open={this.state.openDialog}
+                    onRequestClose={this.handleClose}
+                    className='text-center'
+                    style={{height: '80%'}}
+                >
+                    <AutoComplete
+                        hintText="Digite o que procura"
+                        searchText={this.state.searchText}
+                        dataSource={this.state.searchData}
+                        onUpdateInput={this.handleUpdateInput}
+                        onNewRequest={this.handleNewRequest}
+                        filter={AutoComplete.caseInsensitiveFilter}
+                        floatingLabelText="Digite aqui !!"
+                        fullWidth={true}
+                        style={{width: '90%'}}                       
+
+                    />
+                </Dialog>
             </div>
         )
     }

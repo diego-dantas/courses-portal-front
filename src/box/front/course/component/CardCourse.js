@@ -17,12 +17,28 @@ class CardCourse extends Component {
             subCategory: JSON.parse(localStorage.getItem('subCategory')),
             student:     JSON.parse(localStorage.getItem('student')),
             courses:     JSON.parse(localStorage.getItem('course')),
+            coursePlan:  JSON.parse(localStorage.getItem('coursePlan')),
             listCourses: [],
         }
     }
 
     componentDidMount(){
         this.buildGrid();
+        // console.log(this.state.student.plan)
+        // this.state.coursePlan.map((row, i) => (
+        //     console.log(row.plan._id)    
+        // ))
+        
+    }
+
+    getValuePlan = (idCourse) => {
+        var value = 0;
+
+        this.state.coursePlan.map((row, i) => (
+            row.plan._id === this.state.student.plan._id && row.course._id === idCourse ?
+                value = row.price : ''
+        ));
+        return parseFloat(value).toFixed(2);
     }
 
     buildGrid = () => {
@@ -32,10 +48,13 @@ class CardCourse extends Component {
             row.labelUrl === this.state.subCateg ?
                 idSub = row._id : ''
         ))        
-            
-        listCourses = this.state.courses.map((row, i) => (
-            row.subGrid._id === idSub ? row : undefined
-        ))
+        
+        listCourses !== null ?
+            listCourses = this.state.courses.map((row, i) => (
+                row.subGrid._id === idSub ? row : undefined
+            ))
+        :''
+
         Array.prototype.remByVal = function(val) {
             for (var i = 0; i < this.length; i++) {
                 if (this[i] === val) {
@@ -48,8 +67,8 @@ class CardCourse extends Component {
         listCourses = listCourses.remByVal(undefined)
 
         listCourses = listCourses.map((row, i) => (
-            <Card id={this.state.subCateg+''+i} key={i} style={{width: '200px', height: '300px', marginRight: '2%', boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'}}>
-                <a href={"/course/"+row.labelUrl+'/'+i}>
+            <Card id={this.state.subCateg+''+i} key={i} style={{width: '200px', height: '300px', marginRight: '1%', marginLeft: '1%', boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'}}>
+                <a href={"/course/"+row.labelUrl+'/'+row._id}>
                     <CardMedia>
                         { 
                             <img 
@@ -64,7 +83,12 @@ class CardCourse extends Component {
                     </CardText>
                     <Divider />
                     <CardActions style={{textAlign:'right', width: '200px', height: '50px'}}>
-                        <h4>R$: {parseFloat(row.price).toFixed(2)}</h4>
+                        <h4>R$: { 
+                                    this.state.student === null ?
+                                        parseFloat(row.price).toFixed(2) :
+                                        this.getValuePlan(row._id)
+                                }
+                        </h4>
                     </CardActions>
                 </a>
             </Card>
@@ -127,7 +151,7 @@ class CardCourse extends Component {
             <div>
                 <div key={1}>
                     <h2 className='title-box'>Cursos em {this.state.catUrl.toUpperCase()} ...</h2>
-                    <div className='component-category'>
+                    <div className='container-fluid component-category'>
                         <IconButton
                             style={{background: 'transparent', width: 64, height: 64, padding: 8, float: 'left'}}
                             iconStyle={{width: 48, height: 48}}
@@ -140,7 +164,7 @@ class CardCourse extends Component {
                             {this.state.listCourses}
                         </div>
                         <IconButton
-                            style={{background: 'transparent', width: 64, height: 64, padding: 8, float: 'left'}}
+                            style={{background: 'transparent', width: 64, height: 64, padding: 8, float: 'right'}}
                             iconStyle={{width: 48, height: 48}}
                             tooltip='Ir'
                             onClick={(event, object, action) => this.actionMove(event, 'go')}
