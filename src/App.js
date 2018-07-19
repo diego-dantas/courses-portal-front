@@ -1,6 +1,7 @@
 //import of react
 import React, { Component } from 'react';
 
+
 //import of component
 import NavBar from './box/front/bar/NavBar';
 import CarouselHome from './box/front/home/CarouselHome';
@@ -9,7 +10,7 @@ import Footer from './box/front/bar/Footer';
 import CardCourse from './box/front/course/component/CardCourse';
 
 //import of css
-import  './static/style/css/global.css';
+
 
 
 import HttpService from '../src/service/http/HttpService';
@@ -22,6 +23,7 @@ class App extends Component {
     componentDidMount(){
         this.getCategory();
         this.getSubCategory();
+        this.getCoursePlan();
     }
 
     getCategory = () =>{

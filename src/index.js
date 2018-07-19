@@ -13,6 +13,7 @@ import App from './App';
 //import Courses from './box/home/course/Courses';
 import ListCourses from './box/front/course/ListCourses';
 import InformationCourse from './box/front/course/component/InformationCourse'
+import Search from './box/front/bar/Search';
 
 //import of dash provider
 import Dash from './box/provider/dash/Dash';
@@ -43,6 +44,7 @@ const Main = () => (
                     <Route exact path='/' component={App} />
                     <Route exact path='/courses/:cat/:subCat' component={ListCourses} />
                     <Route exact path='/course/:course/:id' component={InformationCourse} />
+                    <Route exact path='/search/:search' component={Search} />
                     <PrivateRoute path='/provider/:way' component={Dash} />
                     <PrivateRoute path='/student/:way' component={StudentDashboard}/>
                     {/* <Route exact path='/provider/about' component={About} />

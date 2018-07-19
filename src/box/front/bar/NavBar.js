@@ -2,11 +2,10 @@ import './../../../static/css/index.css';
 import React, { Component } from 'react';
 import PubSub from 'pubsub-js'
 import history from  './../../../service/router/history'
-
+import CacheData from './../../../service/cacheData/CacheData';
 //import mateiral-ui
 import FlatButton from 'material-ui/FlatButton';
 import Avatar from 'material-ui/Avatar';
-import Drawer from 'material-ui/Drawer';
 import AutoComplete from 'material-ui/AutoComplete';
 import Dialog from 'material-ui/Dialog';
 
@@ -54,9 +53,11 @@ class NavBar extends Component {
 
     buildSearch = () => {
         var searchData = [];
-        searchData = this.state.courses.map((row, i) => (
-            row.name
-        ))
+        if(this.state.courses !== null){
+            searchData = this.state.courses.map((row, i) => (
+                row.name
+            ))
+        }
         this.setState({'searchData': searchData})
     }
     handleToggle = () => this.setState({openSearch: !this.state.openSearch});
@@ -70,7 +71,15 @@ class NavBar extends Component {
     };
 
     handleNewRequest = () => {
-        console.log(this.state.searchText)
+        console.log(this.state.searchText);
+        var searchNew = '';
+        var searchSplit = this.state.searchText.split(" ");
+        searchSplit.map((row) => (
+            searchNew += row
+        ));
+        this.handleClose();
+        window.location.reload();
+        history.push('/search/'+searchNew);
     };
 
     loadStudent = () =>
@@ -80,6 +89,10 @@ class NavBar extends Component {
 
     buildCourseMenu = () =>{
         let categories = JSON.parse(localStorage.getItem('category'));
+        // while(JSON.parse(localStorage.getItem('category')) === null){
+        //     CacheData.getCategory();
+        // }
+        
         if(categories !== undefined && categories !== null){
             
             let menu =  categories.map((category, index) =>
@@ -155,6 +168,13 @@ class NavBar extends Component {
     
     notLogged = () => (
         <div>
+            <FlatButton
+                    labelPosition="before"
+                    style={{color:"#000"}}
+                    label={'Buscar '}
+                    icon={<Search />}
+                    onClick={this.handleOpen}
+            />
             <button 
                 type="button" 
                 className="btn btn-outline-secondary"
@@ -175,11 +195,11 @@ class NavBar extends Component {
     logged = () => (
         <ul className="navbar-nav mr-auto">
             <FlatButton
-                    labelPosition="before"
-                    style={{color:"#000"}}
-                    label={'Buscar '}
-                    icon={<Search />}
-                    onClick={this.handleOpen}
+                labelPosition="before"
+                style={{color:"#000"}}
+                label={'Buscar '}
+                icon={<Search />}
+                onClick={this.handleOpen}
             />
             <li className="nav-item dropdown">
                 <FlatButton
