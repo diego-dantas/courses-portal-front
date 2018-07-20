@@ -25,7 +25,7 @@ export default class FloatingButton extends Component {
                         backgroundColor: '#87CEEB',
                         borderRadius: '100px'
                     }}
-                    tooltip="Voltar para o topo"
+                    tooltip="VOLTAR AO TOPO"
                     tooltipPosition="top-center"
                     onClick={() => this.topFunction()}
                 >

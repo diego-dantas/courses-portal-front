@@ -7,6 +7,8 @@ import Divider from 'material-ui/Divider';
 import IconButton from 'material-ui/IconButton';
 import ArrowLeft from 'material-ui/svg-icons/hardware/keyboard-arrow-left';
 import ArrowRight from 'material-ui/svg-icons/hardware/keyboard-arrow-right';
+import FlatButton from 'material-ui/FlatButton';
+
 
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
@@ -15,15 +17,19 @@ class CardCourse extends Component {
 
     constructor(props){
         super(props);
+        
         this.state = {
             catUrl: props.category,
             subCateg: props.subCateg,
+            page: props.page,
+            typeScroll: props.typeScroll,
             category:    JSON.parse(localStorage.getItem('category')),
             subCategory: JSON.parse(localStorage.getItem('subCategory')),
             student:     JSON.parse(localStorage.getItem('student')),
             courses:     JSON.parse(localStorage.getItem('course')),
             coursePlan:  JSON.parse(localStorage.getItem('coursePlan')),
             listCourses: [],
+            listVitrine: [],
         }
         this.next = this.next.bind(this);
         this.previous = this.previous.bind(this);
@@ -31,7 +37,7 @@ class CardCourse extends Component {
 
     componentDidMount(){
         this.buildGrid();
-        this.getCourses();        
+        this.getCourses();   
     }
     next() {
         this.slider.slickNext();
@@ -119,12 +125,28 @@ class CardCourse extends Component {
                 </Card>
             </div>
         ))
+        let limitPage = 1;
+        let qtdPage = this.state.listCourses.length / limitPage;
+
+        console.log(qtdPage)  
         this.setState({'listCourses': listCourses});
     }
 
+
+    getPlusVitrine = (size) => {
+
+        let listVitrine = [];
+        for(var x = 0; x < size; x++){
+            listVitrine.push(this.state.listCourses[x]);
+        }
+
+        return listVitrine;
+    }
+
     render(){
-        const settings = { 
+        const settingsCard = { 
             dots: true,
+            className: "center",
             infinite: false,
             speed: 500,
             slidesToShow:5,
@@ -166,10 +188,10 @@ class CardCourse extends Component {
             }
         ]
       };
+      
 
-        return(
-            <div>
-                <div key={1}>
+        const scrollCard = [
+            <div key={1}>
                     <div className='container'>
                         <div className='row'>
                             <div className='col-md-8'>
@@ -184,7 +206,7 @@ class CardCourse extends Component {
                                 </IconButton>
                             </div>
                         </div>
-                         <Slider ref={c => (this.slider = c)} {...settings}>
+                         <Slider ref={c => (this.slider = c)} {...settingsCard}>
                             {this.state.listCourses}
                          </Slider>
                     </div>
@@ -196,6 +218,70 @@ class CardCourse extends Component {
                         backgroundColor: 'rgba(224, 224, 224, 0.5)'}}
                     />
                 </div>
+        ]
+
+        const settingsVitrine = {
+            dots: true,
+            infinite: false,
+            speed: 500,
+            slidesToShow:5,
+            slidesToScroll: 5,
+            initialSlide: 0,
+            //rows
+            className: "center",
+            centerPadding: "60px",
+            rows: 5,
+            responsive: [
+                {
+                    breakpoint: 1200,
+                    settings: {
+                    slidesToShow: 4,
+                    slidesToScroll: 4,
+                    infinite: true,
+                    dots: true
+                    }
+                },
+                {
+                    breakpoint: 992,
+                    settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 3,
+                    infinite: true,
+                    dots: true
+                    }
+                },
+                {
+                    breakpoint: 768,
+                    settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 2,
+                    initialSlide: 2
+                    }
+                },
+                {
+                    breakpoint: 480,
+                    settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1
+                    }
+                }
+            ]
+        };
+
+        const scrollVitrine = [
+            <div className='container'>
+                <div className='row'>
+                    { this.getPlusVitrine(3) }
+                </div>
+            </div>
+        ]
+        return(
+            <div>
+                { 
+                    this.state.typeScroll === 'scrollCard' ?
+                        scrollCard :
+                        scrollVitrine
+                }
             </div>
         )
     }

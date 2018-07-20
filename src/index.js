@@ -42,6 +42,7 @@ const Main = () => (
             <Router history={history}>
                 <div>
                     <Route exact path='/' component={App} />
+                    <Route exact path='/courses/:cat/:subCat/:pag' component={ListCourses} />
                     <Route exact path='/courses/:cat/:subCat' component={ListCourses} />
                     <Route exact path='/course/:course/:id' component={InformationCourse} />
                     <Route exact path='/search/:search' component={Search} />

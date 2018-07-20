@@ -60,9 +60,9 @@ class App extends Component {
                 <FloatingButton />
                 <NavBar />
                 <CarouselHome />
-                <CardCourse category={'development'} subCateg={'web-developer'} />
-                <CardCourse category={'development'} subCateg={'web-developer'} />
-                <CardCourse category={'development'} subCateg={'web-developer'} />
+                <CardCourse category={'development'} subCateg={'web-developer'} typeScroll={'scrollCard'}/>
+                <CardCourse category={'development'} subCateg={'web-developer'} typeScroll={'scrollCard'}/>
+                <CardCourse category={'development'} subCateg={'web-developer'} typeScroll={'scrollCard'}/>
                 <VideoSection />
                 <Footer/>
             </div>

@@ -14,6 +14,7 @@ const ListCourses = (props) => {
     //let subCateg = Routers.get(props.match.params.subCat);
     let category = props.match.params.cat
     let subCateg = props.match.params.subCat
+    let page = props.match.params.pag
 
     return(
         <div>
@@ -32,7 +33,7 @@ const ListCourses = (props) => {
             <br/>
             <br/>                  
             <br/>     
-            <CardCourse category={category} subCateg={subCateg} />
+            <CardCourse category={category} subCateg={subCateg} typeScroll='scrollVitrine' page={page}/>
         </div>
     )
     
