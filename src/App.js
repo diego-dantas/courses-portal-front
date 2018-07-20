@@ -1,14 +1,13 @@
 //import of react
 import React, { Component } from 'react';
 
-
 //import of component
 import NavBar from './box/front/bar/NavBar';
 import CarouselHome from './box/front/home/CarouselHome';
 import VideoSection from './box/front/home/VideoSection';
 import Footer from './box/front/bar/Footer';
 import CardCourse from './box/front/course/component/CardCourse';
-
+import FloatingButton from './box/component/FloatingButton';
 //import of css
 
 
@@ -58,6 +57,7 @@ class App extends Component {
     render(){
         return(
             <div>
+                <FloatingButton />
                 <NavBar />
                 <CarouselHome />
                 <CardCourse category={'development'} subCateg={'web-developer'} />
