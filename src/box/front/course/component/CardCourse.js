@@ -92,7 +92,7 @@ class CardCourse extends Component {
 
         listCourses = listCourses.map((row, i) => (
             <div  key={i} >
-                <Card id={this.state.subCateg+''+i} style={{width: '200px', height: '300px', marginRight: '1%', marginLeft: '1%', boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'}}>
+                <Card id={this.state.subCateg+''+i} style={{width: '200px', height: '300px',  marginBottom: '1%', boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'}}>
                     <a href={"/course/"+row.labelUrl+'/'+row._id}>
                         <CardMedia>
                             { 
@@ -132,16 +132,25 @@ class CardCourse extends Component {
             initialSlide: 0,
             responsive: [
             {
-                breakpoint: 1024,
+                breakpoint: 1200,
                 settings: {
-                slidesToShow: 2,
-                slidesToScroll: 2,
+                slidesToShow: 4,
+                slidesToScroll: 4,
                 infinite: true,
                 dots: true
                 }
             },
             {
-                breakpoint: 600,
+                breakpoint: 992,
+                settings: {
+                slidesToShow: 3,
+                slidesToScroll: 3,
+                infinite: true,
+                dots: true
+                }
+            },
+            {
+                breakpoint: 768,
                 settings: {
                 slidesToShow: 2,
                 slidesToScroll: 2,
@@ -179,7 +188,7 @@ class CardCourse extends Component {
                             {this.state.listCourses}
                          </Slider>
                     </div>
-                    <Divider style={{width: '85%',
+                    <Divider style={{width: '90%',
                         marginLeft: '5%',
                         marginRight: '5%',
                         marginTop: '3%',
