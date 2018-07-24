@@ -3,17 +3,24 @@ import React, { Component } from 'react';
 import PubSub from 'pubsub-js'
 import history from  './../../../service/router/history'
 import CacheData from './../../../service/cacheData/CacheData';
+
+import { connect } from 'react-redux';
+
 //import mateiral-ui
 import FlatButton from 'material-ui/FlatButton';
 import Avatar from 'material-ui/Avatar';
 import AutoComplete from 'material-ui/AutoComplete';
 import Dialog from 'material-ui/Dialog';
+import Badge from 'material-ui/Badge';
+import IconButton from 'material-ui/IconButton';
+
 
 //Incones
 import ActionDashboard from 'material-ui/svg-icons/action/dashboard';
 import Search from 'material-ui/svg-icons/action/search';
 import ExitToApp from 'material-ui/svg-icons/action/exit-to-app';
 import ViewCompact from 'material-ui/svg-icons/image/view-compact'
+import ShoppingCart from 'material-ui/svg-icons/maps/local-grocery-store';
 
 //import modals
 import SignIn from '../student/account/SignIn';
@@ -168,13 +175,6 @@ class NavBar extends Component {
     
     notLogged = () => (
         <div>
-            <FlatButton
-                    labelPosition="before"
-                    style={{color:"#000"}}
-                    label={'Buscar '}
-                    icon={<Search />}
-                    onClick={this.handleOpen}
-            />
             <button 
                 type="button" 
                 className="btn btn-outline-secondary"
@@ -194,13 +194,6 @@ class NavBar extends Component {
     )
     logged = () => (
         <ul className="navbar-nav mr-auto">
-            <FlatButton
-                labelPosition="before"
-                style={{color:"#000"}}
-                label={'Buscar '}
-                icon={<Search />}
-                onClick={this.handleOpen}
-            />
             <li className="nav-item dropdown">
                 <FlatButton
                     labelPosition="before"
@@ -296,6 +289,22 @@ class NavBar extends Component {
                             </li>
                         </ul>
                         <form className="form-inline my-2 my-lg-0">
+                            <FlatButton
+                                labelPosition="before"
+                                style={{color:"#000"}}
+                                label={'Buscar '}
+                                icon={<Search />}
+                                onClick={this.handleOpen}
+                            />
+                            <Badge
+                                badgeContent={this.props.shoppingCart}
+                                primary={true}
+                                badgeStyle={{top: 20, right: 20}}
+                            >
+                                <IconButton>
+                                    <ShoppingCart />
+                                </IconButton>
+                            </Badge>
                             {
                                 (this.state.student === null) ?
                                     (this.notLogged()) : 
@@ -308,6 +317,7 @@ class NavBar extends Component {
                 {(this.state.showModalSignIn) ? <SignIn /> : null}
                 {(this.state.showModalLogin)  ? <Login />  : null}
                
+
                 <Dialog
                     title="O QUE PODEMOS LHE AJUDAR"
                     actions={actions}
@@ -335,4 +345,9 @@ class NavBar extends Component {
     }
 }
 
-export default NavBar;
+
+const mapStateToProps = state => ({
+    shoppingCart: state.shoppingCart.value
+})
+
+export default connect(mapStateToProps)(NavBar);
