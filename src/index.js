@@ -24,6 +24,9 @@ import Dash from './box/provider/dash/Dash';
 //import of student profile
 import StudentDashboard from './box/front/student/dashboard/StudentDashboard'
 
+//import of shopping cart
+import ShoppingCart from './box/front/shoppingCart/ShoppingCart'
+
 import history from './service/router/history'
 
 import registerServiceWorker from './registerServiceWorker';
@@ -50,6 +53,7 @@ const Main = () => (
                         <Route exact path='/courses/:cat/:subCat' component={ListCourses} />
                         <Route exact path='/course/:course/:id' component={InformationCourse} />
                         <Route exact path='/search/:search' component={Search} />
+                        <Route exact path='/shopping-cart' component={ShoppingCart} />
                         <PrivateRoute path='/provider/:way' component={Dash} />
                         <PrivateRoute path='/student/:way' component={StudentDashboard}/>
                         {/* <Route exact path='/provider/about' component={About} />

@@ -301,7 +301,10 @@ class NavBar extends Component {
                                 primary={true}
                                 badgeStyle={{top: 20, right: 20}}
                             >
-                                <IconButton>
+                                <IconButton
+                                    tooltip="IR PARA O CARRINHO"
+                                    onClick={() =>  history.push('/shopping-cart')}
+                                >
                                     <ShoppingCart />
                                 </IconButton>
                             </Badge>
