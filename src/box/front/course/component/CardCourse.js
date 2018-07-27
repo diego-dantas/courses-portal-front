@@ -7,7 +7,6 @@ import Divider from 'material-ui/Divider';
 import IconButton from 'material-ui/IconButton';
 import ArrowLeft from 'material-ui/svg-icons/hardware/keyboard-arrow-left';
 import ArrowRight from 'material-ui/svg-icons/hardware/keyboard-arrow-right';
-import FlatButton from 'material-ui/FlatButton';
 
 
 import "slick-carousel/slick/slick.css"; 
@@ -59,8 +58,8 @@ class CardCourse extends Component {
                    })
     }
 
-    getValuePlan = (idCourse) => {
-        var value = 0;
+    getValuePlan = (idCourse, price) => {
+        var value = price;
         this.state.coursePlan.map((row, i) => (
             row.plan._id === this.state.student.plan._id && row.course._id === idCourse ?
                 value = row.price : ''
@@ -94,6 +93,7 @@ class CardCourse extends Component {
             }
             return this;
         }
+
         listCourses = listCourses.remByVal(undefined)
 
         listCourses = listCourses.map((row, i) => (
@@ -117,7 +117,7 @@ class CardCourse extends Component {
                             <h4>R$: { 
                                         this.state.student === null ?
                                             parseFloat(row.price).toFixed(2) :
-                                            this.getValuePlan(row._id)
+                                            this.getValuePlan(row._id, row.price)
                                     }
                             </h4>
                         </CardActions>
@@ -125,10 +125,7 @@ class CardCourse extends Component {
                 </Card>
             </div>
         ))
-        let limitPage = 1;
-        let qtdPage = this.state.listCourses.length / limitPage;
 
-        console.log(qtdPage)  
         this.setState({'listCourses': listCourses});
     }
 
@@ -220,53 +217,53 @@ class CardCourse extends Component {
                 </div>
         ]
 
-        const settingsVitrine = {
-            dots: true,
-            infinite: false,
-            speed: 500,
-            slidesToShow:5,
-            slidesToScroll: 5,
-            initialSlide: 0,
-            //rows
-            className: "center",
-            centerPadding: "60px",
-            rows: 5,
-            responsive: [
-                {
-                    breakpoint: 1200,
-                    settings: {
-                    slidesToShow: 4,
-                    slidesToScroll: 4,
-                    infinite: true,
-                    dots: true
-                    }
-                },
-                {
-                    breakpoint: 992,
-                    settings: {
-                    slidesToShow: 3,
-                    slidesToScroll: 3,
-                    infinite: true,
-                    dots: true
-                    }
-                },
-                {
-                    breakpoint: 768,
-                    settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 2,
-                    initialSlide: 2
-                    }
-                },
-                {
-                    breakpoint: 480,
-                    settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1
-                    }
-                }
-            ]
-        };
+        // const settingsVitrine = {
+        //     dots: true,
+        //     infinite: false,
+        //     speed: 500,
+        //     slidesToShow:5,
+        //     slidesToScroll: 5,
+        //     initialSlide: 0,
+        //     //rows
+        //     className: "center",
+        //     centerPadding: "60px",
+        //     rows: 5,
+        //     responsive: [
+        //         {
+        //             breakpoint: 1200,
+        //             settings: {
+        //             slidesToShow: 4,
+        //             slidesToScroll: 4,
+        //             infinite: true,
+        //             dots: true
+        //             }
+        //         },
+        //         {
+        //             breakpoint: 992,
+        //             settings: {
+        //             slidesToShow: 3,
+        //             slidesToScroll: 3,
+        //             infinite: true,
+        //             dots: true
+        //             }
+        //         },
+        //         {
+        //             breakpoint: 768,
+        //             settings: {
+        //             slidesToShow: 2,
+        //             slidesToScroll: 2,
+        //             initialSlide: 2
+        //             }
+        //         },
+        //         {
+        //             breakpoint: 480,
+        //             settings: {
+        //             slidesToShow: 1,
+        //             slidesToScroll: 1
+        //             }
+        //         }
+        //     ]
+        // };
 
         const scrollVitrine = [
             <div className='container'>

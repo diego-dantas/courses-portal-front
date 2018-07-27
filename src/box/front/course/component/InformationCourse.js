@@ -79,7 +79,7 @@ class InformationCourse extends Component {
 
         this.setState({'steps': steps});
     };
-    
+
     render(){
 
         
@@ -106,7 +106,7 @@ class InformationCourse extends Component {
                                             secondary={true}
                                             icon={<AddShopping />}
                                             style={{marginTop: '5%', width: '300px'}}
-                                            onClick={this.props.addShoppingCart}
+                                            onClick={() => this.props.addShoppingCart(this.state.course)}
                                         />
                                         <RaisedButton
                                             label="Comprar"

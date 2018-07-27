@@ -2,7 +2,6 @@ import './../../../static/css/index.css';
 import React, { Component } from 'react';
 import PubSub from 'pubsub-js'
 import history from  './../../../service/router/history'
-import CacheData from './../../../service/cacheData/CacheData';
 
 import { connect } from 'react-redux';
 
