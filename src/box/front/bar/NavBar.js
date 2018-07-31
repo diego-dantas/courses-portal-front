@@ -237,7 +237,7 @@ class NavBar extends Component {
     {
         localStorage.removeItem('student');
         this.setState({'student': null});
-        history.push('/');
+        window.location.replace("/");
     };
     handleOpen = () => {
         this.setState({openDialog: true});

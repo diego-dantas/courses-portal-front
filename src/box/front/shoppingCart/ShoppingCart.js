@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 
+
 import NavBar from './../bar/NavBar';
 import Footer from './../bar/Footer';
 import IconButton from 'material-ui/IconButton';
 import RemoveShoopingCart from 'material-ui/svg-icons/action/remove-shopping-cart';
 import RaisedButton from 'material-ui/RaisedButton';
+import history from  './../../../service/router/history';
 
 
 
@@ -21,16 +23,22 @@ class ShoppingCart extends Component{
             student:     JSON.parse(localStorage.getItem('student')),
             coursePlan:  JSON.parse(localStorage.getItem('coursePlan')),
             itemsList: [],
-            totalItems: 0
+            totalItems: 0,
+            open: false,
+            finalizar: false,
+            showModalSignIn: false,
+            showModalLogin:false, 
         }
-
-        console.log(this.state.itensShoppingCart);
     }
 
     componentDidMount() {
         this.buildItemsList();
     }
 
+    
+    handleClose = () => {
+        this.setState({open: false});
+    };
     getValuePlan = (idCourse, price) => {
         var value = price;
         this.state.coursePlan.map((row, i) => (
@@ -90,6 +98,13 @@ class ShoppingCart extends Component{
         this.setState({'itemsList': itemsList});
         this.buildTotalItems();
     }
+   
+
+    checkout = () => {
+        history.push('/checkout');
+    }
+
+  
 
     render(){
         return(
@@ -119,7 +134,12 @@ class ShoppingCart extends Component{
                             <h4>
                                 Total R$: { this.state.totalItems }
                             </h4>
-                            <RaisedButton label="Finalizar Compra" primary={true} fullWidth={true} />
+                            <RaisedButton 
+                                label="Finalizar Compra" 
+                                primary={true} 
+                                fullWidth={true} 
+                                onClick={this.checkout}
+                            />
 
                         </div>
                     </div>
@@ -127,6 +147,7 @@ class ShoppingCart extends Component{
 
                 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
                 <Footer />
+               
             </div>
         )
     }

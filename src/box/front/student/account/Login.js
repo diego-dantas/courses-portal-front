@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import HttpService from './../../../../service/http/HttpService';
 import PubSub from 'pubsub-js';
-import history from  './../../../../service/router/history'
 import FacebookLogin from 'react-facebook-login';
 import GoogleLogin from 'react-google-login';
 
@@ -17,9 +16,9 @@ export default class Login extends Component {
         super(props);
         this.state = {
             open: true,
-            enable: false
+            enable: false,
         };
-        
+        console.log(this.state.source);
     }
 
     handleClose = (value) => {
@@ -38,7 +37,7 @@ export default class Login extends Component {
                         localStorage.setItem('student', JSON.stringify(success.data));
                         PubSub.publish('logged');
                         this.handleClose(false);
-                        history.push('/');
+                        window.location.reload();                        
                    })
                    .catch(error => {
                        console.log('Erro ao realizar login ' + error);

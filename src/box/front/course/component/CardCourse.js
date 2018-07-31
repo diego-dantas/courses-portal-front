@@ -98,7 +98,7 @@ class CardCourse extends Component {
 
         listCourses = listCourses.map((row, i) => (
             <div  key={i} >
-                <Card id={this.state.subCateg+''+i} style={{width: '200px', height: '300px',  marginBottom: '1%', boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'}}>
+                <Card id={this.state.subCateg+''+i} style={{width: '200px', height: '300px',  marginBottom: '10%', boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)'}}>
                     <a href={"/course/"+row.labelUrl+'/'+row._id}>
                         <CardMedia>
                             { 
@@ -110,7 +110,7 @@ class CardCourse extends Component {
                         </CardMedia>
                         <CardTitle style={{paddingBottom: '0%'}} titleStyle={{fontSize: '15px', fontWeight: '250'}} title={row.name}/>
                         <CardText  style={{paddingBottom: '0%', width: '200px', height: '75px'}}>
-                            {row.description}
+                            {row.description.substring(0, 60) + ' ....'}
                         </CardText>
                         <Divider />
                         <CardActions style={{textAlign:'right', width: '200px', height: '50px'}}>
@@ -141,144 +141,82 @@ class CardCourse extends Component {
     }
 
     render(){
-        const settingsCard = { 
+
+        const settingsVitrine = {
             dots: true,
-            className: "center",
             infinite: false,
             speed: 500,
             slidesToShow:5,
             slidesToScroll: 5,
             initialSlide: 0,
+            //rows
+            className: "center",
+            centerPadding: "60px",
+            rows: 2,
             responsive: [
-            {
-                breakpoint: 1200,
-                settings: {
-                slidesToShow: 4,
-                slidesToScroll: 4,
-                infinite: true,
-                dots: true
+                {
+                    breakpoint: 1200,
+                    settings: {
+                    slidesToShow: 4,
+                    slidesToScroll: 4,
+                    infinite: true,
+                    dots: true
+                    }
+                },
+                {
+                    breakpoint: 992,
+                    settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 3,
+                    infinite: true,
+                    dots: true
+                    }
+                },
+                {
+                    breakpoint: 768,
+                    settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 2,
+                    initialSlide: 2
+                    }
+                },
+                {
+                    breakpoint: 480,
+                    settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1
+                    }
                 }
-            },
-            {
-                breakpoint: 992,
-                settings: {
-                slidesToShow: 3,
-                slidesToScroll: 3,
-                infinite: true,
-                dots: true
-                }
-            },
-            {
-                breakpoint: 768,
-                settings: {
-                slidesToShow: 2,
-                slidesToScroll: 2,
-                initialSlide: 2
-                }
-            },
-            {
-                breakpoint: 480,
-                settings: {
-                slidesToShow: 1,
-                slidesToScroll: 1
-                }
-            }
-        ]
-      };
-      
+            ]
+        };
 
-        const scrollCard = [
-            <div key={1}>
-                    <div className='container'>
-                        <div className='row'>
-                            <div className='col-md-8'>
-                                <h2 className='title-box'>Cursos em {this.state.catUrl.toUpperCase()} ...</h2>
-                            </div>
-                            <div className='col-md-4'  style={{ textAlign: "center" }}> 
-                                <IconButton onClick={this.previous}>
-                                    <ArrowLeft />
-                                </IconButton>
-                                <IconButton onClick={this.next}>
-                                    <ArrowRight />
-                                </IconButton>
-                            </div>
-                        </div>
-                         <Slider ref={c => (this.slider = c)} {...settingsCard}>
-                            {this.state.listCourses}
-                         </Slider>
-                    </div>
-                    <Divider style={{width: '90%',
-                        marginLeft: '5%',
-                        marginRight: '5%',
-                        marginTop: '3%',
-                        marginBottom: '3%',
-                        backgroundColor: 'rgba(224, 224, 224, 0.5)'}}
-                    />
-                </div>
-        ]
-
-        // const settingsVitrine = {
-        //     dots: true,
-        //     infinite: false,
-        //     speed: 500,
-        //     slidesToShow:5,
-        //     slidesToScroll: 5,
-        //     initialSlide: 0,
-        //     //rows
-        //     className: "center",
-        //     centerPadding: "60px",
-        //     rows: 5,
-        //     responsive: [
-        //         {
-        //             breakpoint: 1200,
-        //             settings: {
-        //             slidesToShow: 4,
-        //             slidesToScroll: 4,
-        //             infinite: true,
-        //             dots: true
-        //             }
-        //         },
-        //         {
-        //             breakpoint: 992,
-        //             settings: {
-        //             slidesToShow: 3,
-        //             slidesToScroll: 3,
-        //             infinite: true,
-        //             dots: true
-        //             }
-        //         },
-        //         {
-        //             breakpoint: 768,
-        //             settings: {
-        //             slidesToShow: 2,
-        //             slidesToScroll: 2,
-        //             initialSlide: 2
-        //             }
-        //         },
-        //         {
-        //             breakpoint: 480,
-        //             settings: {
-        //             slidesToShow: 1,
-        //             slidesToScroll: 1
-        //             }
-        //         }
-        //     ]
-        // };
-
-        const scrollVitrine = [
-            <div className='container'>
-                <div className='row'>
-                    { this.getPlusVitrine(3) }
-                </div>
-            </div>
-        ]
         return(
-            <div>
-                { 
-                    this.state.typeScroll === 'scrollCard' ?
-                        scrollCard :
-                        scrollVitrine
-                }
+            <div key={1}>
+                <div className='container'>
+                    <div className='row'>
+                        <div className='col-md-8'>
+                            <h2 className='title-box'>Cursos em {this.state.catUrl.toUpperCase()} ...</h2>
+                        </div>
+                        <div className='col-md-4'  style={{ textAlign: "center" }}> 
+                            <IconButton onClick={this.previous}>
+                                <ArrowLeft />
+                            </IconButton>
+                            <IconButton onClick={this.next}>
+                                <ArrowRight />
+                            </IconButton>
+                        </div>
+                    </div>
+                    <Slider ref={c => (this.slider = c)} {...settingsVitrine}>
+                        {this.state.listCourses}
+                    </Slider>
+                </div>
+                <Divider style={{width: '90%',
+                    marginLeft: '5%',
+                    marginRight: '5%',
+                    marginTop: '3%',
+                    marginBottom: '3%',
+                    backgroundColor: 'rgba(224, 224, 224, 0.5)'}}
+                />
             </div>
         )
     }

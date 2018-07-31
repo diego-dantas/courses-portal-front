@@ -3,6 +3,7 @@ import CardCourse from './../course/component/CardCourse';
 import '../../../static/css/listCourses.css';
 
 import NavBar from '../bar/NavBar';
+import Footer from '../bar/Footer';
 
 import TextField from 'material-ui/TextField'
 
@@ -33,7 +34,15 @@ const ListCourses = (props) => {
             <br/>
             <br/>                  
             <br/>     
-            <CardCourse category={category} subCateg={subCateg} typeScroll='scrollVitrine' page={page}/>
+            <CardCourse category={category} subCateg={subCateg}/>
+            <br/>
+            <br/>
+            <br/>                  
+            <br/>    <br/>
+            <br/>
+            <br/>                  
+            <br/>   
+            <Footer/>
         </div>
     )
     

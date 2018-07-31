@@ -9,6 +9,7 @@ import Category from '../customization/Category';
 import Descriptive from '../customization/Descriptive';
 import Carousel from '../customization/Carousel';
 
+
 class Customization extends Component {
 
     constructor(props) {

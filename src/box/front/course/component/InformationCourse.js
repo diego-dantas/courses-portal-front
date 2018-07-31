@@ -23,6 +23,7 @@ class InformationCourse extends Component {
     constructor(props){
         super(props);
         this.state ={
+            id: this.props.match.params.id,
             courses:    JSON.parse(localStorage.getItem('course')),
             coursePlan:  JSON.parse(localStorage.getItem('coursePlan')),
             student:     JSON.parse(localStorage.getItem('student')),
@@ -49,7 +50,7 @@ class InformationCourse extends Component {
 
     buildInformation = () => {
         HttpService.make()
-                   .get('/getCourseID?id=' + this.props.match.params.id)
+                   .get('/getCourseID?id=' + this.state.id)
                    .then(success => {
                         console.log(success.data);
                         this.setState({stepsCouse: success.data});

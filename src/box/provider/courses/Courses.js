@@ -40,6 +40,7 @@ class Courses extends Component {
             labelUrl: '',
             cat: 0,
             subCat: 0,
+            home: 0,
             labelStatus: 'Inativo',
             wayImage: '',
 
@@ -121,6 +122,11 @@ class Courses extends Component {
        // this.setState({idCategory: value})
     }
 
+    //Metodos de tratamento de mudança de compo da sub-categoria
+    homeChange = (event, index, value) => {
+        this.setState({home: value});
+    }
+
     //valida o campo nome na mudança
     nameChange = () => {
         if(this.state.errorName !== '')
@@ -152,6 +158,7 @@ class Courses extends Component {
         this.setState({labelUrl: ''});
         this.setState({cat: 0});
         this.setState({subCat: 0});
+        this.setState({home: 0});
         this.setState({errorDescricao: ''});
         this.setState({errorName: ''});
         this.setState({erroLabel: ''});
@@ -178,6 +185,7 @@ class Courses extends Component {
         this.setState({priceCourse: this.state.courses[col].price});
         this.setState({hoursCourse: this.state.courses[col].hours});
         this.setState({wayImage: this.state.courses[col].wayImage});
+        this.setState({home: this.state.courses[col].home});
         this.setState({cat: this.state.courses[col].grid._id});
         this.setState({subCat: this.state.courses[col].subGrid._id});
         this.setState({labelUrl: this.state.courses[col].labelUrl});
@@ -264,6 +272,7 @@ class Courses extends Component {
             hours: this.hours.input.value,
             price: this.price.input.value,
             wayImage: this.state.wayImage,
+            home: this.state.home,
             status: this.state.statusCourse,
             labelUrl: this.labelUrl.input.value,
             grid: {
@@ -380,13 +389,31 @@ class Courses extends Component {
                     contentStyle={{width: '80%', height: '100%', maxWidth: 'none'}}
                     autoScrollBodyContent={true}
                 >
-                    <Toggle 
-                        label={'Status: ' + this.state.labelStatus}
-                        labelPosition="right"
-                        defaultToggled={this.state.statusCourse}
-                        onToggle={(event, isInputChecked) => this.handleToggle(event, isInputChecked)}
-                        style={{marginTop: '20px'}}
-                    />
+                    <div className="row">
+                        <div className="col-md-4 col-sm-4">
+                            <Toggle 
+                                label={'Status: ' + this.state.labelStatus}
+                                labelPosition="right"
+                                defaultToggled={this.state.statusCourse}
+                                onToggle={(event, isInputChecked) => this.handleToggle(event, isInputChecked)}
+                                style={{marginTop: '20px'}}
+                            />
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                            <SelectField
+                                floatingLabelText="Home"
+                                value={this.state.home}
+                                onChange={this.homeChange}
+                                fullWidth={true}                            
+                                
+                            >  
+                                <MenuItem value={0} primaryText="No Home"/>
+                                <MenuItem value={1} primaryText="Home 1"/>
+                                <MenuItem value={2} primaryText="Home 2"/>
+                                <MenuItem value={3} primaryText="Home 3"/>
+                            </SelectField>
+                        </div>
+                    </div>
                     <div className="row">
                         <div className="col-md-4 col-sm-4">
                             <SelectField

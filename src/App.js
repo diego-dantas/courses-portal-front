@@ -6,7 +6,7 @@ import NavBar from './box/front/bar/NavBar';
 import CarouselHome from './box/front/home/CarouselHome';
 import VideoSection from './box/front/home/VideoSection';
 import Footer from './box/front/bar/Footer';
-import CardCourse from './box/front/course/component/CardCourse';
+import ScrollCourses from './box/front/course/component/ScrollCourses';
 //import of css
 
 
@@ -58,9 +58,9 @@ class App extends Component {
             <div>
                 <NavBar />
                 <CarouselHome />
-                <CardCourse category={'development'} subCateg={'web-developer'} typeScroll={'scrollCard'}/>
-                <CardCourse category={'development'} subCateg={'web-developer'} typeScroll={'scrollCard'}/>
-                <CardCourse category={'development'} subCateg={'web-developer'} typeScroll={'scrollCard'}/>
+                <ScrollCourses home={1}/>
+                <ScrollCourses home={2}/>
+                <ScrollCourses home={3}/>
                 <VideoSection />
                 <Footer/>
             </div>
